@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { clsx } from "clsx";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { AlertTriangle } from "lucide-react";
 import type { FlotaResumen, EstadoSemaforo } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const BORDE: Record<EstadoSemaforo, string> = {
   verde: "border-l-[#15803D]",
@@ -62,18 +66,22 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
                   {flota.cantidad} equipos · {SEMAFORO_LABEL[flota.semaforoGeneral]}
                 </p>
               </div>
-              <SemaforoDot estado={flota.semaforoGeneral} size="lg" />
+              <Tooltip short={`Estado ${flota.modelo}: ${flota.semaforoGeneral}`} help={HELP.semaforo}>
+                <SemaforoDot estado={flota.semaforoGeneral} size="lg" />
+              </Tooltip>
             </div>
 
             {/* KPI grid */}
             <div className="grid grid-cols-3 gap-2">
               {[
-                { k: "Dfm",  v: flota.dfmPromedio,  u: "%",  max: 100 },
-                { k: "TMEF", v: flota.tmefPromedio,  u: "h",  max: 150 },
-                { k: "TMPR", v: flota.tmprPromedio,  u: "h",  max: 30  },
-              ].map(({ k, v, u, max }) => (
+                { k: "Dfm",  v: flota.dfmPromedio,  u: "%",  max: 100, helpKey: "dfm" },
+                { k: "TMEF", v: flota.tmefPromedio,  u: "h",  max: 150, helpKey: "tmef" },
+                { k: "TMPR", v: flota.tmprPromedio,  u: "h",  max: 30,  helpKey: "tmpr" },
+              ].map(({ k, v, u, max, helpKey }) => (
                 <div key={k} className="flex flex-col">
-                  <span className="text-[9px] font-bold text-[#A1A1AA] uppercase tracking-[0.1em]">{k}</span>
+                  <Tooltip short={HELP[helpKey].titulo} help={HELP[helpKey]}>
+                    <span className="text-[9px] font-bold text-[#A1A1AA] uppercase tracking-wider cursor-help">{k}</span>
+                  </Tooltip>
                   <span className="text-[20px] font-mono font-bold text-[#09090B] leading-none mt-0.5">
                     {v}
                   </span>

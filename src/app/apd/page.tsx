@@ -5,6 +5,8 @@ import { ApdParameterTable } from "@/components/apd/ApdParameterTable";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { useCsvApd } from "@/hooks/useCsvApd";
 import { AlertTriangle, Info } from "lucide-react";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 export default function ApdPage() {
   const { estado, datos, nombreArchivo, error, procesarArchivo, limpiar } = useCsvApd();
@@ -14,7 +16,11 @@ export default function ApdPage() {
 
   return (
     <div className="flex flex-col gap-5 max-w-[1200px] mx-auto">
-      <SectionTitle>APD — Análisis Predictivo de Aceites</SectionTitle>
+      <SectionTitle>
+        <Tooltip short="Análisis Predictivo por Aceites — detecta desgaste antes de la falla" help={HELP.navApd}>
+          APD — Análisis Predictivo de Aceites
+        </Tooltip>
+      </SectionTitle>
 
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-5">
         {/* Panel izquierdo */}

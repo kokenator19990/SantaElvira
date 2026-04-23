@@ -1,6 +1,10 @@
+"use client";
+
 import { clsx } from "clsx";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import type { ParametroApd } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 function agrupar(datos: ParametroApd[]): Record<string, ParametroApd[]> {
   return datos.reduce<Record<string, ParametroApd[]>>((acc, p) => {
@@ -38,11 +42,21 @@ export function ApdParameterTable({ datos }: { datos: ParametroApd[] }) {
             <table className="w-full text-sm bg-white">
               <thead>
                 <tr className="border-b border-[#F4F4F5]">
-                  <th className="px-4 py-2 text-left text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Parámetro</th>
-                  <th className="px-4 py-2 text-right text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Valor</th>
-                  <th className="px-4 py-2 text-right text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Mín</th>
-                  <th className="px-4 py-2 text-right text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Máx</th>
-                  <th className="px-4 py-2 text-center text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Estado</th>
+                  <th className="px-4 py-2 text-left text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+                    <Tooltip short="Elemento químico o propiedad analizada" help={HELP.apdParametro}>Parámetro</Tooltip>
+                  </th>
+                  <th className="px-4 py-2 text-right text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+                    <Tooltip short="Concentración medida en partes por millón (ppm)" help={HELP.apdValor}>Valor</Tooltip>
+                  </th>
+                  <th className="px-4 py-2 text-right text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+                    <Tooltip short="Valor mínimo aceptable según fabricante" help={HELP.apdLimite}>Mín</Tooltip>
+                  </th>
+                  <th className="px-4 py-2 text-right text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+                    <Tooltip short="Valor máximo aceptable según fabricante" help={HELP.apdLimite}>Máx</Tooltip>
+                  </th>
+                  <th className="px-4 py-2 text-center text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+                    <Tooltip short="Verde=OK, Ámbar=Advertencia, Rojo=Fuera de rango" help={HELP.semaforo}>Estado</Tooltip>
+                  </th>
                 </tr>
               </thead>
               <tbody>

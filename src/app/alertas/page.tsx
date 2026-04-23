@@ -1,8 +1,12 @@
+"use client";
+
 import { ALERTAS } from "@/lib/data/alertas";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import Link from "next/link";
 import type { Alerta, EstadoSemaforo } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const KPI_LABEL: Record<string, string> = {
   dfm:             "Disponibilidad Física",
@@ -93,14 +97,16 @@ export default function AlertasPage() {
       {/* Resumen */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
-          { label: "Paros Totales", valor: paros.length,    textColor: "text-[#991B1B]",   bg: "bg-[#FEF2F2] border-[#FECACA]" },
-          { label: "Críticos",      valor: criticos.length, textColor: "text-[#B91C1C]",   bg: "bg-[#FEF2F2] border-[#FECACA]" },
-          { label: "Advertencias",  valor: ambar.length,    textColor: "text-[#B45309]", bg: "bg-[#FFFBEB] border-[#FDE68A]" },
+          { label: "Paros Totales", valor: paros.length,    textColor: "text-[#991B1B]",   bg: "bg-[#FEF2F2] border-[#FECACA]", helpKey: "paroTotal",      shortTip: "Equipos completamente detenidos por falla mayor" },
+          { label: "Críticos",      valor: criticos.length, textColor: "text-[#B91C1C]",   bg: "bg-[#FEF2F2] border-[#FECACA]", helpKey: "criticos",       shortTip: "Operan pero con KPIs en estado rojo" },
+          { label: "Advertencias",  valor: ambar.length,    textColor: "text-[#B45309]", bg: "bg-[#FFFBEB] border-[#FDE68A]",   helpKey: "alertasActivas", shortTip: "Equipos con KPIs en zona de advertencia (ámbar)" },
         ].map((s) => (
-          <div key={s.label} className={`flex flex-col gap-1 p-3.5 rounded-[10px] border ${s.bg}`}>
-            <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">{s.label}</span>
-            <span className={`text-[32px] font-mono font-bold leading-none ${s.textColor}`}>{s.valor}</span>
-          </div>
+          <Tooltip key={s.label} short={s.shortTip} help={HELP[s.helpKey]}>
+            <div className={`flex flex-col gap-1 p-3.5 rounded-[10px] border ${s.bg}`}>
+              <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">{s.label}</span>
+              <span className={`text-[32px] font-mono font-bold leading-none ${s.textColor}`}>{s.valor}</span>
+            </div>
+          </Tooltip>
         ))}
       </div>
 

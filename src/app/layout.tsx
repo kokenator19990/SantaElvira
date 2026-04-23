@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ShellClient } from "@/components/layout/ShellClient";
+import { HelpModeProvider } from "@/contexts/HelpModeContext";
+import { HelpModeBanner } from "@/components/ui/HelpModeBanner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,7 +27,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ShellClient>{children}</ShellClient>
+        <HelpModeProvider>
+          <HelpModeBanner />
+          <ShellClient>{children}</ShellClient>
+        </HelpModeProvider>
       </body>
     </html>
   );

@@ -1,6 +1,18 @@
+"use client";
+
 import { clsx } from "clsx";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import type { EstadoSemaforo } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
+
+const KPI_HELP_KEY: Record<string, string> = {
+  "Dfm Flota":   "dfm",
+  "TMEF Prom.":  "tmef",
+  "TMPR Prom.":  "tmpr",
+  "Tiempo Op.":  "tiempoOperativo",
+  "Reserva":     "reserva",
+};
 
 const ESTADO_COLOR: Record<EstadoSemaforo, string> = {
   verde: "#15803D",
@@ -57,7 +69,13 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
             <div className="relative flex flex-col gap-2">
               {/* Label */}
               <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
-                {item.label}
+                <Tooltip
+                  short={item.label}
+                  help={HELP[KPI_HELP_KEY[item.label] ?? "dfm"]}
+                  className="cursor-help"
+                >
+                  {item.label}
+                </Tooltip>
               </span>
 
               {/* Value */}

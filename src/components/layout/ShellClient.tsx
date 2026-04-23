@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { useHelpMode } from "@/contexts/HelpModeContext";
 
 export function ShellClient({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isActive: helpMode } = useHelpMode();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F8FAFC]">
+    <div className={`flex h-screen overflow-hidden bg-[#F8FAFC] ${helpMode ? "mt-[40px]" : ""}`}>
       {/* Overlay móvil */}
       {sidebarOpen && (
         <div

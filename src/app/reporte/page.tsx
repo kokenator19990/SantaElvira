@@ -7,6 +7,8 @@ import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ReportePreview } from "@/components/reporte/ReportePreview";
 import type { FlotaResumen } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const PERIODOS = ["Abril 2025", "Marzo 2025", "Febrero 2025", "Enero 2025"];
 
@@ -35,14 +37,16 @@ export default function ReportePage() {
       <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <SectionTitle>Informe Mensual</SectionTitle>
         <div className="flex items-center gap-3">
-          <select
-            value={periodo}
-            onChange={(e) => setPeriodo(e.target.value)}
-            className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[13px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
-            aria-label="Seleccionar período del informe"
-          >
-            {PERIODOS.map((p) => <option key={p} value={p}>{p}</option>)}
-          </select>
+          <Tooltip short="Selecciona el mes del informe a generar" help={HELP.periodoReporte}>
+            <select
+              value={periodo}
+              onChange={(e) => setPeriodo(e.target.value)}
+              className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[13px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
+              aria-label="Seleccionar período del informe"
+            >
+              {PERIODOS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </Tooltip>
 
           <button
             onClick={imprimir}

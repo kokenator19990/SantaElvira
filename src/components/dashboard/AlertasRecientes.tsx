@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight, AlertCircle } from "lucide-react";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import type { Alerta, EstadoSemaforo } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const KPI_LABEL: Record<string, string> = {
   dfm:             "Dfm",
@@ -32,9 +36,11 @@ export function AlertasRecientes({ alertas, max = 5 }: AlertasRecientesProps) {
       <div className="flex items-center justify-between mb-0.5">
         <div className="flex items-center gap-2">
           <AlertCircle size={14} className="text-[#71717A]" />
-          <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
-            Alertas Activas
-          </span>
+          <Tooltip short="Equipos con KPIs fuera de umbral, ordenados por criticidad" help={HELP.alertasPrioritarias}>
+            <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+              Alertas Activas
+            </span>
+          </Tooltip>
           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-[4px] bg-[#FFFBEB] text-[#92400E]">
             {alertas.length}
           </span>

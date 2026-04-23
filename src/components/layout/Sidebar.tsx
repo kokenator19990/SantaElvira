@@ -10,16 +10,20 @@ import {
   FileText,
   X,
   Pickaxe,
+  HelpCircle,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { FLOTA } from "@/lib/data/flota";
+import { useHelpMode } from "@/contexts/HelpModeContext";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard, description: "KPIs y estado" },
-  { href: "/flota",     label: "Flota",       icon: Truck,           description: `${FLOTA.length} equipos` },
-  { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora" },
-  { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites" },
-  { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual" },
+  { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard, description: "KPIs y estado",    helpKey: "navDashboard" },
+  { href: "/flota",     label: "Flota",       icon: Truck,           description: `${FLOTA.length} equipos`, helpKey: "navFlota" },
+  { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora",    helpKey: "navAlertas" },
+  { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites", helpKey: "navApd" },
+  { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual",  helpKey: "navReporte" },
 ];
 
 interface SidebarProps {
@@ -29,6 +33,7 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { isActive: helpActive, toggle: toggleHelp } = useHelpMode();
 
   return (
     <aside
@@ -67,7 +72,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </span>
         </div>
 
-        {NAV_ITEMS.map(({ href, label, icon: Icon, description }) => {
+        {NAV_ITEMS.map(({ href, label, icon: Icon, description, helpKey }) => {
           const activo = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
           return (
             <Link
@@ -91,15 +96,21 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   activo ? "text-[#B45309]" : "text-[#A1A1AA] group-hover:text-[#52525B]"
                 )}
               />
-              <div className="flex flex-col leading-tight">
-                <span>{label}</span>
-                <span className={clsx(
-                  "text-[10px] font-normal transition-colors",
-                  activo ? "text-[#B45309]/70" : "text-[#A1A1AA] group-hover:text-[#71717A]"
-                )}>
-                  {description}
-                </span>
-              </div>
+              <Tooltip
+                short={description}
+                help={HELP[helpKey]}
+                className="flex-1"
+              >
+                <div className="flex flex-col leading-tight">
+                  <span>{label}</span>
+                  <span className={clsx(
+                    "text-[10px] font-normal transition-colors",
+                    activo ? "text-[#B45309]/70" : "text-[#A1A1AA] group-hover:text-[#71717A]"
+                  )}>
+                    {description}
+                  </span>
+                </div>
+              </Tooltip>
               {activo && (
                 <div className="ml-auto w-1 h-4 rounded-full bg-[#B45309] opacity-80" />
               )}
@@ -110,6 +121,35 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       {/* Footer */}
       <div className="px-5 py-4 border-t border-[#E4E4E7]">
+        <button
+          onClick={toggleHelp}
+          aria-pressed={helpActive}
+          className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg mb-3 transition-all duration-150 border text-left ${
+            helpActive
+              ? "bg-amber-500 border-amber-400 text-white shadow-md"
+              : "bg-[#F4F4F5] border-[#E4E4E7] text-[#52525B] hover:bg-[#FFFBEB] hover:border-[#FDE68A] hover:text-[#92400E]"
+          }`}
+        >
+          <HelpCircle
+            size={15}
+            className={`shrink-0 ${helpActive ? "text-white" : "text-[#A1A1AA]"}`}
+            strokeWidth={helpActive ? 2.5 : 1.8}
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-[12px] font-semibold">
+              {helpActive ? "Ayuda activa" : "Modo Ayuda"}
+            </span>
+            <span className={`text-[10px] font-normal ${helpActive ? "text-amber-100" : "text-[#A1A1AA]"}`}>
+              {helpActive ? "ESC para salir" : "Explica cada indicador"}
+            </span>
+          </div>
+          {helpActive && (
+            <span className="ml-auto relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+            </span>
+          )}
+        </button>
         <div className="flex items-center gap-2 mb-1.5">
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
           <span className="text-[11px] text-[#A1A1AA]">Sistema activo</span>

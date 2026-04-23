@@ -1,3 +1,5 @@
+"use client";
+
 import { FLOTA } from "@/lib/data/flota";
 import { TENDENCIAS } from "@/lib/data/tendencias";
 import { ASARCO_FLOTA } from "@/lib/data/asarco";
@@ -11,6 +13,8 @@ import { AlertasRecientes } from "@/components/dashboard/AlertasRecientes";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { TendenciaSeisMeses } from "@/components/charts/TendenciaSeisMeses";
 import { AsarcoTimeChart } from "@/components/charts/AsarcoTimeChart";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 export default function DashboardPage() {
   const flotas: FlotaResumen[] = [
@@ -46,41 +50,61 @@ export default function DashboardPage() {
 
       {/* ─ Header stats ──────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-3 px-1">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
-          <span className="text-[11px] text-[#52525B]">Total equipos</span>
-          <span className="font-mono font-bold text-[#09090B]">{FLOTA.length}</span>
-        </div>
-        {enParo > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping-slow" />
-            <span className="text-[11px] text-[#991B1B] font-semibold">{enParo} en paro total</span>
+        <Tooltip short="Total de equipos en la faena El Salvador" help={HELP.columnaId}>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
+            <span className="text-[11px] text-[#52525B]">Total equipos</span>
+            <span className="font-mono font-bold text-[#09090B]">{FLOTA.length}</span>
           </div>
+        </Tooltip>
+        {enParo > 0 && (
+          <Tooltip short="Equipos completamente detenidos por falla mayor" help={HELP.paroTotal}>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping-slow" />
+              <span className="text-[11px] text-[#991B1B] font-semibold">{enParo} en paro total</span>
+            </div>
+          </Tooltip>
         )}
         {criticos > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
-            <span className="text-[11px] text-[#B91C1C]">{criticos} críticos</span>
-          </div>
+          <Tooltip short="Operan pero con KPIs en estado crítico (rojo)" help={HELP.criticos}>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
+              <span className="text-[11px] text-[#B91C1C]">{criticos} críticos</span>
+            </div>
+          </Tooltip>
         )}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
-          <span className="text-[11px] text-[#52525B]">Alertas activas</span>
-          <span className="font-mono font-bold text-[#B45309]">{ALERTAS.length}</span>
-        </div>
+        <Tooltip short="Total de alertas por KPIs fuera de umbral" help={HELP.alertasActivas}>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
+            <span className="text-[11px] text-[#52525B]">Alertas activas</span>
+            <span className="font-mono font-bold text-[#B45309]">{ALERTAS.length}</span>
+          </div>
+        </Tooltip>
       </div>
 
       {/* ─ KPI strip ─────────────────────────────────────────────────────── */}
       <section aria-label="KPIs promedio de flota">
-        <SectionTitle className="mb-3">KPIs Flota — Abril 2025</SectionTitle>
+        <SectionTitle className="mb-3">
+          <Tooltip short="Indicadores Clave de Rendimiento promedio de toda la flota activa" help={HELP.tendencia6Meses}>
+            KPIs Flota — Abril 2025
+          </Tooltip>
+        </SectionTitle>
         <KpiSummaryStrip items={[...kpiItems]} />
       </section>
 
       {/* ─ Semáforo + Alertas ────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         <section aria-label="Estado de flota por tipo">
-          <SectionTitle className="mb-3">Estado por Flota</SectionTitle>
+          <SectionTitle className="mb-3">
+            <Tooltip short="Estado de salud por tipo de equipo con semáforo de criticidad" help={HELP.estadoFlota}>
+              Estado por Flota
+            </Tooltip>
+          </SectionTitle>
           <FlotaSemaforo flotas={flotas} />
         </section>
         <section aria-label="Alertas más críticas">
-          <SectionTitle className="mb-3">Alertas Prioritarias</SectionTitle>
+          <SectionTitle className="mb-3">
+            <Tooltip short="Los 5 equipos más críticos en este momento" help={HELP.alertasPrioritarias}>
+              Alertas Prioritarias
+            </Tooltip>
+          </SectionTitle>
           <AlertasRecientes alertas={ALERTAS} max={5} />
         </section>
       </div>
@@ -88,26 +112,36 @@ export default function DashboardPage() {
       {/* ─ Charts ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-4">
         <section aria-label="Tendencia de KPIs en 6 meses">
-          <SectionTitle className="mb-3">Tendencia 6 Meses — CAT 777F</SectionTitle>
+          <SectionTitle className="mb-3">
+            <Tooltip short="Evolución histórica de KPIs para detectar deterioro o mejora" help={HELP.tendencia6Meses}>
+              Tendencia 6 Meses — CAT 777F
+            </Tooltip>
+          </SectionTitle>
           {tendencia777F && <TendenciaSeisMeses datos={tendencia777F.datos} />}
         </section>
         <section aria-label="Distribución ASARCO">
-          <SectionTitle className="mb-3">Distribución ASARCO</SectionTitle>
+          <SectionTitle className="mb-3">
+            <Tooltip short="Cómo se distribuye el tiempo de los equipos en las 5 categorías ASARCO" help={HELP.distribucionAsarco}>
+              Distribución ASARCO
+            </Tooltip>
+          </SectionTitle>
           <div className="p-4 rounded-[10px] bg-white border border-[#E4E4E7]">
             <AsarcoTimeChart datos={ASARCO_FLOTA} />
             {/* Leyenda manual compacta */}
             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
               {[
-                ["#16A34A", "Operativo"],
-                ["#3A6AB0", "Reserva"],
-                ["#D97706", "Det. Prog."],
-                ["#DC2626", "Det. No Prog."],
-                ["#7F1D1D", "Pérdida"],
-              ].map(([color, label]) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: color }} />
-                  <span className="text-[10px] text-[#71717A]">{label}</span>
-                </div>
+                ["#16A34A", "Operativo",      "asarcoOperativo"],
+                ["#3A6AB0", "Reserva",         "asarcoReserva"],
+                ["#D97706", "Det. Prog.",      "asarcoDetProg"],
+                ["#DC2626", "Det. No Prog.",   "asarcoDetNoProg"],
+                ["#7F1D1D", "Pérdida",         "asarcoPerdida"],
+              ].map(([color, label, helpKey]) => (
+                <Tooltip key={label} short={label} help={HELP[helpKey]}>
+                  <div className="flex items-center gap-1.5 cursor-help">
+                    <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: color }} />
+                    <span className="text-[10px] text-[#71717A]">{label}</span>
+                  </div>
+                </Tooltip>
               ))}
             </div>
           </div>

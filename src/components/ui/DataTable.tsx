@@ -1,9 +1,14 @@
+"use client";
+
 import { clsx } from "clsx";
 import { SkeletonCard } from "./SkeletonCard";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 export interface ColumnaDef<T> {
   key: string;
   header: string;
+  helpKey?: string;
   render: (row: T) => React.ReactNode;
   className?: string;
   headerClassName?: string;
@@ -41,7 +46,13 @@ export function DataTable<T>({
                   col.headerClassName
                 )}
               >
-                {col.header}
+                {col.helpKey ? (
+                  <Tooltip short={col.header} help={HELP[col.helpKey]}>
+                    <span className="cursor-help">{col.header}</span>
+                  </Tooltip>
+                ) : (
+                  col.header
+                )}
               </th>
             ))}
           </tr>

@@ -45,6 +45,7 @@ function FlotaContent() {
     {
       key: "id",
       header: "ID",
+      helpKey: "columnaId",
       render: (e) => (
         <span className="font-mono font-bold text-[#09090B] text-[13px]">{e.id}</span>
       ),
@@ -67,6 +68,7 @@ function FlotaContent() {
     {
       key: "dfm",
       header: "Dfm",
+      helpKey: "dfm",
       headerClassName: "text-right",
       render: (e) => (
         <span className={clsx("font-mono font-bold text-[13px]", e.paroTotal && "text-[#B91C1C]")}>
@@ -78,6 +80,7 @@ function FlotaContent() {
     {
       key: "tmef",
       header: "TMEF",
+      helpKey: "tmef",
       headerClassName: "text-right",
       render: (e) => (
         <span className="font-mono text-[12px]">{e.paroTotal ? "—" : `${e.kpis.tmef}h`}</span>
@@ -87,6 +90,7 @@ function FlotaContent() {
     {
       key: "tmpr",
       header: "TMPR",
+      helpKey: "tmpr",
       headerClassName: "text-right",
       render: (e) => (
         <span className="font-mono text-[12px]">{e.paroTotal ? "—" : `${e.kpis.tmpr}h`}</span>
@@ -96,6 +100,7 @@ function FlotaContent() {
     {
       key: "top",
       header: "T.Op.",
+      helpKey: "tiempoOperativo",
       headerClassName: "text-right",
       render: (e) => (
         <span className="font-mono text-[12px]">{e.paroTotal ? "—" : `${e.kpis.tiempoOperativo}%`}</span>
@@ -105,11 +110,13 @@ function FlotaContent() {
     {
       key: "anio",
       header: "Año",
+      helpKey: "columnaAnio",
       render: (e) => <span className="text-[#71717A] text-[12px]">{e.anio}</span>,
     },
     {
       key: "horas",
       header: "Horas",
+      helpKey: "equipoHoras",
       headerClassName: "text-right",
       render: (e) => (
         <span className="font-mono text-[11px] text-[#71717A]">
