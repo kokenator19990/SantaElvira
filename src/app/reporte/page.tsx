@@ -1,19 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Printer, FileDown, FileText, BarChart2 } from "lucide-react";
+import { Printer, FileDown, FileText, BarChart2, Database } from "lucide-react";
 import { FLOTA } from "@/lib/data/flota";
 import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ReportePreview } from "@/components/reporte/ReportePreview";
 import { ComparacionPeriodos } from "@/components/reporte/ComparacionPeriodos";
+import { IntegracionDatos } from "@/components/reporte/IntegracionDatos";
 import type { FlotaResumen } from "@/lib/domain/tipos";
 import { PERIODOS_DISPONIBLES } from "@/lib/data/periodos";
 import { clsx } from "clsx";
 
 const LABELS_PERIODO = PERIODOS_DISPONIBLES.map((p) => p.label);
 
-type Tab = "informe" | "comparar";
+type Tab = "informe" | "comparar" | "integracion";
 
 export default function ReportePage() {
   const [tab, setTab]       = useState<Tab>("informe");
@@ -67,8 +68,9 @@ export default function ReportePage() {
       {/* ── Tabs ───────────────────────────────────────────────────────────── */}
       <div className="no-print flex gap-1 p-1 rounded-[10px] bg-[#F4F4F5] border border-[#E4E4E7] w-fit">
         {([
-          { id: "informe",  label: "Informe del Mes", icon: FileText },
-          { id: "comparar", label: "Comparar Períodos", icon: BarChart2 },
+          { id: "informe",     label: "Informe del Mes",   icon: FileText },
+          { id: "comparar",    label: "Comparar Períodos", icon: BarChart2 },
+          { id: "integracion", label: "Integrar Datos",    icon: Database },
         ] as const).map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -99,17 +101,21 @@ export default function ReportePage() {
       )}
 
       {/* ── Contenido por tab ──────────────────────────────────────────────── */}
-      {tab === "informe" ? (
+      {tab === "informe" && (
         <ReportePreview
           periodo={periodo}
           flotas={flotas}
           equiposCriticos={equiposCriticos}
           equiposEnParo={equiposEnParo}
         />
-      ) : (
+      )}
+      {tab === "comparar" && (
         <div className="bg-white rounded-xl border border-[#E4E4E7] p-5">
           <ComparacionPeriodos />
         </div>
+      )}
+      {tab === "integracion" && (
+        <IntegracionDatos />
       )}
     </div>
   );

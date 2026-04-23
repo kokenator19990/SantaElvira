@@ -1,4 +1,7 @@
+"use client";
+
 import type { Equipo, FlotaResumen, EstadoSemaforo } from "@/lib/domain/tipos";
+import { GraficosReporte } from "./GraficosReporte";
 
 interface ReportePreviewProps {
   periodo: string;
@@ -212,6 +215,9 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
             </div>
           </section>
         )}
+
+        {/* ── GRÁFICOS VISUALES — pantalla only ────────────────────────────── */}
+        <GraficosReporte flotas={flotas} />
 
         {/* ── PIE ──────────────────────────────────────────────────────────── */}
         <footer className="pt-4 border-t border-[#E4E4E7] flex flex-col sm:flex-row justify-between gap-1 text-[10px] text-[#A1A1AA]">
