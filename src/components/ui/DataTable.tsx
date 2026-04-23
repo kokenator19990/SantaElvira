@@ -21,6 +21,8 @@ interface DataTableProps<T> {
   cargando?: boolean;
   onRowClick?: (row: T) => void;
   rowClassName?: (row: T) => string;
+  /** Fija la primera columna al hacer scroll horizontal en móvil */
+  stickyFirst?: boolean;
 }
 
 export function DataTable<T>({
@@ -30,19 +32,24 @@ export function DataTable<T>({
   cargando,
   onRowClick,
   rowClassName,
+  stickyFirst = false,
 }: DataTableProps<T>) {
   if (cargando) return <SkeletonCard variant="table" className="w-full" />;
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#E4E4E7]">
+    <div
+      className="overflow-x-auto rounded-xl border border-[#E4E4E7]"
+      style={{ WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
+    >
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-[#FAFAFA] border-b border-[#E4E4E7]">
-            {columnas.map((col) => (
+          <tr className="bg-[#F4F4F5] border-b border-[#E4E4E7]">
+            {columnas.map((col, colIdx) => (
               <th
                 key={col.key}
                 className={clsx(
-                  "px-4 py-3 text-left text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em] whitespace-nowrap",
+                  "px-4 py-3 text-left text-[10px] font-bold text-[#52525B] uppercase tracking-[0.1em] whitespace-nowrap",
+                  stickyFirst && colIdx === 0 && "sticky left-0 z-10 bg-[#F4F4F5]",
                   col.headerClassName
                 )}
               >
@@ -74,10 +81,14 @@ export function DataTable<T>({
                 rowClassName?.(row)
               )}
             >
-              {columnas.map((col) => (
+              {columnas.map((col, colIdx) => (
                 <td
                   key={col.key}
-                  className={clsx("px-4 py-3 text-[#3F3F46] whitespace-nowrap", col.className)}
+                  className={clsx(
+                    "px-4 py-3 text-[#3F3F46] whitespace-nowrap",
+                    stickyFirst && colIdx === 0 && "sticky left-0 z-10 bg-inherit",
+                    col.className
+                  )}
                 >
                   {col.render(row)}
                 </td>

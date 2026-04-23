@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
+import { BottomNav } from "./BottomNav";
 import { useHelpMode } from "@/contexts/HelpModeContext";
 
 export function ShellClient({ children }: { children: React.ReactNode }) {
@@ -28,12 +29,15 @@ export function ShellClient({ children }: { children: React.ReactNode }) {
         <TopBar onMenuClick={() => setSidebarOpen(true)} />
         <main
           id="main-content"
-          className="flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 no-print"
+          className="flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 no-print pb-[calc(56px+env(safe-area-inset-bottom))] lg:pb-6"
           tabIndex={-1}
         >
           {children}
         </main>
       </div>
+
+      {/* Bottom navigation — mobile only */}
+      <BottomNav />
     </div>
   );
 }

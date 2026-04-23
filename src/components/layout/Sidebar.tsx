@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Home,
   LayoutDashboard,
   Truck,
   BellRing,
@@ -19,6 +20,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
 
 const NAV_ITEMS = [
+  { href: "/portada",   label: "Portada",     icon: Home,            description: "Bienvenida",       helpKey: "navDashboard" },
   { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard, description: "KPIs y estado",    helpKey: "navDashboard" },
   { href: "/flota",     label: "Flota",       icon: Truck,           description: `${FLOTA.length} equipos`, helpKey: "navFlota" },
   { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora",    helpKey: "navAlertas" },
@@ -73,7 +75,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         {NAV_ITEMS.map(({ href, label, icon: Icon, description, helpKey }) => {
-          const activo = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+          const activo = pathname === href || (href !== "/dashboard" && href !== "/portada" && pathname.startsWith(href));
           return (
             <Link
               key={href}

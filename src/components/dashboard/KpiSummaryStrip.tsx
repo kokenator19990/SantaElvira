@@ -14,6 +14,15 @@ const KPI_HELP_KEY: Record<string, string> = {
   "Reserva":     "reserva",
 };
 
+// Descripción breve para el tooltip básico (sin modo ayuda)
+const KPI_SHORT: Record<string, string> = {
+  "Dfm Flota":   "Disponibilidad Física Mecánica — % del turno que el equipo está listo para operar",
+  "TMEF Prom.":  "Tiempo Medio Entre Fallas — promedio de horas que opera sin averías",
+  "TMPR Prom.":  "Tiempo Medio de Parada por Reparación — promedio de horas que dura cada reparación",
+  "Tiempo Op.":  "% del turno en que el equipo estuvo efectivamente trabajando",
+  "Reserva":     "% del turno en que el equipo estaba disponible pero sin tarea asignada",
+};
+
 const ESTADO_COLOR: Record<EstadoSemaforo, string> = {
   verde: "#15803D",
   ambar: "#B45309",
@@ -70,7 +79,7 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
               {/* Label */}
               <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
                 <Tooltip
-                  short={item.label}
+                  short={KPI_SHORT[item.label] ?? item.label}
                   help={HELP[KPI_HELP_KEY[item.label] ?? "dfm"]}
                   className="cursor-help"
                 >

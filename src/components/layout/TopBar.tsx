@@ -5,6 +5,7 @@ import { Menu, ChevronRight } from "lucide-react";
 import { FLOTA } from "@/lib/data/flota";
 
 const RUTAS: Record<string, { titulo: string; subtitulo?: string }> = {
+  "/portada":   { titulo: "Portada",       subtitulo: "Panel de bienvenida" },
   "/dashboard": { titulo: "Dashboard",     subtitulo: "Vista general" },
   "/flota":     { titulo: "Flota",         subtitulo: `${FLOTA.length} equipos` },
   "/alertas":   { titulo: "Alertas",       subtitulo: "Estado en tiempo real" },
