@@ -58,7 +58,8 @@ function KpiGauge({ valor, meta, maxDisplay, unidad, label, color, invertido }: 
   const vAngle = Math.PI * (1 - pct);
   const vx = +(cx + r * Math.cos(vAngle)).toFixed(2);
   const vy = +(cy - r * Math.sin(vAngle)).toFixed(2);
-  const largeArc = pct > 0.5 ? 1 : 0;
+  // largeArc siempre 0: el arco correcto (por el TOP) es siempre el arco corto (≤180°)
+  const largeArc = 0;
 
   // Target tick geometry
   const tA  = Math.PI * (1 - tgtPct);
