@@ -48,9 +48,11 @@ interface GaugeProps {
 function KpiGauge({ valor, meta, maxDisplay, unidad, label, color, invertido }: GaugeProps) {
   const cx = 100, cy = 86, r = 66, sw = 13;
 
-  // Normalize: arc fills left→right based on valor/maxDisplay
-  const pct    = Math.min(Math.max(valor / maxDisplay, 0.005), 0.995);
-  const tgtPct = Math.min(Math.max(meta  / maxDisplay, 0.005), 0.995);
+  // Normalize: for invertido KPIs (lower = better), invert the arc so more arc = closer to ideal
+  const rawPct    = Math.min(Math.max(valor / maxDisplay, 0.005), 0.995);
+  const rawTgtPct = Math.min(Math.max(meta  / maxDisplay, 0.005), 0.995);
+  const pct    = invertido ? 1 - rawPct    : rawPct;
+  const tgtPct = invertido ? 1 - rawTgtPct : rawTgtPct;
 
   // Arc geometry: starts at (cx-r, cy) goes UP and right to endpoint
   const vAngle = Math.PI * (1 - pct);

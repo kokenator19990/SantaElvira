@@ -205,9 +205,9 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
                     <tr key={e.id} className="bg-white hover:bg-[#FAFAFA]">
                       <td className="border border-[#F4F4F5] px-3 py-2.5 font-mono font-bold text-[#B91C1C]">{e.id}</td>
                       <td className="border border-[#F4F4F5] px-3 py-2.5 text-[#52525B]">{e.modelo}</td>
-                      <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#B91C1C]">{e.kpis.dfm}%</td>
-                      <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#B91C1C]">{e.kpis.tmef}h</td>
-                      <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#B45309]">{e.kpis.tmpr}h</td>
+                      <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono" style={{ color: ESTADO_PRINT_COLOR[e.semaforo.dfm] }}>{e.kpis.dfm}%</td>
+                      <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono" style={{ color: ESTADO_PRINT_COLOR[e.semaforo.tmef] }}>{e.kpis.tmef}h</td>
+                      <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono" style={{ color: ESTADO_PRINT_COLOR[e.semaforo.tmpr] }}>{e.kpis.tmpr}h</td>
                     </tr>
                   ))}
                 </tbody>
