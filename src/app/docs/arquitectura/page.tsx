@@ -1283,9 +1283,9 @@ export default function ArquitecturaPage() {
   }, []);
 
   return (
-    <div className="max-w-[960px] mx-auto flex flex-col gap-6">
+    <div>
       {/* Page header */}
-      <div className="flex items-start gap-4">
+      <div className="max-w-[960px] mx-auto flex items-start gap-4 mb-4">
         <div
           className="flex items-center justify-center w-10 h-10 rounded-xl shrink-0"
           style={{
@@ -1312,18 +1312,18 @@ export default function ArquitecturaPage() {
         </div>
       </div>
 
-      {/* Step nav (sticky) */}
-      <div
-        className="sticky top-0 z-30 -mx-1 px-1 py-2 backdrop-blur-sm"
-        style={{ backgroundColor: "rgba(248, 250, 252, 0.92)" }}
-      >
-        <StepNav
-          steps={STEPS}
-          activeStep={activeStep}
-          onStepClick={handleStepClick}
-        />
+      {/* Step nav (sticky) — fuera del flex-col para que sticky funcione */}
+      <div className="sticky top-0 z-30 border-b border-[#E4E4E7] -mx-4 px-4 md:-mx-6 md:px-6 py-2 bg-[#F8FAFC]">
+        <div className="max-w-[960px] mx-auto">
+          <StepNav
+            steps={STEPS}
+            activeStep={activeStep}
+            onStepClick={handleStepClick}
+          />
+        </div>
       </div>
 
+      <div className="max-w-[960px] mx-auto flex flex-col gap-6 pt-6">
       {/* ============================================================ */}
       {/*  Seccion 1 — Situacion Actual vs Objetivo                     */}
       {/* ============================================================ */}
@@ -1721,6 +1721,7 @@ export default function ArquitecturaPage() {
 
       {/* Bottom spacer */}
       <div className="h-8" />
+      </div>
     </div>
   );
 }

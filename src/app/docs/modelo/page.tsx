@@ -1280,9 +1280,9 @@ export default function ModeloPage() {
   }, []);
 
   return (
-    <div className="max-w-[960px] mx-auto flex flex-col gap-6 pb-16">
+    <div>
       {/* Page header */}
-      <div className="flex items-start gap-4">
+      <div className="max-w-[960px] mx-auto flex items-start gap-4 mb-4">
         <Link
           href="/docs"
           className="flex items-center justify-center w-9 h-9 rounded-lg border border-[#E4E4E7] text-[#71717A] hover:text-[#09090B] hover:bg-[#F4F4F5] transition-colors shrink-0 mt-0.5"
@@ -1301,15 +1301,18 @@ export default function ModeloPage() {
         </div>
       </div>
 
-      {/* Sticky step nav */}
-      <div className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-sm -mx-4 px-4 py-2 border-b border-[#E4E4E7]">
-        <StepNav
-          steps={STEPS}
-          activeStep={activeStep}
-          onStepClick={handleStepClick}
-        />
+      {/* Sticky step nav — fuera del flex-col para que sticky funcione */}
+      <div className="sticky top-0 z-30 bg-[#F8FAFC] border-b border-[#E4E4E7] -mx-4 px-4 md:-mx-6 md:px-6 py-2">
+        <div className="max-w-[960px] mx-auto">
+          <StepNav
+            steps={STEPS}
+            activeStep={activeStep}
+            onStepClick={handleStepClick}
+          />
+        </div>
       </div>
 
+      <div className="max-w-[960px] mx-auto flex flex-col gap-6 pt-6 pb-16">
       {/* =========================== */}
       {/*  Section 1: Contexto        */}
       {/* =========================== */}
@@ -1847,6 +1850,7 @@ export default function ModeloPage() {
           })}
         </div>
       </section>
+      </div>
     </div>
   );
 }
