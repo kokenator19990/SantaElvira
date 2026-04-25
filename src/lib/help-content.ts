@@ -145,6 +145,11 @@ export const HELP: Record<string, HelpItem> = {
     que_es: "Genera el informe mensual de mantención con todos los KPIs, equipos críticos y tendencias. Exportable como PDF.",
     ejemplo: "Selecciona 'Abril 2025' y haz clic en 'Imprimir / PDF'. En el diálogo del navegador elige 'Guardar como PDF' para obtener el documento.",
   },
+  navDocs: {
+    titulo: "Documentación Técnica",
+    que_es: "Modelo de base de datos y arquitectura del sistema. Incluye diagramas ER interactivos con zoom, pantalla completa y exportación.",
+    ejemplo: "Navega por las entidades del modelo haciendo clic en cada una. Usa los botones de zoom para explorar secciones específicas del diagrama.",
+  },
   estadoFlota: {
     titulo: "Estado por Flota",
     que_es: "Resumen visual del estado de salud de cada tipo de equipo. Muestra los KPIs principales y cuántos equipos están en paro.",

@@ -180,6 +180,16 @@ input, select, textarea {
 .animate-fade-in-up { animation: fade-in-up 0.3s var(--ease-out-expo) both; }
 .animate-fade-in    { animation: fade-in 0.2s ease both; }
 
+/* Slide in from right (entity detail panel) */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* Hide scrollbar (step nav horizontal scroll) */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
 /* Stagger for list items */
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-children > *:nth-child(2) { animation-delay: 40ms; }

@@ -9,6 +9,7 @@ import {
   BellRing,
   FlaskConical,
   FileText,
+  BookOpen,
   X,
   Pickaxe,
   HelpCircle,
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora",    helpKey: "navAlertas" },
   { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites", helpKey: "navApd" },
   { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual",  helpKey: "navReporte" },
+  { href: "/docs",      label: "Documentacion", icon: BookOpen,       description: "Modelo y arquitectura", helpKey: "navDocs" },
 ];
 
 interface SidebarProps {
