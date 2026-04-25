@@ -1302,7 +1302,7 @@ export default function ModeloPage() {
       </div>
 
       {/* Sticky step nav */}
-      <div className="sticky top-[56px] z-30 bg-[#F8FAFC]/95 backdrop-blur-sm -mx-4 px-4 py-2 border-b border-[#E4E4E7]">
+      <div className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-sm -mx-4 px-4 py-2 border-b border-[#E4E4E7]">
         <StepNav
           steps={STEPS}
           activeStep={activeStep}
