@@ -613,12 +613,16 @@ const NUCLEO_NODES: Node[] = [
   makeEntityNode("KPI_EQUIPO",  320, 240, getEntity("KPI_EQUIPO"), "CENTRAL"),
 ];
 
+// IMPORTANTE: el EntityNode solo expone bottom-s-1, bottom-s-3, right-s, left-s,
+// top-s (sources) y top-t-1, top-t-3, left-t, right-t, bottom-t (targets).
+// El handle del medio (bottom default / top default) NO tiene id — para usarlo
+// se omite sourceHandle/targetHandle en la edge. Usar IDs inexistentes hace que
+// React Flow no renderice la flecha (sin error visible).
 const NUCLEO_EDGES: Edge[] = [
-  // TIPO_FLOTA → EQUIPO: vertical recto en la columna izquierda
+  // TIPO_FLOTA (col izq, arriba) → EQUIPO (col izq, debajo): vertical limpio
   {
     id: "n-tf-eq",
     source: "TIPO_FLOTA",
-    sourceHandle: "bottom-s-2",
     target: "EQUIPO",
     type: "smoothstep",
     animated: true,
@@ -626,7 +630,7 @@ const NUCLEO_EDGES: Edge[] = [
     style: { stroke: "#1A5276", strokeWidth: 2 },
     labelStyle: { fontSize: 11, fontWeight: 600 },
   },
-  // EQUIPO → KPI_EQUIPO: horizontal limpio (right → left)
+  // EQUIPO (col izq) → KPI_EQUIPO (col centro): horizontal
   {
     id: "n-eq-kpi",
     source: "EQUIPO",
@@ -639,11 +643,10 @@ const NUCLEO_EDGES: Edge[] = [
     style: { stroke: "#1A5276", strokeWidth: 2 },
     labelStyle: { fontSize: 11, fontWeight: 600 },
   },
-  // PERIODO → KPI_EQUIPO: vertical en la columna central
+  // PERIODO (col centro, arriba) → KPI_EQUIPO (col centro, abajo): vertical
   {
     id: "n-per-kpi",
     source: "PERIODO",
-    sourceHandle: "bottom-s-2",
     target: "KPI_EQUIPO",
     targetHandle: "top-t-1",
     type: "smoothstep",
@@ -652,11 +655,11 @@ const NUCLEO_EDGES: Edge[] = [
     style: { stroke: "#1E8449", strokeWidth: 2 },
     labelStyle: { fontSize: 11, fontWeight: 600 },
   },
-  // UMBRAL_KPI → KPI_EQUIPO: diagonal arriba-derecha hacia top-derecha
+  // UMBRAL_KPI (col der, arriba) → KPI_EQUIPO (col centro, abajo): diagonal
   {
     id: "n-umb-kpi",
     source: "UMBRAL_KPI",
-    sourceHandle: "bottom-s-2",
+    sourceHandle: "bottom-s-1",
     target: "KPI_EQUIPO",
     targetHandle: "top-t-3",
     type: "smoothstep",
