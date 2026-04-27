@@ -29,7 +29,7 @@ export function ShellClient({ children }: { children: React.ReactNode }) {
         <TopBar onMenuClick={() => setSidebarOpen(true)} />
         <main
           id="main-content"
-          className="flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 no-print pb-[calc(56px+env(safe-area-inset-bottom))] lg:pb-6"
+          className="flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6 pb-[calc(56px+env(safe-area-inset-bottom))] lg:pb-6"
           tabIndex={-1}
         >
           {children}

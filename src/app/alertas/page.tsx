@@ -1,5 +1,3 @@
-"use client";
-
 import { ALERTAS } from "@/lib/data/alertas";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { SectionTitle } from "@/components/ui/SectionTitle";

@@ -1,49 +1,49 @@
-"use client";
-
 import { FLOTA } from "@/lib/data/flota";
 import { TENDENCIAS } from "@/lib/data/tendencias";
 import { ASARCO_FLOTA } from "@/lib/data/asarco";
 import { ALERTAS } from "@/lib/data/alertas";
-import { calcularSemaforoGeneral } from "@/lib/domain/semaforo";
+import { clasificarDfm, clasificarTmef, clasificarTmpr, clasificarTiempoOperativo, clasificarReserva } from "@/lib/domain/semaforo";
 import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import type { FlotaResumen } from "@/lib/domain/tipos";
 import { FlotaSemaforo } from "@/components/dashboard/FlotaSemaforo";
 import { KpiSummaryStrip } from "@/components/dashboard/KpiSummaryStrip";
 import { AlertasRecientes } from "@/components/dashboard/AlertasRecientes";
 import { SectionTitle } from "@/components/ui/SectionTitle";
-import { TendenciaSeisMeses } from "@/components/charts/TendenciaSeisMeses";
-import { AsarcoTimeChart } from "@/components/charts/AsarcoTimeChart";
+import { TendenciaSeisMeses, AsarcoTimeChart } from "@/components/charts/lazy";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
 
+const FLOTAS: FlotaResumen[] = [
+  calcularResumenFlota("785D",   "CAT 785D"),
+  calcularResumenFlota("777F",   "CAT 777F"),
+  calcularResumenFlota("992",    "CAT 992"),
+  calcularResumenFlota("PC2000", "Komatsu PC-2000"),
+];
+
+const ACTIVOS = FLOTA.filter((e) => !e.paroTotal);
+const round1 = (n: number) => Math.round(n * 10) / 10;
+const avg = (fn: (e: typeof FLOTA[0]) => number) =>
+  round1(ACTIVOS.reduce((a, e) => a + fn(e), 0) / ACTIVOS.length);
+
+const AVG_DFM  = avg((e) => e.kpis.dfm);
+const AVG_TMEF = avg((e) => e.kpis.tmef);
+const AVG_TMPR = avg((e) => e.kpis.tmpr);
+const AVG_TOP  = avg((e) => e.kpis.tiempoOperativo);
+const AVG_RES  = avg((e) => e.kpis.reserva);
+
+const KPI_ITEMS = [
+  { label: "Dfm Flota",  valor: AVG_DFM,  unidad: "%", objetivo: 85, delta: -1.2, estado: clasificarDfm(AVG_DFM) },
+  { label: "TMEF Prom.", valor: AVG_TMEF, unidad: "h", objetivo: 80, delta: -2.5, estado: clasificarTmef(AVG_TMEF) },
+  { label: "TMPR Prom.", valor: AVG_TMPR, unidad: "h", objetivo: 5,  delta: 3.1, invertido: true, estado: clasificarTmpr(AVG_TMPR) },
+  { label: "Tiempo Op.", valor: AVG_TOP,  unidad: "%", objetivo: 80, delta: -1.8, estado: clasificarTiempoOperativo(AVG_TOP) },
+  { label: "Reserva",    valor: AVG_RES,  unidad: "%", objetivo: 8,  delta: 2.3, invertido: true, estado: clasificarReserva(AVG_RES) },
+];
+
+const EN_PARO   = FLOTA.filter((e) => e.paroTotal).length;
+const CRITICOS  = FLOTA.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
+const TENDENCIA_777F = TENDENCIAS.find((t) => t.tipoFlota === "777F");
+
 export default function DashboardPage() {
-  const flotas: FlotaResumen[] = [
-    calcularResumenFlota("785D",   "CAT 785D"),
-    calcularResumenFlota("777F",   "CAT 777F"),
-    calcularResumenFlota("992",    "CAT 992"),
-    calcularResumenFlota("PC2000", "Komatsu PC-2000"),
-  ];
-
-  const activos = FLOTA.filter((e) => !e.paroTotal);
-  const avg = (fn: (e: typeof FLOTA[0]) => number) =>
-    Math.round(activos.reduce((a, e) => a + fn(e), 0) / activos.length * 10) / 10;
-
-  const kpiItems = [
-    { label: "Dfm Flota",  valor: avg((e) => e.kpis.dfm),             unidad: "%", objetivo: 85, delta: -1.2,
-      estado: calcularSemaforoGeneral({ dfm: avg((e) => e.kpis.dfm), tmef: 80, tmpr: 5, tiempoOperativo: 80, reserva: 8 }) },
-    { label: "TMEF Prom.", valor: avg((e) => e.kpis.tmef),            unidad: "h", objetivo: 80, delta: -2.5,
-      estado: calcularSemaforoGeneral({ dfm: 80, tmef: avg((e) => e.kpis.tmef), tmpr: 5, tiempoOperativo: 80, reserva: 8 }) },
-    { label: "TMPR Prom.", valor: avg((e) => e.kpis.tmpr),            unidad: "h", objetivo: 5,  delta: 3.1, invertido: true,
-      estado: calcularSemaforoGeneral({ dfm: 80, tmef: 80, tmpr: avg((e) => e.kpis.tmpr), tiempoOperativo: 80, reserva: 8 }) },
-    { label: "Tiempo Op.", valor: avg((e) => e.kpis.tiempoOperativo), unidad: "%", objetivo: 80, delta: -1.8,
-      estado: calcularSemaforoGeneral({ dfm: 80, tmef: 80, tmpr: 5, tiempoOperativo: avg((e) => e.kpis.tiempoOperativo), reserva: 8 }) },
-    { label: "Reserva",    valor: avg((e) => e.kpis.reserva),         unidad: "%", objetivo: 8,  delta: 2.3, invertido: true,
-      estado: calcularSemaforoGeneral({ dfm: 80, tmef: 80, tmpr: 5, tiempoOperativo: 80, reserva: avg((e) => e.kpis.reserva) }) },
-  ];
-
-  const enParo   = FLOTA.filter((e) => e.paroTotal).length;
-  const criticos = FLOTA.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
-  const tendencia777F = TENDENCIAS.find((t) => t.tipoFlota === "777F");
 
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto">
@@ -56,18 +56,21 @@ export default function DashboardPage() {
             <span className="font-mono font-bold text-[#09090B]">{FLOTA.length}</span>
           </div>
         </Tooltip>
-        {enParo > 0 && (
+        {EN_PARO > 0 && (
           <Tooltip short="Equipos completamente detenidos por falla mayor" help={HELP.paroTotal}>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping-slow" />
-              <span className="text-[11px] text-[#991B1B] font-semibold">{enParo} en paro total</span>
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+              </span>
+              <span className="text-[11px] text-[#991B1B] font-semibold">{EN_PARO} en paro total</span>
             </div>
           </Tooltip>
         )}
-        {criticos > 0 && (
+        {CRITICOS > 0 && (
           <Tooltip short="Operan pero con KPIs en estado crítico (rojo)" help={HELP.criticos}>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
-              <span className="text-[11px] text-[#B91C1C]">{criticos} críticos</span>
+              <span className="text-[11px] text-[#B91C1C]">{CRITICOS} críticos</span>
             </div>
           </Tooltip>
         )}
@@ -86,7 +89,7 @@ export default function DashboardPage() {
             KPIs Flota — Abril 2025
           </Tooltip>
         </SectionTitle>
-        <KpiSummaryStrip items={[...kpiItems]} />
+        <KpiSummaryStrip items={KPI_ITEMS} />
       </section>
 
       {/* ─ Semáforo + Alertas ────────────────────────────────────────────── */}
@@ -97,7 +100,7 @@ export default function DashboardPage() {
               Estado por Flota
             </Tooltip>
           </SectionTitle>
-          <FlotaSemaforo flotas={flotas} />
+          <FlotaSemaforo flotas={FLOTAS} />
         </section>
         <section aria-label="Alertas más críticas">
           <SectionTitle className="mb-3">
@@ -117,7 +120,7 @@ export default function DashboardPage() {
               Tendencia 6 Meses — CAT 777F
             </Tooltip>
           </SectionTitle>
-          {tendencia777F && <TendenciaSeisMeses datos={tendencia777F.datos} />}
+          {TENDENCIA_777F && <TendenciaSeisMeses datos={TENDENCIA_777F.datos} />}
         </section>
         <section aria-label="Distribución ASARCO">
           <SectionTitle className="mb-3">

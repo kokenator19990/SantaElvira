@@ -5,6 +5,12 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { clsx } from "clsx";
 
 /* ------------------------------------------------------------------ */
+/*  Constantes                                                         */
+/* ------------------------------------------------------------------ */
+
+const HC = "!w-2 !h-2 !bg-gray-300 !border-gray-400"; // handle class
+
+/* ------------------------------------------------------------------ */
 /*  EntityNode — nodo ER con campos, PK/FK, colores por categoría     */
 /* ------------------------------------------------------------------ */
 
@@ -44,17 +50,15 @@ export const EntityNode = memo(function EntityNode({
         backgroundColor: "#fff",
       }}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="left-t"
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
+      {/* ── Target handles (entrada) ── */}
+      {/* Top: 3 posiciones */}
+      <Handle type="target" position={Position.Top} id="top-t-1" style={{ left: "25%" }} className={HC} />
+      <Handle type="target" position={Position.Top} className={HC} />
+      <Handle type="target" position={Position.Top} id="top-t-3" style={{ left: "75%" }} className={HC} />
+      {/* Laterales */}
+      <Handle type="target" position={Position.Left} id="left-t" className={HC} />
+      <Handle type="target" position={Position.Right} id="right-t" className={HC} />
+      <Handle type="target" position={Position.Bottom} id="bottom-t" className={HC} />
 
       {/* Header */}
       <div
@@ -102,17 +106,15 @@ export const EntityNode = memo(function EntityNode({
         </div>
       )}
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="right-s"
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
+      {/* ── Source handles (salida) ── */}
+      {/* Bottom: 3 posiciones */}
+      <Handle type="source" position={Position.Bottom} id="bottom-s-1" style={{ left: "25%" }} className={HC} />
+      <Handle type="source" position={Position.Bottom} className={HC} />
+      <Handle type="source" position={Position.Bottom} id="bottom-s-3" style={{ left: "75%" }} className={HC} />
+      {/* Laterales */}
+      <Handle type="source" position={Position.Right} id="right-s" className={HC} />
+      <Handle type="source" position={Position.Left} id="left-s" className={HC} />
+      <Handle type="source" position={Position.Top} id="top-s" className={HC} />
     </div>
   );
 });
@@ -157,17 +159,11 @@ export const ProcessNode = memo(function ProcessNode({
         color: d.textColor || "#09090B",
       }}
     >
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
-      <Handle
-        type="target"
-        position={Position.Left}
-        id="left-t"
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
+      {/* ── Target handles (entrada) ── */}
+      <Handle type="target" position={Position.Top} id="top-t-1" style={{ left: "25%" }} className={HC} />
+      <Handle type="target" position={Position.Top} className={HC} />
+      <Handle type="target" position={Position.Top} id="top-t-3" style={{ left: "75%" }} className={HC} />
+      <Handle type="target" position={Position.Left} id="left-t" className={HC} />
 
       <div className={d.shape === "diamond" ? "-rotate-45" : ""}>
         <div className="text-xs font-semibold leading-tight whitespace-pre-line">
@@ -180,17 +176,17 @@ export const ProcessNode = memo(function ProcessNode({
         )}
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        id="right-s"
-        className="!w-2 !h-2 !bg-gray-300 !border-gray-400"
-      />
+      {/* ── Source handles (salida) ── */}
+      <Handle type="source" position={Position.Bottom} id="bottom-s-1" style={{ left: "25%" }} className={HC} />
+      <Handle type="source" position={Position.Bottom} className={HC} />
+      <Handle type="source" position={Position.Bottom} id="bottom-s-3" style={{ left: "75%" }} className={HC} />
+      <Handle type="source" position={Position.Right} id="right-s" className={HC} />
+      <Handle type="source" position={Position.Right} id="right-s-1" style={{ top: "35%" }} className={HC} />
+      <Handle type="source" position={Position.Right} id="right-s-3" style={{ top: "65%" }} className={HC} />
+      <Handle type="source" position={Position.Left} id="left-s" className={HC} />
+      <Handle type="source" position={Position.Top} id="top-s" className={HC} />
+      <Handle type="target" position={Position.Right} id="right-t" className={HC} />
+      <Handle type="target" position={Position.Bottom} id="bottom-t" className={HC} />
     </div>
   );
 });

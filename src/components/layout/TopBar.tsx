@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Menu, ChevronRight } from "lucide-react";
 import { FLOTA } from "@/lib/data/flota";
 
@@ -38,13 +39,19 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   const { titulo, subtitulo } = resolverRuta(pathname);
   const turno = obtenerTurno();
 
-  const hoy = new Date().toLocaleDateString("es-CL", {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const hoy = now.toLocaleDateString("es-CL", {
     weekday: "short",
     day: "2-digit",
     month: "short",
   });
 
-  const hora = new Date().toLocaleTimeString("es-CL", {
+  const hora = now.toLocaleTimeString("es-CL", {
     hour: "2-digit",
     minute: "2-digit",
   });

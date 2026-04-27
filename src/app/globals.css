@@ -225,12 +225,10 @@ input, select, textarea {
 
   .print-target {
     background: #fff !important;
-    color: #000 !important;
+    box-shadow: none !important;
   }
 
   .print-target * {
-    background: transparent !important;
-    color: #000 !important;
     box-shadow: none !important;
   }
 

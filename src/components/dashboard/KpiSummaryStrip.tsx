@@ -113,8 +113,8 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
                 </span>
                 <span className={clsx(
                   "flex items-center gap-0.5 text-[11px] font-semibold",
-                  up   ? "text-green-700" :
-                  down ? "text-red-700"   : "text-[#71717A]"
+                  up   ? (item.invertido ? "text-red-700"   : "text-green-700") :
+                  down ? (item.invertido ? "text-green-700" : "text-red-700")   : "text-[#71717A]"
                 )}>
                   {up   && <TrendingUp  size={11} />}
                   {down && <TrendingDown size={11} />}

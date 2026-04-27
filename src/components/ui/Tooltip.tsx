@@ -51,7 +51,7 @@ export function Tooltip({ short, help, children, className }: TooltipProps) {
           style={{ position: "fixed", top: pos.y, left: pos.x, transform: "translateX(-50%)" }}
         >
           {helpMode && help ? (
-            <div className="bg-white border border-zinc-200 rounded-xl shadow-2xl p-4 w-[304px] text-left animate-in fade-in slide-in-from-bottom-1 duration-150">
+            <div className="bg-white border border-zinc-200 rounded-xl shadow-2xl p-4 w-[304px] text-left animate-fade-in-up">
               {/* Arrow */}
               <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] bg-white border-l border-t border-zinc-200 rotate-45" />
               <p className="font-bold text-[13px] text-zinc-900 mb-2 leading-tight">{help.titulo}</p>

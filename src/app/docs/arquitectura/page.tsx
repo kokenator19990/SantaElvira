@@ -21,8 +21,7 @@ import { clsx } from "clsx";
 import {
   InteractiveDiagram,
   type DiagramSection,
-} from "@/components/docs/InteractiveDiagram";
-import { DIAGRAM_NODE_TYPES } from "@/components/docs/diagram-nodes";
+} from "@/components/docs/lazy";
 import { StepNav, type Step } from "@/components/docs/StepNav";
 
 /* ================================================================== */
@@ -175,6 +174,7 @@ const S1_EDGES: Edge[] = [
     id: "e-h1",
     source: "h-excel",
     target: "h-code",
+    targetHandle: "top-t-1",
     label: "copia manual",
     type: "default",
     style: { stroke: "#922B21" },
@@ -183,6 +183,7 @@ const S1_EDGES: Edge[] = [
     id: "e-h2",
     source: "h-csv",
     target: "h-code",
+    targetHandle: "top-t-3",
     label: "se pierde al recargar",
     type: "default",
     style: { stroke: "#922B21" },
@@ -198,6 +199,7 @@ const S1_EDGES: Edge[] = [
     id: "e-o1",
     source: "o-excel",
     target: "o-api",
+    targetHandle: "top-t-1",
     label: "importar",
     type: "default",
     style: { stroke: "#1E8449" },
@@ -213,6 +215,7 @@ const S1_EDGES: Edge[] = [
     id: "e-o3",
     source: "o-csv",
     target: "o-api",
+    targetHandle: "top-t-3",
     label: "guardar",
     type: "default",
     style: { stroke: "#1E8449" },
@@ -228,6 +231,8 @@ const S1_EDGES: Edge[] = [
     id: "e-o5",
     source: "o-db",
     target: "o-dash",
+    sourceHandle: "right-s-1",
+    targetHandle: "left-t",
     type: "default",
     style: { stroke: "#CA6F1E" },
   },
@@ -235,6 +240,8 @@ const S1_EDGES: Edge[] = [
     id: "e-o6",
     source: "o-db",
     target: "o-export",
+    sourceHandle: "right-s",
+    targetHandle: "left-t",
     type: "default",
     style: { stroke: "#CA6F1E" },
   },
@@ -634,23 +641,24 @@ const S3_EDGES: Edge[] = [
     source: "cm-4",
     target: "cm-5",
     type: "default",
-    sourceHandle: "right-s",
-    targetHandle: "left-t",
+    sourceHandle: "left-s",
+    targetHandle: "top-t-3",
   },
   {
     id: "e-cm5",
     source: "cm-4",
     target: "cm-6",
     type: "default",
-    sourceHandle: "right-s",
+    sourceHandle: "right-s-3",
     targetHandle: "left-t",
   },
-  { id: "e-cm6", source: "cm-5", target: "cm-7", type: "default" },
-  { id: "e-cm7", source: "cm-6", target: "cm-7", type: "default" },
+  { id: "e-cm6", source: "cm-5", target: "cm-7", targetHandle: "top-t-1", type: "default" },
+  { id: "e-cm7", source: "cm-6", target: "cm-7", targetHandle: "top-t-3", type: "default" },
   {
     id: "e-cm8",
     source: "cm-7",
     target: "cm-8",
+    sourceHandle: "bottom-s-1",
     label: "KPI fuera de umbral",
     type: "default",
     style: { stroke: "#C0392B" },
@@ -659,12 +667,13 @@ const S3_EDGES: Edge[] = [
     id: "e-cm9",
     source: "cm-7",
     target: "cm-9",
+    sourceHandle: "bottom-s-3",
     label: "KPI dentro de umbral",
     type: "default",
     style: { stroke: "#1E8449" },
   },
-  { id: "e-cm10", source: "cm-8", target: "cm-10", type: "default" },
-  { id: "e-cm11", source: "cm-9", target: "cm-10", type: "default" },
+  { id: "e-cm10", source: "cm-8", target: "cm-10", targetHandle: "top-t-1", type: "default" },
+  { id: "e-cm11", source: "cm-9", target: "cm-10", targetHandle: "top-t-3", type: "default" },
   { id: "e-cm12", source: "cm-10", target: "cm-11", type: "default" },
 ];
 
@@ -927,6 +936,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at1",
     source: "at-browser",
     target: "at-next",
+    targetHandle: "top-t-1",
     label: "HTTPS",
     type: "default",
     style: { stroke: "#1A5276" },
@@ -935,6 +945,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at2",
     source: "at-mobile",
     target: "at-next",
+    targetHandle: "top-t-3",
     type: "default",
     style: { stroke: "#1A5276" },
   },
@@ -942,6 +953,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at3",
     source: "at-next",
     target: "at-api",
+    sourceHandle: "bottom-s-1",
     type: "default",
     style: { stroke: "#7D3C98" },
   },
@@ -949,6 +961,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at4",
     source: "at-next",
     target: "at-react",
+    sourceHandle: "bottom-s-3",
     type: "default",
     style: { stroke: "#7D3C98" },
   },
@@ -956,6 +969,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at5",
     source: "at-api",
     target: "at-pg",
+    sourceHandle: "bottom-s-1",
     label: "SQL",
     type: "default",
     style: { stroke: "#1E8449" },
@@ -964,6 +978,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at6",
     source: "at-api",
     target: "at-auth",
+    sourceHandle: "bottom-s-3",
     label: "verifica roles",
     type: "default",
     style: { stroke: "#1E8449" },
@@ -990,6 +1005,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at9",
     source: "at-excel",
     target: "at-api",
+    targetHandle: "top-t-1",
     label: "import",
     type: "default",
     style: { stroke: "#CA6F1E" },
@@ -998,6 +1014,7 @@ const S6_EDGES: Edge[] = [
     id: "e-at10",
     source: "at-csv",
     target: "at-api",
+    targetHandle: "top-t-3",
     label: "upload",
     type: "default",
     style: { stroke: "#CA6F1E" },
@@ -1270,7 +1287,7 @@ export default function ArquitecturaPage() {
             }
           });
         },
-        { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
+        { root: document.getElementById("main-content"), rootMargin: "-20% 0px -60% 0px", threshold: 0 }
       );
 
       obs.observe(el);
@@ -1280,6 +1297,24 @@ export default function ArquitecturaPage() {
     return () => {
       observers.forEach((obs) => obs.disconnect());
     };
+  }, []);
+
+  /* ---- JS-based sticky for StepNav (CSS sticky breaks due to overflow-hidden ancestors) ---- */
+  const navSentinelRef = useRef<HTMLDivElement>(null);
+  const [isNavFixed, setIsNavFixed] = useState(false);
+
+  useEffect(() => {
+    const main = document.getElementById("main-content");
+    if (!main) return;
+    const onScroll = () => {
+      if (!navSentinelRef.current) return;
+      const sr = navSentinelRef.current.getBoundingClientRect();
+      const mr = main.getBoundingClientRect();
+      setIsNavFixed(sr.top < mr.top);
+    };
+    main.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => main.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
@@ -1312,8 +1347,18 @@ export default function ArquitecturaPage() {
         </div>
       </div>
 
-      {/* Step nav (sticky) — fuera del flex-col para que sticky funcione */}
-      <div className="sticky top-0 z-30 border-b border-[#E4E4E7] -mx-4 px-4 md:-mx-6 md:px-6 py-2 bg-[#F8FAFC]">
+      {/* Sentinel: marca la posicion natural del StepNav */}
+      <div ref={navSentinelRef} className="h-0" />
+
+      {/* StepNav — JS-based fixed cuando se hace scroll */}
+      <div
+        className={clsx(
+          "z-30 bg-[#F8FAFC] border-b border-[#E4E4E7] py-2",
+          isNavFixed
+            ? "fixed top-[56px] left-0 lg:left-[240px] right-0 px-4 md:px-6 shadow-sm"
+            : "-mx-4 px-4 md:-mx-6 md:px-6"
+        )}
+      >
         <div className="max-w-[960px] mx-auto">
           <StepNav
             steps={STEPS}
@@ -1323,6 +1368,9 @@ export default function ArquitecturaPage() {
         </div>
       </div>
 
+      {/* Spacer cuando el nav esta fixed para evitar salto de layout */}
+      {isNavFixed && <div className="h-12" />}
+
       <div className="max-w-[960px] mx-auto flex flex-col gap-6 pt-6">
       {/* ============================================================ */}
       {/*  Seccion 1 — Situacion Actual vs Objetivo                     */}
@@ -1330,7 +1378,7 @@ export default function ArquitecturaPage() {
       <section
         ref={setRef("hoy-vs-objetivo")}
         id="hoy-vs-objetivo"
-        className="scroll-mt-20"
+        className="scroll-mt-28"
       >
         <SectionHeader
           number={1}
@@ -1341,7 +1389,6 @@ export default function ArquitecturaPage() {
           id="s1-hoy-vs-obj"
           nodes={S1_NODES}
           edges={S1_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Hoy vs Objetivo"
           description="Comparacion del flujo actual con el estado objetivo"
           height="520px"
@@ -1357,13 +1404,12 @@ export default function ArquitecturaPage() {
       {/* ============================================================ */}
       {/*  Seccion 2 — Capas del Sistema                                */}
       {/* ============================================================ */}
-      <section ref={setRef("capas")} id="capas" className="scroll-mt-20">
+      <section ref={setRef("capas")} id="capas" className="scroll-mt-28">
         <SectionHeader number={2} title="Capas del Sistema" icon={Layers} />
         <InteractiveDiagram
           id="s2-capas"
           nodes={S2_NODES}
           edges={S2_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Capas del Sistema"
           description="Presentacion, Logica y Datos separados por responsabilidad"
           height="600px"
@@ -1386,17 +1432,16 @@ export default function ArquitecturaPage() {
       <section
         ref={setRef("carga-mes")}
         id="carga-mes"
-        className="scroll-mt-20"
+        className="scroll-mt-28"
       >
         <SectionHeader number={3} title="Carga Mensual" icon={Upload} />
         <InteractiveDiagram
           id="s3-carga-mes"
           nodes={S3_NODES}
           edges={S3_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Flujo de Carga Mensual"
           description="Desde que el supervisor abre el sistema hasta que el dashboard se actualiza"
-          height="620px"
+          height="820px"
         />
         <ExplanationBox>
           Paso a paso de como el supervisor carga los datos mensuales: ingresa
@@ -1412,17 +1457,16 @@ export default function ArquitecturaPage() {
       <section
         ref={setRef("carga-apd")}
         id="carga-apd"
-        className="scroll-mt-20"
+        className="scroll-mt-28"
       >
         <SectionHeader number={4} title="Carga APD" icon={FlaskConical} />
         <InteractiveDiagram
           id="s4-carga-apd"
           nodes={S4_NODES}
           edges={S4_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Flujo de Carga APD"
           description="Desde la seleccion del CSV hasta el almacenamiento permanente"
-          height="580px"
+          height="720px"
         />
         <ExplanationBox>
           El flujo de carga de analisis de aceites (APD): el tecnico selecciona
@@ -1436,7 +1480,7 @@ export default function ArquitecturaPage() {
       {/* ============================================================ */}
       {/*  Seccion 5 — Roles de Usuario                                 */}
       {/* ============================================================ */}
-      <section ref={setRef("roles")} id="roles" className="scroll-mt-20">
+      <section ref={setRef("roles")} id="roles" className="scroll-mt-28">
         <SectionHeader number={5} title="Roles de Usuario" icon={Users} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1528,7 +1572,7 @@ export default function ArquitecturaPage() {
       <section
         ref={setRef("arquitectura")}
         id="arquitectura"
-        className="scroll-mt-20"
+        className="scroll-mt-28"
       >
         <SectionHeader
           number={6}
@@ -1539,7 +1583,6 @@ export default function ArquitecturaPage() {
           id="s6-arq-tecnica"
           nodes={S6_NODES}
           edges={S6_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Stack Tecnico"
           description="Next.js 14 + Supabase + Vercel"
           height="600px"
@@ -1558,7 +1601,7 @@ export default function ArquitecturaPage() {
       {/* ============================================================ */}
       {/*  Seccion 7 — Roadmap                                          */}
       {/* ============================================================ */}
-      <section ref={setRef("roadmap")} id="roadmap" className="scroll-mt-20">
+      <section ref={setRef("roadmap")} id="roadmap" className="scroll-mt-28">
         <SectionHeader number={7} title="Roadmap" icon={Rocket} />
 
         <div className="relative flex flex-col items-center gap-0 py-4">
@@ -1637,7 +1680,7 @@ export default function ArquitecturaPage() {
       <section
         ref={setRef("reemplazos")}
         id="reemplazos"
-        className="scroll-mt-20"
+        className="scroll-mt-28"
       >
         <SectionHeader
           number={8}

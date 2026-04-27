@@ -43,7 +43,7 @@ export function EntityDetail({ entity, onClose }: EntityDetailProps) {
         "absolute right-0 top-0 bottom-0 w-[340px] max-w-full z-20",
         "bg-white border-l border-[#E4E4E7] shadow-xl",
         "flex flex-col overflow-hidden",
-        "animate-in slide-in-from-right duration-300"
+        ""
       )}
       style={{ animation: "slideInRight 0.25s ease-out" }}
     >

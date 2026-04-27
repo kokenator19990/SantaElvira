@@ -4,7 +4,7 @@ import { getTendenciaPorTipo } from "@/lib/data/tendencias";
 import { EquipoHeader } from "@/components/equipo/EquipoHeader";
 import { EquipoKpiPanel } from "@/components/equipo/EquipoKpiPanel";
 import { EquipoAsarcoBar } from "@/components/equipo/EquipoAsarcoBar";
-import { TendenciaSeisMeses } from "@/components/charts/TendenciaSeisMeses";
+import { TendenciaSeisMeses } from "@/components/charts/lazy";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 
 interface Props {

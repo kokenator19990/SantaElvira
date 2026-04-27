@@ -1,7 +1,7 @@
 "use client";
 
 import type { Equipo, FlotaResumen, EstadoSemaforo } from "@/lib/domain/tipos";
-import { GraficosReporte } from "./GraficosReporte";
+import { GraficosReporte } from "./lazy";
 
 interface ReportePreviewProps {
   periodo: string;
@@ -96,7 +96,7 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
       </div>
 
       {/* ── KPI CARDS — pantalla only ─────────────────────────────────────── */}
-      <div className="no-print grid grid-cols-3 divide-x divide-[#F4F4F5] border-b border-[#E4E4E7]">
+      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#F4F4F5] border-b border-[#E4E4E7]">
         {[
           { label: "Dfm promedio",   valor: `${dfmFlota}%`,  nota: "≥ 85% meta",  color: dfmFlota >= 85 ? "#15803D" : dfmFlota >= 75 ? "#B45309" : "#DC2626" },
           { label: "TMEF promedio",  valor: `${tmefFlota}h`, nota: "≥ 80h meta",  color: tmefFlota >= 80 ? "#15803D" : tmefFlota >= 50 ? "#B45309" : "#DC2626" },

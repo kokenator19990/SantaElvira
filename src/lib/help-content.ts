@@ -72,7 +72,7 @@ export const HELP: Record<string, HelpItem> = {
     titulo: "Alertas Activas",
     que_es: "Total de alertas generadas cuando algún KPI de algún equipo cruza un umbral de advertencia (ámbar) o crítico (rojo).",
     como_funciona: "El sistema genera una alerta por cada KPI en estado ámbar o rojo de cada equipo. Un equipo puede tener múltiples alertas simultáneas.",
-    ejemplo: "86 alertas: si el equipo CE-01 tiene DFM en rojo y TMPR en ámbar, genera 2 alertas. Con 27 equipos se acumulan rápido.",
+    ejemplo: "86 alertas: si el equipo CE-01 tiene DFM en rojo y TMPR en ámbar, genera 2 alertas. Con 28 equipos se acumulan rápido.",
   },
   asarcoOperativo: {
     titulo: "Operativo — ASARCO",
@@ -125,7 +125,7 @@ export const HELP: Record<string, HelpItem> = {
   },
   navFlota: {
     titulo: "Flota — Detalle de Equipos",
-    que_es: "Tabla completa con los 27 equipos de la faena, sus KPIs individuales, estado de semáforo y detalle por equipo.",
+    que_es: "Tabla completa con los 28 equipos de la faena, sus KPIs individuales, estado de semáforo y detalle por equipo.",
     ejemplo: "Filtra por '777F' para ver solo los camiones de ese modelo. Haz clic en una fila para ver el detalle completo del equipo.",
   },
   navAlertas: {

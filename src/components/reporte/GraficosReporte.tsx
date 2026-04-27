@@ -247,7 +247,7 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
   const catStyle  = { fontSize: 11, fill: "#3F3F46", fontWeight: 600 };
 
   return (
-    <div className="no-print space-y-5">
+    <div className="space-y-5">
 
       {/* ── Separador ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 pt-2">
@@ -257,7 +257,7 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
       </div>
 
       {/* ── 1. KPI Gauges ────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
           { valor: +avgDfm,  meta: 85, maxDisplay: 100, unidad: "%", label: "Dfm Flota",  color: SEM[estDfm],  invertido: false },
           { valor: +avgTmef, meta: 80, maxDisplay: 120, unidad: "h", label: "TMEF Prom.", color: SEM[estTmef], invertido: false },

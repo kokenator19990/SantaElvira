@@ -6,7 +6,7 @@ import { FLOTA } from "@/lib/data/flota";
 import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ReportePreview } from "@/components/reporte/ReportePreview";
-import { ComparacionPeriodos } from "@/components/reporte/ComparacionPeriodos";
+import { ComparacionPeriodos } from "@/components/reporte/lazy";
 import { IntegracionDatos } from "@/components/reporte/IntegracionDatos";
 import type { FlotaResumen } from "@/lib/domain/tipos";
 import { PERIODOS_DISPONIBLES } from "@/lib/data/periodos";
