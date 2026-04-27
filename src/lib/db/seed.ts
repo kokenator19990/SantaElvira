@@ -26,6 +26,19 @@ if (!connectionString) {
   process.exit(1);
 }
 
+// Salvaguarda destructiva: el seed hace TRUNCATE CASCADE de TODAS las tablas.
+// Para evitar destruir producción por accidente, requiere SEED_ALLOW_DESTRUCTIVE=1 explícito.
+if (process.env.SEED_ALLOW_DESTRUCTIVE !== "1") {
+  console.error("");
+  console.error("✗ Este script BORRA todas las tablas (TRUNCATE CASCADE).");
+  console.error("  Si estás seguro, ejecuta:");
+  console.error("    SEED_ALLOW_DESTRUCTIVE=1 npm run db:seed       (Linux/Mac)");
+  console.error("    $env:SEED_ALLOW_DESTRUCTIVE=\"1\"; npm run db:seed   (PowerShell)");
+  console.error("");
+  console.error("  Verifica primero a qué BD apunta DATABASE_URL en .env.local.");
+  process.exit(1);
+}
+
 const client = postgres(connectionString, { prepare: false });
 const db = drizzle(client, { schema, casing: "snake_case" });
 
