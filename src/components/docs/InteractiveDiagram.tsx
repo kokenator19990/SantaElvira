@@ -148,11 +148,42 @@ function DiagramInner({
     return () => document.removeEventListener("fullscreenchange", handler);
   }, []);
 
-  /* Highlight selected node */
-  const styledNodes = nodes.map((n) => ({
-    ...n,
-    selected: n.id === selectedNodeId,
-  }));
+  /* Highlight selected node + dim nodes/edges fuera de la sección activa */
+  const activeNodeIds = activeSection
+    ? new Set(sections?.find((s) => s.id === activeSection)?.nodeIds ?? [])
+    : null;
+
+  const styledNodes = nodes.map((n) => {
+    const inActiveSection = !activeNodeIds || activeNodeIds.has(n.id);
+    return {
+      ...n,
+      selected: n.id === selectedNodeId,
+      style: {
+        ...(n.style ?? {}),
+        opacity: inActiveSection ? 1 : 0.18,
+        filter: inActiveSection ? "none" : "grayscale(0.8)",
+        transition: "opacity 250ms ease, filter 250ms ease",
+        pointerEvents: (inActiveSection ? "auto" : "none") as "auto" | "none",
+      },
+    };
+  });
+
+  const styledEdges = edges.map((e) => {
+    const bothInSection =
+      !activeNodeIds || (activeNodeIds.has(e.source) && activeNodeIds.has(e.target));
+    return {
+      ...e,
+      style: {
+        ...(e.style ?? {}),
+        opacity: bothInSection ? 1 : 0.12,
+        transition: "opacity 250ms ease",
+      },
+      labelStyle: {
+        ...(e.labelStyle ?? {}),
+        opacity: bothInSection ? 1 : 0.2,
+      },
+    };
+  });
 
   /* Handlers */
   const handleFitView = useCallback(() => {
@@ -229,7 +260,7 @@ function DiagramInner({
     >
       <ReactFlow
         nodes={styledNodes}
-        edges={edges}
+        edges={styledEdges}
         nodeTypes={nodeTypes}
         onNodeClick={(_e, node) => onNodeClick?.(node.id)}
         fitView
