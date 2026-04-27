@@ -7,6 +7,8 @@ import { clsx } from "clsx";
 import type { Periodo } from "@/lib/db/schema";
 import { regenerarAlertasPeriodo } from "@/lib/db/actions/kpis";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 export function AlertasAdminClient({ periodos }: { periodos: Periodo[] }) {
   const [periodoId, setPeriodoId] = useState(periodos[0]?.id ?? 0);
@@ -29,7 +31,11 @@ export function AlertasAdminClient({ periodos }: { periodos: Periodo[] }) {
           <ArrowLeft size={13} /> Admin
         </Link>
       </div>
-      <SectionTitle>Regenerar Alertas</SectionTitle>
+      <SectionTitle>
+        <Tooltip short="Recalcula alertas según KPIs y umbrales vigentes" help={HELP.adminAlertas}>
+          Regenerar Alertas
+        </Tooltip>
+      </SectionTitle>
 
       <div className="p-4 rounded-[10px] bg-white border border-[#E4E4E7] flex flex-col gap-3">
         <p className="text-[12px] text-[#52525B] leading-relaxed">

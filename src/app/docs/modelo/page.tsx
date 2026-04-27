@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Database,
   ArrowLeft,
+  CheckCircle,
 } from "lucide-react";
 import { clsx } from "clsx";
 import Link from "next/link";
@@ -1469,6 +1470,29 @@ export default function ModeloPage() {
               los KPIs, alertas, ASARCO y analisis APD de forma permanente, con
               formularios web para la carga de datos.
             </p>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-xl border-2 border-[#1E8449] bg-[#EAF4E8] p-5">
+          <div className="flex items-start gap-3">
+            <CheckCircle size={20} className="text-[#1E8449] mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-[#186A3B] font-semibold mb-2">
+                Estado actual: ya implementado ✓
+              </p>
+              <p className="text-sm text-[#3F3F46] leading-relaxed mb-3">
+                Las 9 entidades de este diagrama ya estan creadas como tablas reales en{" "}
+                <strong>Postgres 17.6 sobre Supabase</strong>. El dashboard, /flota, /alertas y
+                /portada leen sus datos desde la BD via Drizzle ORM. La carga manual de KPIs
+                mensuales se hace desde <Link href="/admin/kpis" className="underline text-[#1E8449]">/admin/kpis</Link>.
+              </p>
+              <Link
+                href="/docs/supabase"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#15803D] hover:text-[#166534]"
+              >
+                Ver detalle del setup en Supabase →
+              </Link>
+            </div>
           </div>
         </div>
       </section>

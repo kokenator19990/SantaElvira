@@ -17,6 +17,7 @@ import {
   Check,
 } from "lucide-react";
 import { clsx } from "clsx";
+import Link from "next/link";
 
 import {
   InteractiveDiagram,
@@ -1399,6 +1400,32 @@ export default function ArquitecturaPage() {
           datos real para que los supervisores puedan cargar y consultar datos
           sin modificar el codigo fuente.
         </ExplanationBox>
+
+        <div
+          className="mt-4 rounded-xl border-2 p-5"
+          style={{ borderColor: "#1E8449", backgroundColor: "#EAF4E8" }}
+        >
+          <div className="flex items-start gap-3">
+            <Check size={20} style={{ color: "#1E8449" }} className="mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold mb-2" style={{ color: "#186A3B" }}>
+                Estado actual: el OBJETIVO ya esta implementado ✓
+              </p>
+              <p className="text-sm leading-relaxed mb-3" style={{ color: "#3F3F46" }}>
+                La caja verde &ldquo;OBJETIVO — Con base de datos&rdquo; del diagrama de arriba ya es la
+                realidad. Existe el proyecto Supabase, las 9 tablas Postgres, las migraciones
+                Drizzle, los formularios web en /admin y la persistencia del CSV APD.
+              </p>
+              <Link
+                href="/docs/supabase"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
+                style={{ color: "#15803D" }}
+              >
+                Ver el setup completo de Supabase →
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ============================================================ */}

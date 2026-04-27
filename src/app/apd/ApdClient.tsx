@@ -102,9 +102,11 @@ export function ApdClient({
 
           {estado === "done" && (
             <div className="flex flex-col gap-2.5 p-4 rounded-[10px] bg-[#FFFBEB] border border-[#FDE68A]">
-              <p className="text-[10px] font-bold text-[#92400E] uppercase tracking-[0.08em] inline-flex items-center gap-1.5">
-                <Database size={11} /> Guardar en base de datos
-              </p>
+              <Tooltip short="Persiste el CSV procesado en la BD (cabecera + muestras)" help={HELP.apdGuardar}>
+                <p className="text-[10px] font-bold text-[#92400E] uppercase tracking-[0.08em] inline-flex items-center gap-1.5">
+                  <Database size={11} /> Guardar en base de datos
+                </p>
+              </Tooltip>
               <label className="flex flex-col gap-1">
                 <span className="text-[10px] text-[#71717A]">Período</span>
                 <select
@@ -191,7 +193,9 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
             <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
               <div className="px-4 py-2.5 bg-[#FAFAFA] border-b border-[#E4E4E7] inline-flex items-center gap-2 w-full">
                 <History size={13} className="text-[#71717A]" />
-                <span className="text-[11px] font-bold text-[#52525B] uppercase tracking-wider">Análisis cargados</span>
+                <Tooltip short="Histórico de CSVs persistidos en BD" help={HELP.apdHistorico}>
+                  <span className="text-[11px] font-bold text-[#52525B] uppercase tracking-wider">Análisis cargados</span>
+                </Tooltip>
                 <span className="ml-auto text-[10px] font-mono text-[#A1A1AA]">{analisis.length}</span>
               </div>
               <table className="w-full text-[11px]">

@@ -7,6 +7,8 @@ import { clsx } from "clsx";
 import type { Equipo, TipoFlota } from "@/lib/domain/tipos";
 import { crearEquipo, actualizarEquipo, darDeBajaEquipo, reactivarEquipo } from "@/lib/db/actions/equipos";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 type Msg = { type: "ok" | "error"; text: string } | null;
 
@@ -48,7 +50,11 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
         </Link>
       </div>
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <SectionTitle>Gestionar Flota</SectionTitle>
+        <SectionTitle>
+          <Tooltip short="CRUD de equipos de la flota" help={HELP.adminEquipos}>
+            Gestionar Flota
+          </Tooltip>
+        </SectionTitle>
         <button
           onClick={() => setShowNew((v) => !v)}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-[#09090B] hover:bg-[#27272A] text-white text-[12px] font-semibold"

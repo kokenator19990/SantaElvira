@@ -198,4 +198,57 @@ export const HELP: Record<string, HelpItem> = {
     que_es: "Año en que fue fabricado el equipo. A mayor antigüedad y horas acumuladas, mayor es el costo de mantención.",
     ejemplo: "Año 2015 → Equipo de 10 años. Los equipos CAT tienen vida útil de 15–20 años con mantención adecuada.",
   },
+
+  // ─── Admin / carga de datos ────────────────────────────────────────────────
+  navAdmin: {
+    titulo: "Administración — Carga de Datos",
+    que_es: "Panel de carga manual de datos. Reemplaza a las planillas Excel: el supervisor ingresa KPIs mensuales, gestiona la flota y crea períodos directamente desde la web.",
+    como_funciona: "Cada operación se guarda inmediatamente en la base de datos PostgreSQL de Supabase. El dashboard se actualiza automáticamente tras cada cambio.",
+    ejemplo: "Al cierre del mes, el supervisor entra a /admin/kpis, selecciona Abril 2025, llena los DFM/TMEF/TMPR de cada equipo y hace clic en 'Guardar todo'. Listo: el dashboard refleja el mes nuevo.",
+  },
+  adminKpis: {
+    titulo: "Cargar KPIs Mensuales",
+    que_es: "Tabla editable con los 28 equipos y sus KPIs (DFM, TMEF, TMPR, T.Op, Reserva) más la distribución ASARCO (5 segmentos que suman 100%) para el período seleccionado.",
+    como_funciona: "Edita cada celda directamente. El botón ✓ por fila guarda solo ese equipo. 'Guardar todo' itera por las 28 filas. La columna Σ valida que los 5 segmentos ASARCO sumen 100±0.5%.",
+    ejemplo: "Cambias el DFM de CE-01 de 73 a 78, presionas ✓ y la BD se actualiza. El dashboard ya muestra el dato nuevo en su próxima carga.",
+    meta: "Validaciones: DFM/T.Op/Reserva entre 0–100, TMEF/TMPR ≥ 0, suma ASARCO = 100±0.5",
+  },
+  adminEquipos: {
+    titulo: "Gestionar Flota",
+    que_es: "CRUD básico de equipos: agregar uno nuevo, editar metadatos (modelo, año, tipo) o dar de baja sin perder histórico (queda enServicio=false).",
+    como_funciona: "El ID debe seguir el patrón [LL]-[##] (ej: CH-09, CE-13). Tipo de flota se elige entre 785D, 777F, 992, PC2000. Los equipos dados de baja conservan su histórico de KPIs.",
+    ejemplo: "Llega un camión nuevo a la mina: /admin/equipos → Nuevo → ID=CH-09, Tipo=785D, Modelo='CAT 785D', Año=2024 → Crear. Aparece en /flota inmediatamente.",
+  },
+  adminPeriodos: {
+    titulo: "Períodos",
+    que_es: "Gestión del calendario: cada mes que se reportan datos es un 'período' con id propio. Los KPIs y alertas se asocian a un período específico.",
+    como_funciona: "Antes de cargar KPIs de Mayo 2025, debes crear ese período. Cerrar un período lo marca como inmutable (los datos del mes ya no se editan).",
+    ejemplo: "El 1 de mayo: vas a /admin/periodos → Año=2025, Mes=Mayo → Crear. Luego en /admin/kpis ya puedes seleccionar 'Mayo 2025' y empezar a cargar.",
+    meta: "Restricción: solo un período por (año, mes). Intentar duplicarlo da error.",
+  },
+  adminAlertas: {
+    titulo: "Regenerar Alertas",
+    que_es: "Recalcula la tabla de alertas de un período comparando los KPIs actuales contra los umbrales vigentes. Borra las alertas anteriores del período y reinserta.",
+    como_funciona: "Cada KPI fuera de umbral genera una alerta. Si el equipo está en paroTotal, se genera una alerta de tipo 'paro' en lugar de las KPI por KPI.",
+    ejemplo: "Cambias los umbrales de DFM (verde 90%, ámbar 80%) en la tabla umbral_kpi → /admin/alertas → seleccionas el período → Regenerar. Las alertas se recalculan con los nuevos límites.",
+    meta: "El botón también está disponible en /admin/kpis para uso conjunto.",
+  },
+  apdGuardar: {
+    titulo: "Guardar Análisis APD en BD",
+    que_es: "Persiste el CSV procesado en la base de datos. Crea un registro en analisis_apd (cabecera) y un registro por muestra en muestra_apd.",
+    como_funciona: "Selecciona el período al que pertenece este análisis y la fecha en que se tomaron las muestras. Si algún equipo del CSV no existe en BD, el guardado falla con la lista de IDs faltantes.",
+    ejemplo: "Subes APD_Abril2025.csv con 120 muestras → eliges período 'Abril 2025' y fecha 2025-04-15 → Guardar. La BD persiste 1 análisis + 120 muestras, y el histórico se actualiza.",
+  },
+  apdHistorico: {
+    titulo: "Análisis APD Cargados",
+    que_es: "Lista de todos los análisis ya persistidos en la BD. Permite ver cuántas muestras tiene cada uno, cuántas en rojo/ámbar y eliminarlos.",
+    como_funciona: "Cada fila es un CSV cargado. Borrar un análisis elimina también todas sus muestras (cascada FK). El recuento por estado ayuda a detectar análisis con muchos parámetros fuera de rango.",
+    ejemplo: "Si ves un análisis con 80 muestras y 35 en rojo, ese mes hubo problemas serios de desgaste y vale la pena revisar el detalle.",
+  },
+  apdEstado: {
+    titulo: "Estado del Parámetro",
+    que_es: "Resultado de comparar el valor medido contra los límites mínimo y máximo del parámetro.",
+    como_funciona: "Verde: dentro del rango. Ámbar: dentro pero al 90% del límite (alerta temprana). Rojo: fuera del rango (intervención inmediata).",
+    ejemplo: "Fe motor con LimMax=30. Valor 18 = verde (lejos del tope). Valor 28 = ámbar (cerca, vigilar). Valor 45 = rojo (desgaste acelerado).",
+  },
 };

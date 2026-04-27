@@ -8,6 +8,9 @@ import {
   GitBranch,
   Users,
   Workflow,
+  Cloud,
+  Server,
+  KeyRound,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -41,6 +44,21 @@ const DOCS = [
     ],
     description:
       "Recorre la arquitectura completa: desde el estado actual hasta el objetivo con base de datos. Visualiza flujos de carga, roles de usuario y el roadmap de migracion.",
+  },
+  {
+    href: "/docs/supabase",
+    title: "Supabase — BD en producción",
+    subtitle: "Setup real, conexiones, migraciones",
+    icon: Cloud,
+    color: "#15803D",
+    bg: "#F0FDF4",
+    features: [
+      { icon: Server, label: "Pooler vs Direct connection" },
+      { icon: GitBranch, label: "Migraciones con Drizzle" },
+      { icon: KeyRound, label: "Env vars y seguridad" },
+    ],
+    description:
+      "Cómo está armada físicamente la BD: el proyecto Supabase, las 9 tablas en Postgres, las migraciones, el flujo end-to-end desde un click en /admin hasta el INSERT. Manual operativo para mantener el sistema.",
   },
 ];
 

@@ -8,6 +8,8 @@ import type { Equipo } from "@/lib/domain/tipos";
 import type { Periodo } from "@/lib/db/schema";
 import { upsertKpiEquipo, upsertAsarcoEquipo, regenerarAlertasPeriodo } from "@/lib/db/actions/kpis";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 interface KpiRow {
   equipoId: string;
@@ -127,7 +129,11 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
           <ArrowLeft size={13} /> Admin
         </Link>
       </div>
-      <SectionTitle>Cargar KPIs — {periodoLabel}</SectionTitle>
+      <SectionTitle>
+        <Tooltip short="Tabla editable: edita las celdas y guarda" help={HELP.adminKpis}>
+          Cargar KPIs — {periodoLabel}
+        </Tooltip>
+      </SectionTitle>
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3 p-3 rounded-[10px] bg-white border border-[#E4E4E7]">

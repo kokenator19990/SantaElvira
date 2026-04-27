@@ -7,6 +7,8 @@ import { clsx } from "clsx";
 import type { Periodo } from "@/lib/db/schema";
 import { crearPeriodo, cerrarPeriodo } from "@/lib/db/actions/kpis";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
@@ -33,7 +35,11 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
           <ArrowLeft size={13} /> Admin
         </Link>
       </div>
-      <SectionTitle>Períodos</SectionTitle>
+      <SectionTitle>
+        <Tooltip short="Calendario de meses con datos" help={HELP.adminPeriodos}>
+          Períodos
+        </Tooltip>
+      </SectionTitle>
 
       {msg && (
         <div className={clsx(
