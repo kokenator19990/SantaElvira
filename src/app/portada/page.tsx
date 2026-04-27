@@ -11,14 +11,9 @@ import {
   MonitorCheck,
   Pickaxe,
 } from "lucide-react";
-import { FLOTA } from "@/lib/data/flota";
-import { ALERTAS } from "@/lib/data/alertas";
+import { getFlota } from "@/lib/db/queries/flota";
+import { getAlertas } from "@/lib/db/queries/alertas";
 import { GlosarioRapido } from "@/components/portada/GlosarioRapido";
-
-// ─── Datos derivados ──────────────────────────────────────────────────────────
-const paros    = FLOTA.filter((e) => e.paroTotal).length;
-const criticos = FLOTA.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
-const advertencias = ALERTAS.filter((a) => a.estado === "ambar").length;
 
 // ─── Secciones del sistema ────────────────────────────────────────────────────
 const SECCIONES = [
@@ -64,7 +59,12 @@ const SECCIONES = [
   },
 ] as const;
 
-export default function PortadaPage() {
+export default async function PortadaPage() {
+  const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
+  const paros        = flota.filter((e) => e.paroTotal).length;
+  const criticos     = flota.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
+  const advertencias = alertas.filter((a) => a.estado === "ambar").length;
+
   return (
     <div className="flex flex-col gap-8 max-w-[900px] mx-auto animate-fade-in-up">
 

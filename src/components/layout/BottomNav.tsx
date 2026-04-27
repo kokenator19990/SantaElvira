@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, LayoutDashboard, Truck, BellRing, FileText } from "lucide-react";
 import { clsx } from "clsx";
-import { ALERTAS } from "@/lib/data/alertas";
 
 interface NavItem {
   href: string;
@@ -22,10 +21,9 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/reporte",   label: "Reporte",   icon: FileText },
 ];
 
-const alertasRojas = ALERTAS.filter((a) => a.estado === "paro" || a.estado === "rojo").length;
-
-export function BottomNav() {
+export function BottomNav({ alertasCriticas }: { alertasCriticas: number }) {
   const pathname = usePathname();
+  const alertasRojas = alertasCriticas;
 
   return (
     <nav

@@ -4,6 +4,8 @@ import "./globals.css";
 import { ShellClient } from "@/components/layout/ShellClient";
 import { HelpModeProvider } from "@/contexts/HelpModeContext";
 import { HelpModeBanner } from "@/components/ui/HelpModeBanner";
+import { getFlota } from "@/lib/db/queries/flota";
+import { getAlertas } from "@/lib/db/queries/alertas";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,15 +30,25 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Datos compartidos del shell — single round-trip al iniciar la sesión.
+  // React.cache deduplica si las páginas hijas también llaman estas queries.
+  const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
+  const alertasCriticas = alertas.filter((a) => a.estado === "paro" || a.estado === "rojo").length;
+
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <HelpModeProvider>
           <HelpModeBanner />
-          <ShellClient>{children}</ShellClient>
+          <ShellClient
+            alertasCriticas={alertasCriticas}
+            totalEquipos={flota.length}
+          >
+            {children}
+          </ShellClient>
         </HelpModeProvider>
       </body>
     </html>

@@ -1,9 +1,13 @@
 import { FLOTA } from "@/lib/data/flota";
 import { calcularSemaforoGeneral } from "@/lib/domain/semaforo";
-import type { FlotaResumen, TipoFlota } from "@/lib/domain/tipos";
+import type { Equipo, FlotaResumen, TipoFlota } from "@/lib/domain/tipos";
 
-export function calcularResumenFlota(tipo: TipoFlota, modelo: string): FlotaResumen {
-  const equipos = FLOTA.filter((e) => e.tipoFlota === tipo);
+export function calcularResumenFlota(
+  tipo: TipoFlota,
+  modelo: string,
+  flota: Equipo[] = FLOTA
+): FlotaResumen {
+  const equipos = flota.filter((e) => e.tipoFlota === tipo);
   const activos = equipos.filter((e) => !e.paroTotal);
   const avg = (arr: number[]) =>
     arr.length === 0 ? 0 : Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);

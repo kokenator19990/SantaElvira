@@ -1,7 +1,7 @@
-import { FLOTA } from "@/lib/data/flota";
-import { TENDENCIAS } from "@/lib/data/tendencias";
-import { ASARCO_FLOTA } from "@/lib/data/asarco";
-import { ALERTAS } from "@/lib/data/alertas";
+import { getFlota } from "@/lib/db/queries/flota";
+import { getAlertas } from "@/lib/db/queries/alertas";
+import { getAsarcoPorFlota } from "@/lib/db/queries/asarco";
+import { getTendenciaPorTipo } from "@/lib/db/queries/tendencias";
 import { clasificarDfm, clasificarTmef, clasificarTmpr, clasificarTiempoOperativo, clasificarReserva } from "@/lib/domain/semaforo";
 import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import type { FlotaResumen } from "@/lib/domain/tipos";
@@ -13,37 +13,43 @@ import { TendenciaSeisMeses, AsarcoTimeChart } from "@/components/charts/lazy";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
 
-const FLOTAS: FlotaResumen[] = [
-  calcularResumenFlota("785D",   "CAT 785D"),
-  calcularResumenFlota("777F",   "CAT 777F"),
-  calcularResumenFlota("992",    "CAT 992"),
-  calcularResumenFlota("PC2000", "Komatsu PC-2000"),
-];
-
-const ACTIVOS = FLOTA.filter((e) => !e.paroTotal);
 const round1 = (n: number) => Math.round(n * 10) / 10;
-const avg = (fn: (e: typeof FLOTA[0]) => number) =>
-  round1(ACTIVOS.reduce((a, e) => a + fn(e), 0) / ACTIVOS.length);
 
-const AVG_DFM  = avg((e) => e.kpis.dfm);
-const AVG_TMEF = avg((e) => e.kpis.tmef);
-const AVG_TMPR = avg((e) => e.kpis.tmpr);
-const AVG_TOP  = avg((e) => e.kpis.tiempoOperativo);
-const AVG_RES  = avg((e) => e.kpis.reserva);
+export default async function DashboardPage() {
+  const [flota, alertas, asarcoFlota, tendencia777F] = await Promise.all([
+    getFlota(),
+    getAlertas(),
+    getAsarcoPorFlota(),
+    getTendenciaPorTipo("777F"),
+  ]);
 
-const KPI_ITEMS = [
-  { label: "Dfm Flota",  valor: AVG_DFM,  unidad: "%", objetivo: 85, delta: -1.2, estado: clasificarDfm(AVG_DFM) },
-  { label: "TMEF Prom.", valor: AVG_TMEF, unidad: "h", objetivo: 80, delta: -2.5, estado: clasificarTmef(AVG_TMEF) },
-  { label: "TMPR Prom.", valor: AVG_TMPR, unidad: "h", objetivo: 5,  delta: 3.1, invertido: true, estado: clasificarTmpr(AVG_TMPR) },
-  { label: "Tiempo Op.", valor: AVG_TOP,  unidad: "%", objetivo: 80, delta: -1.8, estado: clasificarTiempoOperativo(AVG_TOP) },
-  { label: "Reserva",    valor: AVG_RES,  unidad: "%", objetivo: 8,  delta: 2.3, invertido: true, estado: clasificarReserva(AVG_RES) },
-];
+  const FLOTAS: FlotaResumen[] = [
+    calcularResumenFlota("785D",   "CAT 785D",        flota),
+    calcularResumenFlota("777F",   "CAT 777F",        flota),
+    calcularResumenFlota("992",    "CAT 992",         flota),
+    calcularResumenFlota("PC2000", "Komatsu PC-2000", flota),
+  ];
 
-const EN_PARO   = FLOTA.filter((e) => e.paroTotal).length;
-const CRITICOS  = FLOTA.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
-const TENDENCIA_777F = TENDENCIAS.find((t) => t.tipoFlota === "777F");
+  const ACTIVOS = flota.filter((e) => !e.paroTotal);
+  const avg = (fn: (e: typeof flota[0]) => number) =>
+    ACTIVOS.length === 0 ? 0 : round1(ACTIVOS.reduce((a, e) => a + fn(e), 0) / ACTIVOS.length);
 
-export default function DashboardPage() {
+  const AVG_DFM  = avg((e) => e.kpis.dfm);
+  const AVG_TMEF = avg((e) => e.kpis.tmef);
+  const AVG_TMPR = avg((e) => e.kpis.tmpr);
+  const AVG_TOP  = avg((e) => e.kpis.tiempoOperativo);
+  const AVG_RES  = avg((e) => e.kpis.reserva);
+
+  const KPI_ITEMS = [
+    { label: "Dfm Flota",  valor: AVG_DFM,  unidad: "%", objetivo: 85, delta: -1.2, estado: clasificarDfm(AVG_DFM) },
+    { label: "TMEF Prom.", valor: AVG_TMEF, unidad: "h", objetivo: 80, delta: -2.5, estado: clasificarTmef(AVG_TMEF) },
+    { label: "TMPR Prom.", valor: AVG_TMPR, unidad: "h", objetivo: 5,  delta: 3.1, invertido: true, estado: clasificarTmpr(AVG_TMPR) },
+    { label: "Tiempo Op.", valor: AVG_TOP,  unidad: "%", objetivo: 80, delta: -1.8, estado: clasificarTiempoOperativo(AVG_TOP) },
+    { label: "Reserva",    valor: AVG_RES,  unidad: "%", objetivo: 8,  delta: 2.3, invertido: true, estado: clasificarReserva(AVG_RES) },
+  ];
+
+  const EN_PARO  = flota.filter((e) => e.paroTotal).length;
+  const CRITICOS = flota.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
 
   return (
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto">
@@ -53,7 +59,7 @@ export default function DashboardPage() {
         <Tooltip short="Total de equipos en la faena El Salvador" help={HELP.columnaId}>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
             <span className="text-[11px] text-[#52525B]">Total equipos</span>
-            <span className="font-mono font-bold text-[#09090B]">{FLOTA.length}</span>
+            <span className="font-mono font-bold text-[#09090B]">{flota.length}</span>
           </div>
         </Tooltip>
         {EN_PARO > 0 && (
@@ -77,7 +83,7 @@ export default function DashboardPage() {
         <Tooltip short="Total de alertas por KPIs fuera de umbral" help={HELP.alertasActivas}>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
             <span className="text-[11px] text-[#52525B]">Alertas activas</span>
-            <span className="font-mono font-bold text-[#B45309]">{ALERTAS.length}</span>
+            <span className="font-mono font-bold text-[#B45309]">{alertas.length}</span>
           </div>
         </Tooltip>
       </div>
@@ -108,7 +114,7 @@ export default function DashboardPage() {
               Alertas Prioritarias
             </Tooltip>
           </SectionTitle>
-          <AlertasRecientes alertas={ALERTAS} max={5} />
+          <AlertasRecientes alertas={alertas} max={5} />
         </section>
       </div>
 
@@ -120,7 +126,7 @@ export default function DashboardPage() {
               Tendencia 6 Meses — CAT 777F
             </Tooltip>
           </SectionTitle>
-          {TENDENCIA_777F && <TendenciaSeisMeses datos={TENDENCIA_777F.datos} />}
+          {tendencia777F && <TendenciaSeisMeses datos={tendencia777F.datos} />}
         </section>
         <section aria-label="Distribución ASARCO">
           <SectionTitle className="mb-3">
@@ -129,7 +135,7 @@ export default function DashboardPage() {
             </Tooltip>
           </SectionTitle>
           <div className="p-4 rounded-[10px] bg-white border border-[#E4E4E7]">
-            <AsarcoTimeChart datos={ASARCO_FLOTA} />
+            <AsarcoTimeChart datos={asarcoFlota} />
             {/* Leyenda manual compacta */}
             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
               {[

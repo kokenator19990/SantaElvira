@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getEquipoPorId } from "@/lib/data/flota";
-import { getTendenciaPorTipo } from "@/lib/data/tendencias";
+import { getEquipoPorId } from "@/lib/db/queries/flota";
+import { getTendenciaPorTipo } from "@/lib/db/queries/tendencias";
 import { EquipoHeader } from "@/components/equipo/EquipoHeader";
 import { EquipoKpiPanel } from "@/components/equipo/EquipoKpiPanel";
 import { EquipoAsarcoBar } from "@/components/equipo/EquipoAsarcoBar";
@@ -11,11 +11,11 @@ interface Props {
   params: { equipoId: string };
 }
 
-export default function EquipoPage({ params }: Props) {
-  const equipo = getEquipoPorId(params.equipoId.toUpperCase());
+export default async function EquipoPage({ params }: Props) {
+  const equipo = await getEquipoPorId(params.equipoId.toUpperCase());
   if (!equipo) notFound();
 
-  const tendencia = getTendenciaPorTipo(equipo.tipoFlota);
+  const tendencia = await getTendenciaPorTipo(equipo.tipoFlota);
 
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] mx-auto">

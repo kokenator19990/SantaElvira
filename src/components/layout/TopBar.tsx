@@ -3,18 +3,16 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, ChevronRight } from "lucide-react";
-import { FLOTA } from "@/lib/data/flota";
 
-const RUTAS: Record<string, { titulo: string; subtitulo?: string }> = {
-  "/portada":   { titulo: "Portada",       subtitulo: "Panel de bienvenida" },
-  "/dashboard": { titulo: "Dashboard",     subtitulo: "Vista general" },
-  "/flota":     { titulo: "Flota",         subtitulo: `${FLOTA.length} equipos` },
-  "/alertas":   { titulo: "Alertas",       subtitulo: "Estado en tiempo real" },
-  "/apd":       { titulo: "APD Aceites",   subtitulo: "Análisis predictivo" },
-  "/reporte":   { titulo: "Reporte",       subtitulo: "Informe mensual" },
-};
-
-function resolverRuta(pathname: string) {
+function resolverRuta(pathname: string, totalEquipos: number) {
+  const RUTAS: Record<string, { titulo: string; subtitulo?: string }> = {
+    "/portada":   { titulo: "Portada",       subtitulo: "Panel de bienvenida" },
+    "/dashboard": { titulo: "Dashboard",     subtitulo: "Vista general" },
+    "/flota":     { titulo: "Flota",         subtitulo: `${totalEquipos} equipos` },
+    "/alertas":   { titulo: "Alertas",       subtitulo: "Estado en tiempo real" },
+    "/apd":       { titulo: "APD Aceites",   subtitulo: "Análisis predictivo" },
+    "/reporte":   { titulo: "Reporte",       subtitulo: "Informe mensual" },
+  };
   if (RUTAS[pathname]) return RUTAS[pathname];
   if (pathname.startsWith("/flota/")) {
     const id = pathname.split("/flota/")[1]?.toUpperCase();
@@ -32,11 +30,12 @@ function obtenerTurno() {
 
 interface TopBarProps {
   onMenuClick: () => void;
+  totalEquipos: number;
 }
 
-export function TopBar({ onMenuClick }: TopBarProps) {
+export function TopBar({ onMenuClick, totalEquipos }: TopBarProps) {
   const pathname = usePathname();
-  const { titulo, subtitulo } = resolverRuta(pathname);
+  const { titulo, subtitulo } = resolverRuta(pathname, totalEquipos);
   const turno = obtenerTurno();
 
   const [now, setNow] = useState(() => new Date());

@@ -1,4 +1,4 @@
-import { ALERTAS } from "@/lib/data/alertas";
+import { getAlertas } from "@/lib/db/queries/alertas";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import Link from "next/link";
@@ -77,10 +77,11 @@ function SeccionAlertas({ estado, alertas }: { estado: EstadoSemaforo; alertas: 
   );
 }
 
-export default function AlertasPage() {
-  const paros    = ALERTAS.filter((a) => a.estado === "paro");
-  const criticos = ALERTAS.filter((a) => a.estado === "rojo");
-  const ambar    = ALERTAS.filter((a) => a.estado === "ambar");
+export default async function AlertasPage() {
+  const alertas  = await getAlertas();
+  const paros    = alertas.filter((a) => a.estado === "paro");
+  const criticos = alertas.filter((a) => a.estado === "rojo");
+  const ambar    = alertas.filter((a) => a.estado === "ambar");
 
   return (
     <div className="flex flex-col gap-5 max-w-[960px] mx-auto">
@@ -88,7 +89,7 @@ export default function AlertasPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <SectionTitle>Panel de Alertas</SectionTitle>
         <span className="text-[11px] font-mono text-[#A1A1AA]">
-          {ALERTAS.length} alertas · Actualizado ahora
+          {alertas.length} alertas · Actualizado ahora
         </span>
       </div>
 
@@ -113,7 +114,7 @@ export default function AlertasPage() {
       <SeccionAlertas estado="rojo"  alertas={criticos} />
       <SeccionAlertas estado="ambar" alertas={ambar} />
 
-      {ALERTAS.length === 0 && (
+      {alertas.length === 0 && (
         <div className="flex items-center justify-center h-40 rounded-[10px] bg-white border border-[#E4E4E7]">
           <p className="text-[13px] text-[#A1A1AA]">No hay alertas activas</p>
         </div>

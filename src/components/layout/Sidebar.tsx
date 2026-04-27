@@ -15,27 +15,26 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { clsx } from "clsx";
-import { FLOTA } from "@/lib/data/flota";
 import { useHelpMode } from "@/contexts/HelpModeContext";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
 
-const NAV_ITEMS = [
-  { href: "/portada",   label: "Portada",     icon: Home,            description: "Bienvenida",       helpKey: "navDashboard" },
-  { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard, description: "KPIs y estado",    helpKey: "navDashboard" },
-  { href: "/flota",     label: "Flota",       icon: Truck,           description: `${FLOTA.length} equipos`, helpKey: "navFlota" },
-  { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora",    helpKey: "navAlertas" },
-  { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites", helpKey: "navApd" },
-  { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual",  helpKey: "navReporte" },
-  { href: "/docs",      label: "Documentacion", icon: BookOpen,       description: "Modelo y arquitectura", helpKey: "navDocs" },
-];
-
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
+  totalEquipos: number;
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
+  const NAV_ITEMS = [
+    { href: "/portada",   label: "Portada",     icon: Home,            description: "Bienvenida",       helpKey: "navDashboard" },
+    { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard, description: "KPIs y estado",    helpKey: "navDashboard" },
+    { href: "/flota",     label: "Flota",       icon: Truck,           description: `${totalEquipos} equipos`, helpKey: "navFlota" },
+    { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora",    helpKey: "navAlertas" },
+    { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites", helpKey: "navApd" },
+    { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual",  helpKey: "navReporte" },
+    { href: "/docs",      label: "Documentacion", icon: BookOpen,       description: "Modelo y arquitectura", helpKey: "navDocs" },
+  ];
   const pathname = usePathname();
   const { isActive: helpActive, toggle: toggleHelp } = useHelpMode();
 
