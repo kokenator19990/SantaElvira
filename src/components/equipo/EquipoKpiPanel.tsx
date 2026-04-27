@@ -11,10 +11,10 @@ export function EquipoKpiPanel({ equipo }: EquipoKpiPanelProps) {
   if (equipo.paroTotal) {
     return (
       <div className="flex flex-col items-center justify-center h-36 rounded-[10px] bg-[#FEF2F2] border border-[#FECACA] gap-2">
-        <span className="text-[16px] font-bold text-[#991B1B] uppercase tracking-widest">
+        <span className="text-[18px] font-bold text-[#991B1B] uppercase tracking-widest">
           PARO TOTAL
         </span>
-        <p className="text-[12px] text-[#991B1B]/60 text-center px-4 max-w-[220px] leading-relaxed">
+        <p className="text-[13px] text-[#991B1B]/60 text-center px-4 max-w-[220px] leading-relaxed">
           {equipo.motivoParo}
         </p>
       </div>

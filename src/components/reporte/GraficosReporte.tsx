@@ -95,8 +95,8 @@ function KpiGauge({ valor, meta, maxDisplay, unidad, label, color, invertido }: 
         </text>
       </svg>
       <div className="text-center mt-0.5 pb-1">
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#3F3F46]">{label}</p>
-        <p className="text-[9px] text-[#A1A1AA] mt-0.5">
+        <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-[#3F3F46]">{label}</p>
+        <p className="text-[10px] text-[#A1A1AA] mt-0.5">
           Meta {invertido ? "≤" : "≥"} {meta}{unidad}
           <span className="ml-1.5 inline-block w-4 align-middle border-t-2 border-dashed border-[#B45309]" />
         </p>
@@ -115,9 +115,9 @@ function ChartTooltip({ active, payload, label, suffix = "" }: {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white border border-[#E4E4E7] rounded-[8px] px-3 py-2.5 shadow-md">
-      <p className="text-[12px] font-semibold text-[#09090B] mb-1.5">{label}</p>
+      <p className="text-[13px] font-semibold text-[#09090B] mb-1.5">{label}</p>
       {payload.map((p) => (
-        <div key={p.name} className="flex items-center gap-2 text-[11px]">
+        <div key={p.name} className="flex items-center gap-2 text-[12px]">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
           <span className="text-[#71717A]">{p.name}:</span>
           <span className="font-mono font-semibold text-[#09090B]">{p.value}{suffix}</span>
@@ -143,7 +143,7 @@ function DonutFlota({ modelo, distribucion }: {
 
   return (
     <div className="flex flex-col items-center gap-1.5">
-      <p className="text-[11px] font-semibold text-[#3F3F46] text-center">{shortName}</p>
+      <p className="text-[12px] font-semibold text-[#3F3F46] text-center">{shortName}</p>
       <div className="relative w-full" style={{ paddingBottom: "85%", maxWidth: 160 }}>
         <div className="absolute inset-0">
           <ResponsiveContainer width="100%" height="100%">
@@ -173,7 +173,7 @@ function DonutFlota({ modelo, distribucion }: {
           {/* Center label */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <p className="text-[17px] font-bold font-mono leading-none" style={{ color: col }}>{op}%</p>
+              <p className="text-[19px] font-bold font-mono leading-none" style={{ color: col }}>{op}%</p>
               <p className="text-[8px] text-[#A1A1AA] leading-tight mt-0.5">Op.</p>
             </div>
           </div>
@@ -188,7 +188,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-4">
       <div className="h-px flex-1 bg-[#F4F4F5]" />
-      <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#A1A1AA] whitespace-nowrap">
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#A1A1AA] whitespace-nowrap">
         {children}
       </span>
       <div className="h-px flex-1 bg-[#F4F4F5]" />
@@ -252,7 +252,7 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
       {/* ── Separador ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 pt-2">
         <div className="h-px flex-1 bg-[#E4E4E7]" />
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#A1A1AA]">Análisis Visual</span>
+        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#A1A1AA]">Análisis Visual</span>
         <div className="h-px flex-1 bg-[#E4E4E7]" />
       </div>
 
@@ -298,7 +298,7 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-[9px] text-[#A1A1AA] mt-1.5 flex items-center gap-1.5">
+          <p className="text-[10px] text-[#A1A1AA] mt-1.5 flex items-center gap-1.5">
             <span className="inline-block w-5 border-t border-dashed border-[#B45309]" />
             Meta ≥ 85%
           </p>
@@ -330,7 +330,7 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-[9px] text-[#A1A1AA] mt-1.5 flex items-center gap-1.5">
+          <p className="text-[10px] text-[#A1A1AA] mt-1.5 flex items-center gap-1.5">
             <span className="inline-block w-5 border-t border-dashed border-[#B45309]" />
             Meta ≥ 80h
           </p>
@@ -365,11 +365,11 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
           </ResponsiveContainer>
         </div>
         <div className="flex gap-4 mt-1.5">
-          <p className="text-[9px] text-[#A1A1AA] flex items-center gap-1.5">
+          <p className="text-[10px] text-[#A1A1AA] flex items-center gap-1.5">
             <span className="inline-block w-5 border-t border-dashed border-[#15803D]" />
             Meta ≤ 5h
           </p>
-          <p className="text-[9px] text-[#A1A1AA] flex items-center gap-1.5">
+          <p className="text-[10px] text-[#A1A1AA] flex items-center gap-1.5">
             <span className="inline-block w-5 border-t border-dashed border-[#DC2626]" />
             Crítico &gt; 15h
           </p>
@@ -428,7 +428,7 @@ export function GraficosReporte({ flotas }: GraficosReporteProps) {
           {(Object.keys(ASARCO_C) as AsarcoKey[]).map((k) => (
             <div key={k} className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: ASARCO_C[k] }} />
-              <span className="text-[10px] text-[#71717A]">{ASARCO_L[k]}</span>
+              <span className="text-[11px] text-[#71717A]">{ASARCO_L[k]}</span>
             </div>
           ))}
         </div>

@@ -42,7 +42,7 @@ export function StepNav({ steps, activeStep, onStepClick }: StepNavProps) {
           >
             <span
               className={clsx(
-                "flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold shrink-0",
+                "flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-bold shrink-0",
                 isActive
                   ? "bg-[#B45309] text-white"
                   : isPast

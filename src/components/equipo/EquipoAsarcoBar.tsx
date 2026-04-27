@@ -41,7 +41,7 @@ export function EquipoAsarcoBar({ asarco }: EquipoAsarcoBarProps) {
             onMouseLeave={() => setHoveredKey(null)}
           >
             {seg.valor >= 8 && (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold text-white/90">
+              <span className="absolute inset-0 flex items-center justify-center text-[11px] font-mono font-bold text-white/90">
                 {seg.valor}%
               </span>
             )}

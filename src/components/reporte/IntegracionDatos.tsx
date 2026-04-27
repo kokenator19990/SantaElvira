@@ -162,7 +162,7 @@ function ComplejidadDots({ nivel }: { nivel: 1 | 2 | 3 }) {
           style={{ background: n <= nivel ? colors[nivel - 1] : "#E4E4E7" }}
         />
       ))}
-      <span className="text-[11px] ml-1" style={{ color: colors[nivel - 1] }}>
+      <span className="text-[12px] ml-1" style={{ color: colors[nivel - 1] }}>
         {labels[nivel - 1]}
       </span>
     </div>
@@ -171,7 +171,7 @@ function ComplejidadDots({ nivel }: { nivel: 1 | 2 | 3 }) {
 
 function MetaChip({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
   return (
-    <div className="flex items-center gap-1.5 text-[11px] text-[#71717A]">
+    <div className="flex items-center gap-1.5 text-[12px] text-[#71717A]">
       <Icon size={12} className="text-[#A1A1AA] shrink-0" />
       {text}
     </div>
@@ -203,10 +203,10 @@ function OpcionCard({ op, defaultOpen }: { op: Opcion; defaultOpen?: boolean }) 
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-[14px] font-bold text-[#09090B]">{op.titulo}</h3>
+            <h3 className="text-[16px] font-bold text-[#09090B]">{op.titulo}</h3>
             {op.etiqueta && (
               <span
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide"
                 style={{ background: op.bgColor, color: op.etiquetaColor ?? op.color }}
               >
                 <Star size={9} />
@@ -214,7 +214,7 @@ function OpcionCard({ op, defaultOpen }: { op: Opcion; defaultOpen?: boolean }) 
               </span>
             )}
           </div>
-          <p className="text-[12px] text-[#71717A] mt-0.5">{op.subtitulo}</p>
+          <p className="text-[13px] text-[#71717A] mt-0.5">{op.subtitulo}</p>
 
           <div className="flex flex-wrap gap-3 mt-2.5">
             <ComplejidadDots nivel={op.complejidad} />
@@ -232,23 +232,23 @@ function OpcionCard({ op, defaultOpen }: { op: Opcion; defaultOpen?: boolean }) 
         <div className="border-t border-[#F4F4F5] p-4 space-y-5">
 
           {/* Descripción */}
-          <p className="text-[13px] text-[#52525B] leading-relaxed">{op.descripcion}</p>
+          <p className="text-[15px] text-[#52525B] leading-relaxed">{op.descripcion}</p>
 
           {/* Ventajas / desventajas */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-2">Ventajas</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-2">Ventajas</p>
               {op.ventajas.map((v) => (
-                <div key={v} className="flex gap-2 text-[12px] text-[#3F3F46]">
+                <div key={v} className="flex gap-2 text-[13px] text-[#3F3F46]">
                   <CheckCircle2 size={13} className="shrink-0 mt-0.5 text-[#15803D]" />
                   <span>{v}</span>
                 </div>
               ))}
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-2">Consideraciones</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-2">Consideraciones</p>
               {op.desventajas.map((d) => (
-                <div key={d} className="flex gap-2 text-[12px] text-[#3F3F46]">
+                <div key={d} className="flex gap-2 text-[13px] text-[#3F3F46]">
                   <XCircle size={13} className="shrink-0 mt-0.5 text-[#B45309]" />
                   <span>{d}</span>
                 </div>
@@ -258,14 +258,14 @@ function OpcionCard({ op, defaultOpen }: { op: Opcion; defaultOpen?: boolean }) 
 
           {/* Pasos de implementación */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-3">
               Pasos de implementación
             </p>
             <div className="space-y-2">
               {op.pasos.map((paso, i) => (
-                <div key={i} className="flex gap-3 text-[12px]">
+                <div key={i} className="flex gap-3 text-[13px]">
                   <span
-                    className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                    className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
                     style={{ background: op.color }}
                   >
                     {i + 1}
@@ -278,13 +278,13 @@ function OpcionCard({ op, defaultOpen }: { op: Opcion; defaultOpen?: boolean }) 
 
           {/* Stack técnico */}
           <div className="rounded-[8px] bg-[#F4F4F5] border border-[#E4E4E7] p-3.5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-2.5 flex items-center gap-1.5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#71717A] mb-2.5 flex items-center gap-1.5">
               <Database size={10} />
               Stack técnico sugerido
             </p>
             <div className="space-y-1.5">
               {op.tecnico.map((t) => (
-                <p key={t} className="text-[11px] font-mono text-[#52525B]">• {t}</p>
+                <p key={t} className="text-[12px] font-mono text-[#52525B]">• {t}</p>
               ))}
             </div>
           </div>
@@ -301,10 +301,10 @@ export function IntegracionDatos() {
 
       {/* Intro */}
       <div className="rounded-xl border border-[#E4E4E7] bg-white p-5">
-        <h2 className="text-[16px] font-bold text-[#09090B] mb-1.5">
+        <h2 className="text-[18px] font-bold text-[#09090B] mb-1.5">
           ¿Cómo mantener los datos actualizados?
         </h2>
-        <p className="text-[13px] text-[#71717A] leading-relaxed mb-4">
+        <p className="text-[15px] text-[#71717A] leading-relaxed mb-4">
           En este momento el dashboard trabaja con <strong className="text-[#52525B]">datos de demostración</strong> fijos en el código.
           Para usarlo en producción real, los datos deben conectarse a una fuente viva.
           Estas son las tres opciones principales, ordenadas de más simple a más completa.
@@ -315,11 +315,11 @@ export function IntegracionDatos() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#F4F4F5] border-b border-[#E4E4E7]">
-                <th className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Opción</th>
-                <th className="px-4 py-2.5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Complejidad</th>
-                <th className="px-4 py-2.5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Tiempo</th>
-                <th className="px-4 py-2.5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Actualización</th>
-                <th className="px-4 py-2.5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Costo</th>
+                <th className="px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Opción</th>
+                <th className="px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Complejidad</th>
+                <th className="px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Tiempo</th>
+                <th className="px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Actualización</th>
+                <th className="px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Costo</th>
               </tr>
             </thead>
             <tbody>
@@ -332,15 +332,15 @@ export function IntegracionDatos() {
                   <td className="px-4 py-2.5 font-medium text-[#09090B] flex items-center gap-2">
                     {row.nombre}
                     {row.recomendado && (
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#F0FDF4] text-[#15803D] uppercase tracking-wide">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#F0FDF4] text-[#15803D] uppercase tracking-wide">
                         ✦ Recomendado
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-2.5 text-center text-[12px] text-[#52525B]">{row.complejidad}</td>
-                  <td className="px-4 py-2.5 text-center font-mono text-[12px] text-[#52525B]">{row.tiempo}</td>
-                  <td className="px-4 py-2.5 text-center text-[12px] text-[#52525B]">{row.actualizacion}</td>
-                  <td className="px-4 py-2.5 text-center text-[12px] text-[#52525B]">{row.costo}</td>
+                  <td className="px-4 py-2.5 text-center text-[13px] text-[#52525B]">{row.complejidad}</td>
+                  <td className="px-4 py-2.5 text-center font-mono text-[13px] text-[#52525B]">{row.tiempo}</td>
+                  <td className="px-4 py-2.5 text-center text-[13px] text-[#52525B]">{row.actualizacion}</td>
+                  <td className="px-4 py-2.5 text-center text-[13px] text-[#52525B]">{row.costo}</td>
                 </tr>
               ))}
             </tbody>
@@ -350,7 +350,7 @@ export function IntegracionDatos() {
 
       {/* Cards expandibles */}
       <div className="space-y-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#A1A1AA]">
+        <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#A1A1AA]">
           Opciones en detalle — haz clic para expandir
         </p>
         {OPCIONES.map((op, i) => (
@@ -362,8 +362,8 @@ export function IntegracionDatos() {
       <div className="rounded-xl border border-[#E4E4E7] bg-[#FAFAFA] p-4 flex gap-3">
         <Zap size={16} className="text-[#B45309] shrink-0 mt-0.5" />
         <div>
-          <p className="text-[12px] font-semibold text-[#3F3F46] mb-1">Camino sugerido para MSG</p>
-          <p className="text-[12px] text-[#71717A] leading-relaxed">
+          <p className="text-[13px] font-semibold text-[#3F3F46] mb-1">Camino sugerido para MSG</p>
+          <p className="text-[13px] text-[#71717A] leading-relaxed">
             Comenzar con <strong className="text-[#52525B]">Google Sheets</strong> permite validar el flujo de datos sin inversión técnica.
             Una vez que el equipo confirma qué campos y qué frecuencia necesitan, se migra a la{" "}
             <strong className="text-[#52525B]">app de carga por turno</strong> para mayor precisión, trazabilidad y control de acceso.
@@ -385,8 +385,8 @@ export function IntegracionDatos() {
               <Icon size={15} className="text-[#71717A]" />
             </div>
             <div>
-              <p className="text-[12px] font-semibold text-[#09090B]">{label}</p>
-              <p className="text-[11px] text-[#A1A1AA] mt-0.5">{desc}</p>
+              <p className="text-[13px] font-semibold text-[#09090B]">{label}</p>
+              <p className="text-[12px] text-[#A1A1AA] mt-0.5">{desc}</p>
             </div>
           </div>
         ))}

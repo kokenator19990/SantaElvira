@@ -67,7 +67,7 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
       role="img"
       aria-label={`Gráfico de tendencia ${cfg.label} — últimos 6 meses`}
     >
-      {titulo && <p className="text-[11px] text-[#71717A] font-medium">{titulo}</p>}
+      {titulo && <p className="text-[12px] text-[#71717A] font-medium">{titulo}</p>}
 
       {/* Selector de KPI */}
       <div className="flex flex-wrap gap-1.5">
@@ -75,7 +75,7 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
           <button
             key={k}
             onClick={() => setKpiActivo(k)}
-            className={`px-2.5 py-1 rounded-[5px] text-[11px] font-semibold transition-all duration-150 min-h-[32px] ${
+            className={`px-2.5 py-1 rounded-[5px] text-[12px] font-semibold transition-all duration-150 min-h-[32px] ${
               kpiActivo === k
                 ? "bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]"
                 : "text-[#71717A] hover:text-[#09090B] hover:bg-[#F4F4F5] border border-[#E4E4E7]"
@@ -138,7 +138,7 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
         </ResponsiveContainer>
       </div>
 
-      <p className="text-[9px] text-[#A1A1AA] text-right font-mono">Nov 2024 — Abr 2025</p>
+      <p className="text-[10px] text-[#A1A1AA] text-right font-mono">Nov 2024 — Abr 2025</p>
     </div>
   );
 }

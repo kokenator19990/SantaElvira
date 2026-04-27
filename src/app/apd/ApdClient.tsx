@@ -78,13 +78,13 @@ export function ApdClient({
           {error && (
             <div className="flex items-start gap-2.5 p-3.5 rounded-[9px] bg-[#FEF2F2] border border-[#FECACA]">
               <AlertTriangle size={15} className="text-[#B91C1C] shrink-0 mt-0.5" />
-              <p className="text-[12px] text-[#991B1B] leading-relaxed">{error}</p>
+              <p className="text-[13px] text-[#991B1B] leading-relaxed">{error}</p>
             </div>
           )}
 
           {estado === "done" && (
             <div className="flex flex-col gap-2.5 p-4 rounded-[10px] bg-[#FAFAFA] border border-[#E4E4E7]">
-              <p className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em] mb-1">
+              <p className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em] mb-1">
                 Resumen del análisis
               </p>
               {[
@@ -93,8 +93,8 @@ export function ApdClient({
                 { label: "En advertencia",   valor: advertencias,    color: "#B45309" },
               ].map((s) => (
                 <div key={s.label} className="flex items-center justify-between">
-                  <span className="text-[12px] text-[#71717A]">{s.label}</span>
-                  <span className="font-mono font-bold text-[15px]" style={{ color: s.color }}>{s.valor}</span>
+                  <span className="text-[13px] text-[#71717A]">{s.label}</span>
+                  <span className="font-mono font-bold text-[17px]" style={{ color: s.color }}>{s.valor}</span>
                 </div>
               ))}
             </div>
@@ -103,33 +103,33 @@ export function ApdClient({
           {estado === "done" && (
             <div className="flex flex-col gap-2.5 p-4 rounded-[10px] bg-[#FFFBEB] border border-[#FDE68A]">
               <Tooltip short="Persiste el CSV procesado en la BD (cabecera + muestras)" help={HELP.apdGuardar}>
-                <p className="text-[10px] font-bold text-[#92400E] uppercase tracking-[0.08em] inline-flex items-center gap-1.5">
+                <p className="text-[11px] font-bold text-[#92400E] uppercase tracking-[0.08em] inline-flex items-center gap-1.5">
                   <Database size={11} /> Guardar en base de datos
                 </p>
               </Tooltip>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] text-[#71717A]">Período</span>
+                <span className="text-[11px] text-[#71717A]">Período</span>
                 <select
                   value={periodoId}
                   onChange={(e) => setPeriodoId(Number(e.target.value))}
-                  className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px]"
+                  className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px]"
                 >
                   {periodos.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
                 </select>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[10px] text-[#71717A]">Fecha del análisis</span>
+                <span className="text-[11px] text-[#71717A]">Fecha del análisis</span>
                 <input
                   type="date"
                   value={fechaAnalisis}
                   onChange={(e) => setFechaAnalisis(e.target.value)}
-                  className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px]"
+                  className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px]"
                 />
               </label>
               <button
                 onClick={guardarEnBD}
                 disabled={pending}
-                className="mt-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-[6px] bg-[#09090B] hover:bg-[#27272A] disabled:opacity-50 text-white text-[12px] font-semibold"
+                className="mt-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-[6px] bg-[#09090B] hover:bg-[#27272A] disabled:opacity-50 text-white text-[13px] font-semibold"
               >
                 <Database size={13} /> {pending ? "Guardando…" : "Guardar análisis"}
               </button>
@@ -139,11 +139,11 @@ export function ApdClient({
           <div className="flex flex-col gap-2 p-4 rounded-[10px] bg-[#FAFAFA] border border-[#E4E4E7]">
             <div className="flex items-center gap-1.5">
               <Info size={12} className="text-[#A1A1AA]" />
-              <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.08em]">
+              <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.08em]">
                 Formato CSV esperado
               </span>
             </div>
-            <pre className="text-[10px] text-[#52525B] font-mono whitespace-pre-wrap leading-relaxed">
+            <pre className="text-[11px] text-[#52525B] font-mono whitespace-pre-wrap leading-relaxed">
 {`Equipo,Compartimento,Parámetro,Valor,Unidad,LimMin,LimMax
 CH-01,Motor,Fe,18,ppm,,30
 CH-01,Motor,Cu,5,ppm,,20
@@ -155,7 +155,7 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
         <div className="flex flex-col gap-5">
           {msg && (
             <div className={clsx(
-              "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[12px]",
+              "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[13px]",
               msg.type === "ok"
                 ? "bg-[#F0FDF4] border border-[#BBF7D0] text-[#15803D]"
                 : "bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C]"
@@ -170,7 +170,7 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
               <div className="w-10 h-10 rounded-full bg-[#F4F4F5] flex items-center justify-center">
                 <Info size={18} className="text-[#A1A1AA]" />
               </div>
-              <p className="text-[12px] text-[#A1A1AA] text-center max-w-[260px] leading-relaxed">
+              <p className="text-[13px] text-[#A1A1AA] text-center max-w-[260px] leading-relaxed">
                 Sube un CSV para previsualizar y guardar en la base de datos
               </p>
             </div>
@@ -178,13 +178,13 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
           {estado === "parsing" && (
             <div className="flex flex-col items-center justify-center h-64 rounded-[10px] bg-white border border-[#FDE68A] gap-3">
               <div className="w-8 h-8 border-2 border-[#B45309] border-t-transparent rounded-full animate-spin" />
-              <p className="text-[12px] text-[#B45309]/80">Procesando archivo…</p>
+              <p className="text-[13px] text-[#B45309]/80">Procesando archivo…</p>
             </div>
           )}
           {estado === "done" && <ApdParameterTable datos={datos} />}
           {estado === "error" && (
             <div className="flex items-center justify-center h-64 rounded-[10px] bg-[#FEF2F2] border border-[#FECACA]">
-              <p className="text-[13px] text-[#991B1B]">No se pudo procesar el archivo</p>
+              <p className="text-[15px] text-[#991B1B]">No se pudo procesar el archivo</p>
             </div>
           )}
 
@@ -194,13 +194,13 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
               <div className="px-4 py-2.5 bg-[#FAFAFA] border-b border-[#E4E4E7] inline-flex items-center gap-2 w-full">
                 <History size={13} className="text-[#71717A]" />
                 <Tooltip short="Histórico de CSVs persistidos en BD" help={HELP.apdHistorico}>
-                  <span className="text-[11px] font-bold text-[#52525B] uppercase tracking-wider">Análisis cargados</span>
+                  <span className="text-[12px] font-bold text-[#52525B] uppercase tracking-wider">Análisis cargados</span>
                 </Tooltip>
-                <span className="ml-auto text-[10px] font-mono text-[#A1A1AA]">{analisis.length}</span>
+                <span className="ml-auto text-[11px] font-mono text-[#A1A1AA]">{analisis.length}</span>
               </div>
-              <table className="w-full text-[11px]">
+              <table className="w-full text-[12px]">
                 <thead className="bg-white border-b border-[#F4F4F5]">
-                  <tr className="text-[10px] uppercase tracking-wider text-[#A1A1AA]">
+                  <tr className="text-[11px] uppercase tracking-wider text-[#A1A1AA]">
                     <th className="px-3 py-1.5 text-left">Fecha</th>
                     <th className="px-3 py-1.5 text-left">Período</th>
                     <th className="px-3 py-1.5 text-left">Archivo</th>

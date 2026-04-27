@@ -75,13 +75,13 @@ export function ComparacionPeriodos() {
       {/* Selectores A / B */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex flex-col gap-1 flex-1">
-          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A]">
+          <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#71717A]">
             Período A (base)
           </label>
           <select
             value={labelA}
             onChange={(e) => setLabelA(e.target.value)}
-            className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[13px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
+            className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[15px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
           >
             {labels.map((l) => (
               <option key={l} value={l} disabled={l === labelB}>{l}</option>
@@ -89,13 +89,13 @@ export function ComparacionPeriodos() {
           </select>
         </div>
         <div className="flex flex-col gap-1 flex-1">
-          <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#71717A]">
+          <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#71717A]">
             Período B (comparar)
           </label>
           <select
             value={labelB}
             onChange={(e) => setLabelB(e.target.value)}
-            className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[13px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
+            className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[15px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
           >
             {labels.map((l) => (
               <option key={l} value={l} disabled={l === labelA}>{l}</option>
@@ -109,10 +109,10 @@ export function ComparacionPeriodos() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[#F4F4F5] border-b border-[#E4E4E7]">
-              <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">KPI</th>
-              <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">{labelA}</th>
-              <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">{labelB}</th>
-              <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Δ</th>
+              <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">KPI</th>
+              <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">{labelA}</th>
+              <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">{labelB}</th>
+              <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Δ</th>
             </tr>
           </thead>
           <tbody>
@@ -129,7 +129,7 @@ export function ComparacionPeriodos() {
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center gap-1" style={{ color: col }}>
                       <DeltaIcon delta={delta} mejorEsMayor={mejorEsMayor} />
-                      <span className="font-mono font-semibold text-[12px]">
+                      <span className="font-mono font-semibold text-[13px]">
                         {delta > 0 ? "+" : ""}{delta}{unidad}
                       </span>
                     </div>
@@ -143,7 +143,7 @@ export function ComparacionPeriodos() {
 
       {/* BarChart Dfm por flota */}
       <div className="rounded-xl border border-[#E4E4E7] bg-white p-4">
-        <p className="text-[12px] font-semibold text-[#52525B] mb-4">Dfm por flota — comparación</p>
+        <p className="text-[13px] font-semibold text-[#52525B] mb-4">Dfm por flota — comparación</p>
         <div className="h-[220px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartDataDfm} barCategoryGap="30%" barGap={4}>
@@ -183,14 +183,14 @@ export function ComparacionPeriodos() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-[#F4F4F5] border-b border-[#E4E4E7]">
-                <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Flota</th>
+                <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B]">Flota</th>
                 {["Dfm", "TMEF", "TMPR"].map((k) => (
-                  <th key={k} colSpan={2} className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-[#52525B] border-l border-[#E4E4E7]">
+                  <th key={k} colSpan={2} className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-[#52525B] border-l border-[#E4E4E7]">
                     {k}
                   </th>
                 ))}
               </tr>
-              <tr className="bg-white border-b border-[#E4E4E7] text-[9px] text-[#A1A1AA] uppercase tracking-wider">
+              <tr className="bg-white border-b border-[#E4E4E7] text-[10px] text-[#A1A1AA] uppercase tracking-wider">
                 <th className="px-4 py-1.5" />
                 <th className="px-3 py-1.5 text-center border-l border-[#F4F4F5]">{labelA.split(" ")[0]}</th>
                 <th className="px-3 py-1.5 text-center">{labelB.split(" ")[0]}</th>

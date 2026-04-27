@@ -45,7 +45,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
   return (
     <div className="flex flex-col gap-5 max-w-[1100px] mx-auto">
       <div className="flex items-center gap-2">
-        <Link href="/admin" className="text-[12px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1">
+        <Link href="/admin" className="text-[13px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1">
           <ArrowLeft size={13} /> Admin
         </Link>
       </div>
@@ -57,7 +57,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
         </SectionTitle>
         <button
           onClick={() => setShowNew((v) => !v)}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-[#09090B] hover:bg-[#27272A] text-white text-[12px] font-semibold"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-[#09090B] hover:bg-[#27272A] text-white text-[13px] font-semibold"
         >
           {showNew ? <X size={13} /> : <Plus size={13} />}
           {showNew ? "Cerrar" : "Nuevo equipo"}
@@ -66,7 +66,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
 
       {msg && (
         <div className={clsx(
-          "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[12px]",
+          "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[13px]",
           msg.type === "ok"
             ? "bg-[#F0FDF4] border border-[#BBF7D0] text-[#15803D]"
             : "bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C]"
@@ -83,14 +83,14 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
               value={nuevo.id}
               onChange={(e) => setNuevo({ ...nuevo, id: e.target.value.toUpperCase() })}
               placeholder="CH-09"
-              className="w-[110px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px] font-mono uppercase"
+              className="w-[110px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px] font-mono uppercase"
             />
           </Field>
           <Field label="Tipo">
             <select
               value={nuevo.tipoFlotaId}
               onChange={(e) => setNuevo({ ...nuevo, tipoFlotaId: e.target.value })}
-              className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px]"
+              className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px]"
             >
               {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -99,7 +99,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
             <input
               value={nuevo.modelo}
               onChange={(e) => setNuevo({ ...nuevo, modelo: e.target.value })}
-              className="w-[180px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px]"
+              className="w-[180px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px]"
             />
           </Field>
           <Field label="Año">
@@ -107,7 +107,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
               type="number"
               value={nuevo.anio}
               onChange={(e) => setNuevo({ ...nuevo, anio: parseInt(e.target.value) || 0 })}
-              className="w-[80px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px] font-mono"
+              className="w-[80px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px] font-mono"
             />
           </Field>
           <button
@@ -115,7 +115,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
               crearEquipo({ id: nuevo.id, tipoFlotaId: nuevo.tipoFlotaId, modelo: nuevo.modelo, anioFabricacion: nuevo.anio }),
               `Equipo ${nuevo.id} creado.`
             )}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#15803D] hover:bg-[#166534] text-white text-[12px] font-semibold"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#15803D] hover:bg-[#166534] text-white text-[13px] font-semibold"
           >
             <Save size={12} /> Crear
           </button>
@@ -123,9 +123,9 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
       )}
 
       <div className="overflow-x-auto rounded-[10px] border border-[#E4E4E7] bg-white">
-        <table className="w-full text-[12px]">
+        <table className="w-full text-[13px]">
           <thead className="bg-[#FAFAFA] border-b border-[#E4E4E7]">
-            <tr className="text-[10px] uppercase tracking-wider text-[#71717A]">
+            <tr className="text-[11px] uppercase tracking-wider text-[#71717A]">
               <th className="px-3 py-2 text-left">ID</th>
               <th className="px-3 py-2 text-left">Tipo</th>
               <th className="px-3 py-2 text-left">Modelo</th>
@@ -146,7 +146,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
                       <select
                         value={draft.tipoFlotaId}
                         onChange={(ev) => setDraft({ ...draft, tipoFlotaId: ev.target.value })}
-                        className="px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[11px]"
+                        className="px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[12px]"
                       >
                         {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
                       </select>
@@ -159,7 +159,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
                       <input
                         value={draft.modelo}
                         onChange={(ev) => setDraft({ ...draft, modelo: ev.target.value })}
-                        className="px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[11px]"
+                        className="px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[12px]"
                       />
                     ) : (
                       <span className="text-[#52525B]">{e.modelo}</span>
@@ -171,7 +171,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
                         type="number"
                         value={draft.anio}
                         onChange={(ev) => setDraft({ ...draft, anio: parseInt(ev.target.value) || 0 })}
-                        className="w-[70px] px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[11px] font-mono text-right"
+                        className="w-[70px] px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[12px] font-mono text-right"
                       />
                     ) : (
                       <span className="font-mono text-[#71717A]">{e.anio}</span>
@@ -180,9 +180,9 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
                   <td className="px-3 py-2 text-right font-mono text-[#71717A]">{e.horasAcumuladas.toLocaleString("es-CL")}</td>
                   <td className="px-3 py-2 text-center">
                     {e.paroTotal ? (
-                      <span className="text-[10px] font-bold text-[#B91C1C] bg-[#FEF2F2] px-2 py-0.5 rounded">PARO</span>
+                      <span className="text-[11px] font-bold text-[#B91C1C] bg-[#FEF2F2] px-2 py-0.5 rounded">PARO</span>
                     ) : (
-                      <span className="text-[10px] font-medium text-[#15803D] bg-[#F0FDF4] px-2 py-0.5 rounded">Activo</span>
+                      <span className="text-[11px] font-medium text-[#15803D] bg-[#F0FDF4] px-2 py-0.5 rounded">Activo</span>
                     )}
                   </td>
                   <td className="px-3 py-2">
@@ -214,7 +214,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
                         <>
                           <button
                             onClick={() => openEdit(e)}
-                            className="px-2 py-0.5 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[10px] font-medium text-[#52525B]"
+                            className="px-2 py-0.5 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[11px] font-medium text-[#52525B]"
                           >
                             Editar
                           </button>
@@ -224,7 +224,7 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
                                 handleAction(darDeBajaEquipo(e.id), `${e.id} dado de baja.`);
                               }
                             }}
-                            className="px-2 py-0.5 rounded-[4px] bg-[#FEF2F2] hover:bg-[#FECACA] text-[10px] font-medium text-[#B91C1C]"
+                            className="px-2 py-0.5 rounded-[4px] bg-[#FEF2F2] hover:bg-[#FECACA] text-[11px] font-medium text-[#B91C1C]"
                           >
                             Baja
                           </button>
@@ -239,12 +239,12 @@ export function EquiposAdminClient({ flota }: { flota: Equipo[] }) {
         </table>
       </div>
 
-      <p className="text-[10px] text-[#A1A1AA]">
+      <p className="text-[11px] text-[#A1A1AA]">
         Total: {flota.length} equipos. Los cambios se reflejan en el dashboard tras la próxima carga (revalidate).
       </p>
 
       {/* Helper: reactivar (escondido — entry by id manual). En el futuro listar también equipos enServicio=false en otra pestaña. */}
-      <details className="text-[11px] text-[#71717A]">
+      <details className="text-[12px] text-[#71717A]">
         <summary className="cursor-pointer">Reactivar un equipo dado de baja</summary>
         <ReactivarForm onSubmit={(id) => handleAction(reactivarEquipo(id), `${id} reactivado.`)} />
       </details>
@@ -260,12 +260,12 @@ function ReactivarForm({ onSubmit }: { onSubmit: (id: string) => void }) {
         value={id}
         onChange={(e) => setId(e.target.value.toUpperCase())}
         placeholder="CE-13"
-        className="px-2 py-1 rounded-[4px] bg-white border border-[#E4E4E7] text-[11px] font-mono uppercase w-[100px]"
+        className="px-2 py-1 rounded-[4px] bg-white border border-[#E4E4E7] text-[12px] font-mono uppercase w-[100px]"
       />
       <button
         onClick={() => id && onSubmit(id)}
         disabled={!id}
-        className="px-2.5 py-1 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[11px] disabled:opacity-50"
+        className="px-2.5 py-1 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[12px] disabled:opacity-50"
       >
         Reactivar
       </button>
@@ -276,7 +276,7 @@ function ReactivarForm({ onSubmit }: { onSubmit: (id: string) => void }) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-wider">{label}</span>
+      <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">{label}</span>
       {children}
     </label>
   );

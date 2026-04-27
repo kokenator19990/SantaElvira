@@ -77,7 +77,7 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
 
             <div className="relative flex flex-col gap-2">
               {/* Label */}
-              <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+              <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
                 <Tooltip
                   short={KPI_SHORT[item.label] ?? item.label}
                   help={HELP[KPI_HELP_KEY[item.label] ?? "dfm"]}
@@ -90,12 +90,12 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
               {/* Value */}
               <div className="flex items-end gap-1.5">
                 <span
-                  className="text-[32px] font-mono font-bold leading-none tabular-nums"
+                  className="text-[36px] font-mono font-bold leading-none tabular-nums"
                   style={{ color }}
                 >
                   {item.valor}
                 </span>
-                <span className="text-[13px] text-[#71717A] mb-0.5 font-medium">{item.unidad}</span>
+                <span className="text-[15px] text-[#71717A] mb-0.5 font-medium">{item.unidad}</span>
               </div>
 
               {/* Progress bar toward objective */}
@@ -108,11 +108,11 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
 
               {/* Objective + delta */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#A1A1AA]">
+                <span className="text-[11px] text-[#A1A1AA]">
                   Meta <span className="text-[#52525B] font-mono">{item.objetivo}{item.unidad}</span>
                 </span>
                 <span className={clsx(
-                  "flex items-center gap-0.5 text-[11px] font-semibold",
+                  "flex items-center gap-0.5 text-[12px] font-semibold",
                   up   ? (item.invertido ? "text-red-700"   : "text-green-700") :
                   down ? (item.invertido ? "text-green-700" : "text-red-700")   : "text-[#71717A]"
                 )}>

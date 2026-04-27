@@ -46,7 +46,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       header: "ID",
       helpKey: "columnaId",
       render: (e) => (
-        <span className="font-mono font-bold text-[#09090B] text-[13px]">{e.id}</span>
+        <span className="font-mono font-bold text-[#09090B] text-[15px]">{e.id}</span>
       ),
     },
     {
@@ -70,7 +70,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       helpKey: "dfm",
       headerClassName: "text-right",
       render: (e) => (
-        <span className={clsx("font-mono font-bold text-[13px]", e.paroTotal && "text-[#B91C1C]")}>
+        <span className={clsx("font-mono font-bold text-[15px]", e.paroTotal && "text-[#B91C1C]")}>
           {e.paroTotal ? "—" : `${e.kpis.dfm}%`}
         </span>
       ),
@@ -82,7 +82,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       helpKey: "tmef",
       headerClassName: "text-right",
       render: (e) => (
-        <span className="font-mono text-[12px]">{e.paroTotal ? "—" : `${e.kpis.tmef}h`}</span>
+        <span className="font-mono text-[13px]">{e.paroTotal ? "—" : `${e.kpis.tmef}h`}</span>
       ),
       className: "text-right",
     },
@@ -92,7 +92,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       helpKey: "tmpr",
       headerClassName: "text-right",
       render: (e) => (
-        <span className="font-mono text-[12px]">{e.paroTotal ? "—" : `${e.kpis.tmpr}h`}</span>
+        <span className="font-mono text-[13px]">{e.paroTotal ? "—" : `${e.kpis.tmpr}h`}</span>
       ),
       className: "text-right",
     },
@@ -102,7 +102,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       helpKey: "tiempoOperativo",
       headerClassName: "text-right",
       render: (e) => (
-        <span className="font-mono text-[12px]">{e.paroTotal ? "—" : `${e.kpis.tiempoOperativo}%`}</span>
+        <span className="font-mono text-[13px]">{e.paroTotal ? "—" : `${e.kpis.tiempoOperativo}%`}</span>
       ),
       className: "text-right",
     },
@@ -110,7 +110,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       key: "anio",
       header: "Año",
       helpKey: "columnaAnio",
-      render: (e) => <span className="text-[#71717A] text-[12px]">{e.anio}</span>,
+      render: (e) => <span className="text-[#71717A] text-[13px]">{e.anio}</span>,
     },
     {
       key: "horas",
@@ -118,7 +118,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
       helpKey: "equipoHoras",
       headerClassName: "text-right",
       render: (e) => (
-        <span className="font-mono text-[11px] text-[#71717A]">
+        <span className="font-mono text-[12px] text-[#71717A]">
           {e.horasAcumuladas.toLocaleString("es-CL")}
         </span>
       ),
@@ -138,7 +138,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
             aria-selected={tabActivo === tab.id}
             onClick={() => setTabActivo(tab.id)}
             className={clsx(
-              "flex items-center gap-2 px-3.5 py-2 rounded-[7px] text-[12px] font-semibold",
+              "flex items-center gap-2 px-3.5 py-2 rounded-[7px] text-[13px] font-semibold",
               "whitespace-nowrap min-h-[36px] transition-all duration-150 border",
               tabActivo === tab.id
                 ? "bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]"
@@ -147,7 +147,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
           >
             {tab.label}
             <span className={clsx(
-              "text-[10px] font-mono px-1 py-0.5 rounded-[3px]",
+              "text-[11px] font-mono px-1 py-0.5 rounded-[3px]",
               tabActivo === tab.id ? "bg-[#FDE68A]/50 text-[#92400E]" : "bg-[#F4F4F5] text-[#A1A1AA]"
             )}>
               {tab.count}
@@ -164,8 +164,8 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
           { label: "Paro Total",       valor: stats.paros,    color: "#B91C1C", bg: "bg-[#FEF2F2] border-[#FECACA]" },
         ].map((s) => (
           <div key={s.label} className={clsx("flex flex-col gap-0.5 p-3.5 rounded-[9px] border border-[#E4E4E7]", s.bg)}>
-            <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">{s.label}</span>
-            <span className="text-[28px] font-mono font-bold leading-tight" style={{ color: s.color }}>
+            <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">{s.label}</span>
+            <span className="text-[31px] font-mono font-bold leading-tight" style={{ color: s.color }}>
               {s.valor}
             </span>
           </div>
@@ -185,7 +185,7 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
         }}
       />
 
-      <p className="text-[10px] text-[#A1A1AA] text-right font-mono">
+      <p className="text-[11px] text-[#A1A1AA] text-right font-mono">
         {filtrados.length} equipos · Haz clic en una fila para ver el detalle
       </p>
     </div>

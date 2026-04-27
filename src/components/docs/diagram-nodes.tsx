@@ -67,7 +67,7 @@ export const EntityNode = memo(function EntityNode({
       >
         <span className="text-xs font-bold leading-tight">{d.label}</span>
         {d.tag && (
-          <span className="text-[9px] opacity-70 font-medium">[{d.tag}]</span>
+          <span className="text-[10px] opacity-70 font-medium">[{d.tag}]</span>
         )}
       </div>
 
@@ -77,7 +77,7 @@ export const EntityNode = memo(function EntityNode({
           {d.fields.map((f, i) => (
             <div
               key={i}
-              className="px-3 py-[3px] text-[11px] flex items-center gap-1.5"
+              className="px-3 py-[3px] text-[12px] flex items-center gap-1.5"
             >
               <span
                 className={clsx(
@@ -88,7 +88,7 @@ export const EntityNode = memo(function EntityNode({
               >
                 {f.name}
               </span>
-              <span className="text-gray-400 ml-auto text-[10px] shrink-0">
+              <span className="text-gray-400 ml-auto text-[11px] shrink-0">
                 {f.type}
               </span>
               {f.pk && (
@@ -170,7 +170,7 @@ export const ProcessNode = memo(function ProcessNode({
           {d.label}
         </div>
         {d.sublabel && (
-          <div className="text-[10px] opacity-70 mt-0.5 leading-tight">
+          <div className="text-[11px] opacity-70 mt-0.5 leading-tight">
             {d.sublabel}
           </div>
         )}
@@ -220,7 +220,7 @@ export const GroupNode = memo(function GroupNode({
       }}
     >
       <div
-        className="absolute -top-3 left-4 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded"
+        className="absolute -top-3 left-4 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded"
         style={{
           backgroundColor: d.borderColor,
           color: "#fff",

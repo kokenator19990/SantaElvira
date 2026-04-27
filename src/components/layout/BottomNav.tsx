@@ -51,7 +51,7 @@ export function BottomNav({ alertasCriticas }: { alertasCriticas: number }) {
             >
               {/* Badge de alertas */}
               {badge && alertasRojas > 0 && (
-                <span className="absolute top-1.5 right-[calc(50%-8px)] flex items-center justify-center w-4 h-4 rounded-full bg-[#DC2626] text-white text-[9px] font-bold leading-none z-10">
+                <span className="absolute top-1.5 right-[calc(50%-8px)] flex items-center justify-center w-4 h-4 rounded-full bg-[#DC2626] text-white text-[10px] font-bold leading-none z-10">
                   {alertasRojas > 9 ? "9+" : alertasRojas}
                 </span>
               )}
@@ -61,7 +61,7 @@ export function BottomNav({ alertasCriticas }: { alertasCriticas: number }) {
                 strokeWidth={activo ? 2.2 : 1.7}
                 className="shrink-0"
               />
-              <span className="text-[10px] font-medium leading-none">{label}</span>
+              <span className="text-[11px] font-medium leading-none">{label}</span>
 
               {/* Dot activo */}
               {activo && (

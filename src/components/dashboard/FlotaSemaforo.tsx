@@ -61,8 +61,8 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
             {/* Header */}
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-[15px] font-semibold text-[#09090B] leading-tight">{flota.modelo}</p>
-                <p className="text-[11px] text-[#71717A] mt-0.5">
+                <p className="text-[17px] font-semibold text-[#09090B] leading-tight">{flota.modelo}</p>
+                <p className="text-[12px] text-[#71717A] mt-0.5">
                   {flota.cantidad} equipos · {SEMAFORO_LABEL[flota.semaforoGeneral]}
                 </p>
               </div>
@@ -80,12 +80,12 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
               ].map(({ k, v, u, max, helpKey }) => (
                 <div key={k} className="flex flex-col">
                   <Tooltip short={HELP[helpKey].titulo} help={HELP[helpKey]}>
-                    <span className="text-[9px] font-bold text-[#A1A1AA] uppercase tracking-wider cursor-help">{k}</span>
+                    <span className="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider cursor-help">{k}</span>
                   </Tooltip>
-                  <span className="text-[20px] font-mono font-bold text-[#09090B] leading-none mt-0.5">
+                  <span className="text-[22px] font-mono font-bold text-[#09090B] leading-none mt-0.5">
                     {v}
                   </span>
-                  <span className="text-[9px] text-[#A1A1AA]">{u}</span>
+                  <span className="text-[10px] text-[#A1A1AA]">{u}</span>
                   <MiniBar valor={k === "TMPR" ? Math.max(max - v, 0) : v} max={max} color={color} />
                 </div>
               ))}
@@ -95,7 +95,7 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
             {flota.enParo > 0 && (
               <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[6px] bg-[#FEF2F2] border border-[#FECACA]">
                 <AlertTriangle size={12} className="text-[#B91C1C] shrink-0" />
-                <span className="text-[11px] font-semibold text-[#991B1B]">
+                <span className="text-[12px] font-semibold text-[#991B1B]">
                   {flota.enParo} equipo{flota.enParo > 1 ? "s" : ""} en paro total
                 </span>
               </div>

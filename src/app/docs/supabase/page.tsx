@@ -33,11 +33,11 @@ export default function DocsSupabasePage() {
         </Link>
         <div className="flex-1">
           <SectionTitle>Supabase — Base de datos en producción</SectionTitle>
-          <p className="text-[13px] text-[#3F3F46] mt-2 leading-relaxed max-w-2xl">
+          <p className="text-[15px] text-[#3F3F46] mt-2 leading-relaxed max-w-2xl">
             Cómo está armada físicamente la base de datos del dashboard MSG: el
             proyecto en Supabase, las 9 tablas, las migraciones con Drizzle, las
             conexiones desde Vercel, y el flujo de datos completo desde un click
-            en <code className="text-[12px] font-mono bg-[#F4F4F5] px-1.5 py-0.5 rounded">/admin/kpis</code> hasta Postgres.
+            en <code className="text-[13px] font-mono bg-[#F4F4F5] px-1.5 py-0.5 rounded">/admin/kpis</code> hasta Postgres.
           </p>
         </div>
       </div>
@@ -86,15 +86,15 @@ export default function DocsSupabasePage() {
             <div key={t.nombre} className="rounded-[10px] border border-[#E4E4E7] bg-white p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span
-                  className="text-[11px] font-mono font-bold px-2 py-0.5 rounded"
+                  className="text-[12px] font-mono font-bold px-2 py-0.5 rounded"
                   style={{ backgroundColor: t.bg, color: t.color }}
                 >
                   {t.nombre}
                 </span>
-                <span className="text-[10px] text-[#A1A1AA] font-mono">{t.cardinalidad}</span>
+                <span className="text-[11px] text-[#A1A1AA] font-mono">{t.cardinalidad}</span>
               </div>
-              <p className="text-[12px] text-[#3F3F46] leading-relaxed mb-2">{t.descripcion}</p>
-              <p className="text-[10px] text-[#71717A]">
+              <p className="text-[13px] text-[#3F3F46] leading-relaxed mb-2">{t.descripcion}</p>
+              <p className="text-[11px] text-[#71717A]">
                 <strong className="text-[#52525B]">Campos clave:</strong> {t.camposClave}
               </p>
             </div>
@@ -224,9 +224,9 @@ export default function DocsSupabasePage() {
         intro="Las credenciales viven en .env.local (gitignored) y en el panel de Vercel para producción."
       >
         <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
-          <table className="w-full text-[12px]">
+          <table className="w-full text-[13px]">
             <thead className="bg-[#FAFAFA] border-b border-[#E4E4E7]">
-              <tr className="text-[10px] uppercase tracking-wider text-[#71717A]">
+              <tr className="text-[11px] uppercase tracking-wider text-[#71717A]">
                 <th className="px-3 py-2 text-left">Variable</th>
                 <th className="px-3 py-2 text-left">Para qué</th>
                 <th className="px-3 py-2 text-center">Local</th>
@@ -314,9 +314,9 @@ export default function DocsSupabasePage() {
         intro="El diagrama ER en /docs/modelo es la vista lógica. Aquí el mapeo a Postgres."
       >
         <div className="overflow-x-auto rounded-[10px] border border-[#E4E4E7] bg-white">
-          <table className="w-full text-[11px]">
+          <table className="w-full text-[12px]">
             <thead className="bg-[#FAFAFA] border-b border-[#E4E4E7]">
-              <tr className="text-[10px] uppercase tracking-wider text-[#71717A]">
+              <tr className="text-[11px] uppercase tracking-wider text-[#71717A]">
                 <th className="px-3 py-2 text-left">Conceptual (ER)</th>
                 <th className="px-3 py-2 text-left">Implementación SQL</th>
                 <th className="px-3 py-2 text-left">Por qué</th>
@@ -377,7 +377,7 @@ export default function DocsSupabasePage() {
       </Section>
 
       {/* ── Footer ───────────────────────────────────────────────────────────── */}
-      <div className="rounded-xl bg-[#F4F4F5] p-5 text-[12px] text-[#52525B] leading-relaxed">
+      <div className="rounded-xl bg-[#F4F4F5] p-5 text-[13px] text-[#52525B] leading-relaxed">
         <strong className="text-[#09090B]">Ver también:</strong>
         <div className="flex flex-wrap gap-3 mt-2">
           <Link href="/docs/modelo" className="underline text-[#B45309] hover:text-[#92400E]">
@@ -426,13 +426,13 @@ function Section({
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-[12px] font-bold font-mono">
+        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-[13px] font-bold font-mono">
           {n}
         </span>
         <Icon size={18} className="text-[#52525B]" />
-        <h2 className="text-[16px] font-bold text-[#09090B] tracking-tight">{title}</h2>
+        <h2 className="text-[18px] font-bold text-[#09090B] tracking-tight">{title}</h2>
       </div>
-      <p className="text-[13px] text-[#3F3F46] leading-relaxed -mt-1">{intro}</p>
+      <p className="text-[15px] text-[#3F3F46] leading-relaxed -mt-1">{intro}</p>
       {children}
     </section>
   );
@@ -468,8 +468,8 @@ function Box({
         borderRadius: cylinder ? "30px" : "8px",
       }}
     >
-      <p className="text-[12px] font-bold leading-tight" style={{ color }}>{title}</p>
-      <p className="text-[10px] mt-0.5" style={{ color: `${color}cc` }}>{sub}</p>
+      <p className="text-[13px] font-bold leading-tight" style={{ color }}>{title}</p>
+      <p className="text-[11px] mt-0.5" style={{ color: `${color}cc` }}>{sub}</p>
     </div>
   );
 }
@@ -478,7 +478,7 @@ function Arrow({ label, reverse }: { label: string; reverse?: boolean }) {
   return (
     <div className="flex flex-col items-center my-1">
       <div className="w-px h-3 bg-[#A1A1AA]" />
-      <div className="text-[9px] text-[#71717A] font-mono px-2 py-0.5 bg-white border border-[#E4E4E7] rounded">
+      <div className="text-[10px] text-[#71717A] font-mono px-2 py-0.5 bg-white border border-[#E4E4E7] rounded">
         {label} {reverse && "↻"}
       </div>
       <div className="w-px h-3 bg-[#A1A1AA]" />
@@ -495,7 +495,7 @@ function Note({ tone, children }: { tone: "info" | "warn" | "ok"; children: Reac
   const Icon = cfg.Icon;
   return (
     <div
-      className="flex items-start gap-2 p-3 rounded-[8px] border text-[12px] leading-relaxed"
+      className="flex items-start gap-2 p-3 rounded-[8px] border text-[13px] leading-relaxed"
       style={{ backgroundColor: cfg.bg, borderColor: cfg.border, color: cfg.color }}
     >
       <Icon size={14} className="mt-0.5 shrink-0" />
@@ -507,7 +507,7 @@ function Note({ tone, children }: { tone: "info" | "warn" | "ok"; children: Reac
 function Specs({ items }: { items: [string, string][] }) {
   return (
     <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
-      <table className="w-full text-[12px]">
+      <table className="w-full text-[13px]">
         <tbody>
           {items.map(([k, v]) => (
             <tr key={k} className="border-t border-[#F4F4F5] first:border-t-0">
@@ -526,12 +526,12 @@ function Steps({ steps }: { steps: { titulo: string; detalle: string }[] }) {
     <ol className="flex flex-col gap-3">
       {steps.map((s, i) => (
         <li key={i} className="flex gap-3 p-3 rounded-[8px] border border-[#E4E4E7] bg-white">
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#09090B] text-white text-[11px] font-bold shrink-0">
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#09090B] text-white text-[12px] font-bold shrink-0">
             {i + 1}
           </span>
           <div>
-            <p className="text-[13px] font-semibold text-[#09090B]">{s.titulo}</p>
-            <p className="text-[12px] text-[#71717A] mt-0.5 leading-relaxed">{s.detalle}</p>
+            <p className="text-[15px] font-semibold text-[#09090B]">{s.titulo}</p>
+            <p className="text-[13px] text-[#71717A] mt-0.5 leading-relaxed">{s.detalle}</p>
           </div>
         </li>
       ))}
@@ -564,22 +564,22 @@ function ConnTipo({
     <div className="rounded-[10px] border border-[#E4E4E7] bg-white p-4 flex flex-col gap-2.5">
       <div className="flex items-center gap-2">
         <span
-          className="text-[10px] font-mono font-bold px-2 py-0.5 rounded"
+          className="text-[11px] font-mono font-bold px-2 py-0.5 rounded"
           style={{ backgroundColor: bg, color }}
         >
           {badge}
         </span>
-        <span className="text-[13px] font-semibold text-[#09090B]">{titulo}</span>
+        <span className="text-[15px] font-semibold text-[#09090B]">{titulo}</span>
       </div>
-      <div className="text-[11px] font-mono text-[#52525B] bg-[#FAFAFA] p-2 rounded leading-relaxed">
+      <div className="text-[12px] font-mono text-[#52525B] bg-[#FAFAFA] p-2 rounded leading-relaxed">
         <div><span className="text-[#A1A1AA]">host:</span> {host}</div>
         <div><span className="text-[#A1A1AA]">puerto:</span> {puerto}</div>
         <div><span className="text-[#A1A1AA]">user:</span> {usuario}</div>
       </div>
-      <p className="text-[12px] text-[#3F3F46]">
+      <p className="text-[13px] text-[#3F3F46]">
         <strong className="text-[#09090B]">Uso:</strong> {uso}
       </p>
-      <ul className="text-[11px] text-[#52525B] list-disc pl-4 space-y-0.5">
+      <ul className="text-[12px] text-[#52525B] list-disc pl-4 space-y-0.5">
         {puntos.map((p) => <li key={p}>{p}</li>)}
       </ul>
     </div>
@@ -599,9 +599,9 @@ function Op({
     <div className="rounded-[10px] border border-[#E4E4E7] bg-white p-4 flex flex-col gap-2 mb-3">
       <div className="flex items-center gap-2">
         <Icon size={14} className="text-[#52525B]" />
-        <p className="text-[13px] font-semibold text-[#09090B]">{titulo}</p>
+        <p className="text-[15px] font-semibold text-[#09090B]">{titulo}</p>
       </div>
-      <ol className="text-[12px] text-[#52525B] list-decimal pl-5 space-y-1 leading-relaxed">
+      <ol className="text-[13px] text-[#52525B] list-decimal pl-5 space-y-1 leading-relaxed">
         {pasos.map((p, i) => <li key={i}>{p}</li>)}
       </ol>
     </div>
@@ -626,16 +626,16 @@ function Estado({
     <div className="rounded-[10px] p-3 border flex flex-col gap-1.5" style={{ backgroundColor: cfg.bg, borderColor: cfg.border }}>
       <div className="flex items-center gap-1.5">
         <Icon size={13} style={{ color: cfg.color }} />
-        <p className="text-[12px] font-bold" style={{ color: cfg.color }}>{titulo}</p>
+        <p className="text-[13px] font-bold" style={{ color: cfg.color }}>{titulo}</p>
       </div>
-      <p className="text-[11px] text-[#52525B] leading-relaxed">{detalle}</p>
+      <p className="text-[12px] text-[#52525B] leading-relaxed">{detalle}</p>
     </div>
   );
 }
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="text-[11px] font-mono bg-[#F4F4F5] px-1.5 py-0.5 rounded">{children}</code>
+    <code className="text-[12px] font-mono bg-[#F4F4F5] px-1.5 py-0.5 rounded">{children}</code>
   );
 }
 

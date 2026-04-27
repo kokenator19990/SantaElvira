@@ -57,13 +57,13 @@ export default async function AdminPage() {
             Administración
           </Tooltip>
         </SectionTitle>
-        <p className="text-[12px] text-[#71717A] mt-2 max-w-2xl leading-relaxed">
+        <p className="text-[13px] text-[#71717A] mt-2 max-w-2xl leading-relaxed">
           Carga manual de datos. Si ya están los KPIs del mes en una planilla Excel,
           aquí los pasas al sistema. Cada cambio se guarda directamente en Postgres y
           se refleja en el dashboard.
         </p>
         {periodoActual && (
-          <p className="text-[11px] text-[#52525B] mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A]">
+          <p className="text-[12px] text-[#52525B] mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#B45309]" />
             Último período con datos: <strong className="text-[#92400E]">{periodoActual.label}</strong>
             {periodoActual.cerrado && <span className="text-[#71717A]">· cerrado</span>}
@@ -86,12 +86,12 @@ export default async function AdminPage() {
             </div>
             <div className="flex-1">
               <Tooltip short={descripcion} help={HELP[helpKey]}>
-                <p className="text-[14px] font-semibold text-[#09090B]">{titulo}</p>
+                <p className="text-[16px] font-semibold text-[#09090B]">{titulo}</p>
               </Tooltip>
-              <p className="text-[12px] text-[#71717A] mt-1 leading-relaxed">{descripcion}</p>
+              <p className="text-[13px] text-[#71717A] mt-1 leading-relaxed">{descripcion}</p>
             </div>
             <div
-              className="flex items-center gap-1 text-[12px] font-semibold group-hover:gap-2 transition-all duration-150"
+              className="flex items-center gap-1 text-[13px] font-semibold group-hover:gap-2 transition-all duration-150"
               style={{ color }}
             >
               Abrir <ArrowRight size={12} />

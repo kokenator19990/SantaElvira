@@ -2,64 +2,18 @@ export const revalidate = 300;
 
 import Link from "next/link";
 import {
-  LayoutDashboard,
-  Truck,
-  BellRing,
-  FlaskConical,
-  FileText,
   AlertTriangle,
   XCircle,
   ArrowRight,
   MonitorCheck,
   Pickaxe,
+  Sun,
+  CalendarCheck,
+  Sparkles,
 } from "lucide-react";
 import { getFlota } from "@/lib/db/queries/flota";
 import { getAlertas } from "@/lib/db/queries/alertas";
 import { GlosarioRapido } from "@/components/portada/GlosarioRapido";
-
-// ─── Secciones del sistema ────────────────────────────────────────────────────
-const SECCIONES = [
-  {
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    titulo: "Dashboard",
-    descripcion: "Estado general de toda la flota: semáforos, disponibilidad y tendencias por mes.",
-    color: "#B45309",
-    bg: "#FFFBEB",
-  },
-  {
-    href: "/flota",
-    icon: Truck,
-    titulo: "Flota",
-    descripcion: "Ficha individual de cada equipo: KPIs, distribución ASARCO y detalle de fallas.",
-    color: "#1D4ED8",
-    bg: "#EFF6FF",
-  },
-  {
-    href: "/alertas",
-    icon: BellRing,
-    titulo: "Alertas",
-    descripcion: "Lista de equipos fuera de umbral ordenados por criticidad. Paros primero.",
-    color: "#DC2626",
-    bg: "#FEF2F2",
-  },
-  {
-    href: "/apd",
-    icon: FlaskConical,
-    titulo: "APD Aceites",
-    descripcion: "Sube un CSV del laboratorio y el sistema detecta parámetros fuera de rango.",
-    color: "#059669",
-    bg: "#ECFDF5",
-  },
-  {
-    href: "/reporte",
-    icon: FileText,
-    titulo: "Reporte",
-    descripcion: "Genera el informe mensual PDF listo para imprimir. Compara períodos anteriores.",
-    color: "#7C3AED",
-    bg: "#F5F3FF",
-  },
-] as const;
 
 export default async function PortadaPage() {
   const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
@@ -67,141 +21,256 @@ export default async function PortadaPage() {
   const criticos     = flota.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
   const advertencias = alertas.filter((a) => a.estado === "ambar").length;
 
-  return (
-    <div className="flex flex-col gap-8 max-w-[900px] mx-auto animate-fade-in-up">
+  const sinAlertas = paros === 0 && criticos === 0 && advertencias === 0;
+  const proximoPaso = paros > 0 || criticos > 0
+    ? { titulo: "Hay equipos en alerta crítica", url: "/alertas", color: "#B91C1C", bg: "#FEF2F2", border: "#FECACA" }
+    : advertencias > 0
+    ? { titulo: "Revisa las advertencias", url: "/alertas", color: "#92400E", bg: "#FFFBEB", border: "#FDE68A" }
+    : { titulo: "Flota estable. Revisa los KPIs del día", url: "/dashboard", color: "#15803D", bg: "#F0FDF4", border: "#BBF7D0" };
 
-      {/* ── HERO STRIP ─────────────────────────────────────────────────────── */}
-      <section className="rounded-xl border border-[#E4E4E7] bg-white p-5 sm:p-6">
-        <div className="flex items-start gap-3 mb-4">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-amber-500 shrink-0">
-            <Pickaxe size={17} className="text-white" strokeWidth={2.5} />
+  return (
+    <div className="flex flex-col gap-10 max-w-[960px] mx-auto animate-fade-in-up pb-8">
+
+      {/* ── HERO ─────────────────────────────────────────────────────────────── */}
+      <section className="rounded-xl border border-[#E4E4E7] bg-white p-6 sm:p-8">
+        <div className="flex items-start gap-4 mb-5">
+          <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-amber-500 shrink-0 shadow-glow">
+            <Pickaxe size={22} className="text-white" strokeWidth={2.5} />
           </div>
-          <div>
-            <h1 className="text-[17px] font-bold text-[#09090B] leading-tight">
-              Panel de Control MSG
+          <div className="flex-1">
+            <h1 className="text-[25px] font-bold text-[#09090B] leading-tight tracking-tight">
+              Dashboard MSG El Salvador
             </h1>
-            <p className="text-[12px] text-[#71717A] mt-0.5">Faena El Salvador — Estado del turno</p>
+            <p className="text-[16px] text-[#52525B] mt-1.5">
+              Sistema de gestión de KPIs · 28 equipos · Postgres en Supabase
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        {/* Estado actual */}
+        <div className="flex flex-wrap gap-2.5 mb-5">
           {paros > 0 && (
-            <Link
-              href="/alertas"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] text-[13px] font-semibold hover:bg-[#FEE2E2] transition-colors"
-            >
-              <XCircle size={14} />
+            <Link href="/alertas" className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] text-[16px] font-semibold hover:bg-[#FEE2E2] transition-colors">
+              <XCircle size={16} />
               {paros} {paros === 1 ? "Paro" : "Paros"}
             </Link>
           )}
           {criticos > 0 && (
-            <Link
-              href="/alertas"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] text-[13px] font-semibold hover:bg-[#FEE2E2] transition-colors"
-            >
-              <AlertTriangle size={14} />
+            <Link href="/alertas" className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] text-[16px] font-semibold hover:bg-[#FEE2E2] transition-colors">
+              <AlertTriangle size={16} />
               {criticos} {criticos === 1 ? "Crítico" : "Críticos"}
             </Link>
           )}
           {advertencias > 0 && (
-            <Link
-              href="/alertas"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-[13px] font-semibold hover:bg-[#FEF3C7] transition-colors"
-            >
-              <AlertTriangle size={14} />
+            <Link href="/alertas" className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-[16px] font-semibold hover:bg-[#FEF3C7] transition-colors">
+              <AlertTriangle size={16} />
               {advertencias} {advertencias === 1 ? "Advertencia" : "Advertencias"}
             </Link>
           )}
-          {paros === 0 && criticos === 0 && advertencias === 0 && (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] text-[#15803D] text-[13px] font-semibold">
-              <MonitorCheck size={14} />
+          {sinAlertas && (
+            <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] text-[#15803D] text-[16px] font-semibold">
+              <MonitorCheck size={16} />
               Flota sin alertas críticas
             </span>
           )}
         </div>
+
+        {/* Próximo paso recomendado */}
+        <Link
+          href={proximoPaso.url}
+          className="flex items-center gap-3 p-4 rounded-xl border-2 hover:shadow-md transition-all group"
+          style={{ backgroundColor: proximoPaso.bg, borderColor: proximoPaso.border }}
+        >
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white shrink-0 shadow-sm">
+            <Sparkles size={17} style={{ color: proximoPaso.color }} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[12px] font-bold uppercase tracking-wider" style={{ color: proximoPaso.color, opacity: 0.8 }}>
+              Te sugiero empezar por
+            </p>
+            <p className="text-[17px] font-semibold mt-0.5" style={{ color: proximoPaso.color }}>
+              {proximoPaso.titulo}
+            </p>
+          </div>
+          <ArrowRight size={18} style={{ color: proximoPaso.color }} className="shrink-0 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </section>
 
-      {/* ── GUÍA RÁPIDA ────────────────────────────────────────────────────── */}
+      {/* ── GUÍA: ENTRO AL SITIO Y... ────────────────────────────────────────── */}
       <section>
-        <h2 className="text-[13px] font-bold text-[#09090B] uppercase tracking-[0.08em] mb-3">
-          ¿Cómo usar este sistema?
-        </h2>
+        <div className="flex items-baseline gap-3 mb-4">
+          <h2 className="text-[20px] font-bold text-[#09090B] tracking-tight">
+            Entro al sitio. ¿Ahora qué?
+          </h2>
+          <span className="text-[13px] text-[#A1A1AA]">— guía paso a paso</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[
-            {
-              n: "1",
-              titulo: "Al inicio del turno",
-              desc: "Abre este panel y revisa los chips de estado. Si hay paros o críticos, ve directamente a Alertas.",
-            },
-            {
-              n: "2",
-              titulo: "Revisa la flota",
-              desc: "En 'Flota' puedes ver el estado individual de cada equipo: qué tan bien está disponible y cuánto tarda en repararse.",
-            },
-            {
-              n: "3",
-              titulo: "Sigue las alertas",
-              desc: "Las alertas muestran qué equipos están fuera de los límites normales. Los paros siempre aparecen primero.",
-            },
-            {
-              n: "4",
-              titulo: "Al cierre del mes",
-              desc: "Genera el reporte en 'Reporte', elige el período, y usa 'Imprimir / PDF' para enviarlo a supervisión.",
-            },
-          ].map(({ n, titulo, desc }) => (
-            <div key={n} className="flex gap-3 p-4 rounded-xl border border-[#E4E4E7] bg-white">
-              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-[#09090B] text-white text-[12px] font-bold shrink-0">
-                {n}
-              </span>
-              <div>
-                <p className="text-[13px] font-semibold text-[#09090B]">{titulo}</p>
-                <p className="text-[12px] text-[#71717A] mt-0.5 leading-relaxed">{desc}</p>
-              </div>
-            </div>
-          ))}
+          <Paso
+            n="1"
+            titulo="Mira los chips de arriba"
+            desc="¿Hay paros o críticos rojos? Ve directo a /alertas. Si todo está verde, sigue al paso 2."
+            url="/alertas"
+            urlLabel="Ir a Alertas"
+            color="#B91C1C"
+          />
+          <Paso
+            n="2"
+            titulo="Revisa el panorama del día"
+            desc="En el Dashboard ves los KPIs promedio (DFM, TMEF, TMPR), el semáforo por tipo de flota y la tendencia 6 meses."
+            url="/dashboard"
+            urlLabel="Ir al Dashboard"
+            color="#B45309"
+          />
+          <Paso
+            n="3"
+            titulo="¿Hay un equipo sospechoso?"
+            desc="En Flota filtras por tipo (785D, 777F, 992, PC-2000) y haces clic en una fila para ver el detalle individual."
+            url="/flota"
+            urlLabel="Ir a Flota"
+            color="#1D4ED8"
+          />
+          <Paso
+            n="4"
+            titulo="Generar reporte mensual"
+            desc="Selecciona el período y haz clic en 'Imprimir / PDF'. El reporte se exporta sin sidebar ni controles."
+            url="/reporte"
+            urlLabel="Ir a Reporte"
+            color="#7C3AED"
+          />
         </div>
       </section>
 
-      {/* ── SECCIONES DEL SISTEMA ──────────────────────────────────────────── */}
+      {/* ── DOS RUTINAS: DIARIA Y CIERRE DE MES ─────────────────────────────── */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Rutina
+          icon={Sun}
+          color="#B45309"
+          bg="#FFFBEB"
+          titulo="Rutina diaria"
+          subtitulo="Al inicio del turno"
+          items={[
+            { url: "/portada", text: "Abre la portada — chips de paros/críticos visibles arriba" },
+            { url: "/alertas", text: "Si hay rojos: lista priorizada de paros y equipos críticos" },
+            { url: "/dashboard", text: "Mira KPIs flota + tendencia 6 meses" },
+            { url: "/flota", text: "Drill-down en equipos sospechosos" },
+          ]}
+        />
+        <Rutina
+          icon={CalendarCheck}
+          color="#15803D"
+          bg="#F0FDF4"
+          titulo="Cierre de mes"
+          subtitulo="Para cargar datos nuevos"
+          items={[
+            { url: "/admin/periodos", text: "Crear el período del mes (Año + Mes)" },
+            { url: "/admin/kpis", text: "Cargar DFM, TMEF, TMPR, T.Op, Reserva y ASARCO de cada equipo" },
+            { url: "/admin/alertas", text: "Regenerar alertas (calcula desde KPIs y umbrales)" },
+            { url: "/apd", text: "Subir CSV de análisis de aceite y guardarlo en BD" },
+            { url: "/reporte", text: "Imprimir / Exportar PDF del informe" },
+          ]}
+        />
+      </section>
+
+      {/* ── GLOSARIO ─────────────────────────────────────────────────────────── */}
       <section>
-        <h2 className="text-[13px] font-bold text-[#09090B] uppercase tracking-[0.08em] mb-3">
-          Secciones del sistema
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {SECCIONES.map(({ href, icon: Icon, titulo, descripcion, color, bg }) => (
-            <Link
-              key={href}
-              href={href}
-              className="group flex flex-col gap-3 p-4 rounded-xl border border-[#E4E4E7] bg-white hover:border-[#D4D4D8] hover:shadow-sm transition-all duration-150"
-            >
-              <div
-                className="flex items-center justify-center w-10 h-10 rounded-lg"
-                style={{ backgroundColor: bg }}
-              >
-                <Icon size={20} style={{ color }} strokeWidth={1.8} />
-              </div>
-              <div className="flex-1">
-                <p className="text-[14px] font-semibold text-[#09090B]">{titulo}</p>
-                <p className="text-[12px] text-[#71717A] mt-1 leading-relaxed">{descripcion}</p>
-              </div>
-              <div
-                className="flex items-center gap-1 text-[12px] font-semibold group-hover:gap-2 transition-all duration-150"
-                style={{ color }}
-              >
-                Ir <ArrowRight size={12} />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ── GLOSARIO RÁPIDO ────────────────────────────────────────────────── */}
-      <section className="mb-4">
-        <h2 className="text-[13px] font-bold text-[#09090B] uppercase tracking-[0.08em] mb-3">
+        <h2 className="text-[17px] font-bold text-[#09090B] uppercase tracking-[0.08em] mb-3">
           Glosario rápido
         </h2>
+        <p className="text-[15px] text-[#52525B] mb-3 leading-relaxed">
+          Si no te suena algún término, expandelo aquí. También cada KPI del dashboard tiene
+          tooltip — activa el <strong>Modo Ayuda</strong> (botón en el sidebar abajo) para verlos en detalle.
+        </p>
         <GlosarioRapido />
       </section>
     </div>
   );
 }
+
+/* ─── helpers visuales ──────────────────────────────────────────────────── */
+
+function Paso({
+  n,
+  titulo,
+  desc,
+  url,
+  urlLabel,
+  color,
+}: {
+  n: string;
+  titulo: string;
+  desc: string;
+  url: string;
+  urlLabel: string;
+  color: string;
+}) {
+  return (
+    <div className="flex flex-col gap-3 p-4 rounded-xl border border-[#E4E4E7] bg-white">
+      <div className="flex items-start gap-3">
+        <span
+          className="flex items-center justify-center w-8 h-8 rounded-full text-white text-[16px] font-bold shrink-0"
+          style={{ backgroundColor: color }}
+        >
+          {n}
+        </span>
+        <div className="flex-1">
+          <p className="text-[16px] font-semibold text-[#09090B] leading-tight">{titulo}</p>
+          <p className="text-[15px] text-[#52525B] mt-1 leading-relaxed">{desc}</p>
+        </div>
+      </div>
+      <Link
+        href={url}
+        className="self-start inline-flex items-center gap-1.5 text-[13px] font-semibold hover:gap-2 transition-all"
+        style={{ color }}
+      >
+        {urlLabel} <ArrowRight size={12} />
+      </Link>
+    </div>
+  );
+}
+
+function Rutina({
+  icon: Icon,
+  color,
+  bg,
+  titulo,
+  subtitulo,
+  items,
+}: {
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+  titulo: string;
+  subtitulo: string;
+  items: { url: string; text: string }[];
+}) {
+  return (
+    <div className="rounded-xl border border-[#E4E4E7] bg-white overflow-hidden">
+      <div className="flex items-center gap-3 p-4 border-b border-[#F4F4F5]" style={{ backgroundColor: bg }}>
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white shrink-0 shadow-sm">
+          <Icon size={18} style={{ color }} />
+        </div>
+        <div>
+          <p className="text-[17px] font-bold" style={{ color }}>{titulo}</p>
+          <p className="text-[13px]" style={{ color: `${color}cc` }}>{subtitulo}</p>
+        </div>
+      </div>
+      <ol className="flex flex-col">
+        {items.map((item, i) => (
+          <li key={item.url + i} className="border-t border-[#F4F4F5] first:border-t-0">
+            <Link href={item.url} className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#FAFAFA] transition-colors group">
+              <span
+                className="flex items-center justify-center w-6 h-6 rounded-full text-[12px] font-mono font-bold shrink-0"
+                style={{ backgroundColor: bg, color }}
+              >
+                {i + 1}
+              </span>
+              <span className="flex-1 text-[15px] text-[#3F3F46] leading-snug">{item.text}</span>
+              <ArrowRight size={13} className="text-[#A1A1AA] group-hover:text-[#52525B] group-hover:translate-x-0.5 transition-all shrink-0" />
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+

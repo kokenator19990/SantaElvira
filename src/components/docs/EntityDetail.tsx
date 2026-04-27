@@ -59,7 +59,7 @@ export function EntityDetail({ entity, onClose }: EntityDetailProps) {
           >
             {entity.nombre}
           </h3>
-          <p className="text-[11px] mt-0.5 opacity-80" style={{ color: entity.headerText }}>
+          <p className="text-[12px] mt-0.5 opacity-80" style={{ color: entity.headerText }}>
             {entity.descripcion}
           </p>
         </div>
@@ -76,11 +76,11 @@ export function EntityDetail({ entity, onClose }: EntityDetailProps) {
       <div className="flex-1 overflow-y-auto">
         {/* Fields table */}
         <div className="px-4 py-3">
-          <h4 className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">
+          <h4 className="text-[12px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">
             Campos
           </h4>
           <div className="border border-[#E4E4E7] rounded-lg overflow-hidden">
-            <table className="w-full text-[11px]">
+            <table className="w-full text-[12px]">
               <thead>
                 <tr className="bg-[#F4F4F5]">
                   <th className="text-left px-2.5 py-1.5 font-semibold text-[#3F3F46]">
@@ -100,7 +100,7 @@ export function EntityDetail({ entity, onClose }: EntityDetailProps) {
                     <td className="px-2.5 py-1.5 font-medium text-[#09090B]">
                       {c.name}
                       {c.ejemplo && (
-                        <span className="block text-[10px] text-[#A1A1AA] font-normal mt-0.5">
+                        <span className="block text-[11px] text-[#A1A1AA] font-normal mt-0.5">
                           ej: {c.ejemplo}
                         </span>
                       )}
@@ -130,14 +130,14 @@ export function EntityDetail({ entity, onClose }: EntityDetailProps) {
         {/* Relationships */}
         {entity.relaciones.length > 0 && (
           <div className="px-4 py-3 border-t border-[#F4F4F5]">
-            <h4 className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">
+            <h4 className="text-[12px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">
               Relaciones
             </h4>
             <div className="space-y-1.5">
               {entity.relaciones.map((r, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 text-[11px] px-2.5 py-1.5 bg-[#FAFAFA] rounded-md"
+                  className="flex items-center gap-2 text-[12px] px-2.5 py-1.5 bg-[#FAFAFA] rounded-md"
                 >
                   <span className="text-[#B45309] font-mono font-bold shrink-0">
                     {r.tipo}
@@ -155,14 +155,14 @@ export function EntityDetail({ entity, onClose }: EntityDetailProps) {
         {/* Description */}
         {entity.campos.some((c) => c.descripcion) && (
           <div className="px-4 py-3 border-t border-[#F4F4F5]">
-            <h4 className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">
+            <h4 className="text-[12px] font-semibold text-[#71717A] uppercase tracking-wider mb-2">
               Notas
             </h4>
             <div className="space-y-1">
               {entity.campos
                 .filter((c) => c.descripcion)
                 .map((c) => (
-                  <p key={c.name} className="text-[11px] text-[#3F3F46]">
+                  <p key={c.name} className="text-[12px] text-[#3F3F46]">
                     <strong className="text-[#09090B]">{c.name}:</strong>{" "}
                     {c.descripcion}
                   </p>

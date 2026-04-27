@@ -125,7 +125,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto">
       <div className="flex items-center gap-2">
-        <Link href="/admin" className="text-[12px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1">
+        <Link href="/admin" className="text-[13px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1">
           <ArrowLeft size={13} /> Admin
         </Link>
       </div>
@@ -137,12 +137,12 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3 p-3 rounded-[10px] bg-white border border-[#E4E4E7]">
-        <label className="flex items-center gap-2 text-[12px] text-[#52525B]">
+        <label className="flex items-center gap-2 text-[13px] text-[#52525B]">
           Período:
           <select
             value={periodoId}
             onChange={(e) => setPeriodoId(Number(e.target.value))}
-            className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#E4E4E7] text-[12px] focus:outline-none focus:border-[#B45309]"
+            className="px-2.5 py-1.5 rounded-[6px] bg-white border border-[#E4E4E7] text-[13px] focus:outline-none focus:border-[#B45309]"
           >
             {periodos.map((p) => (
               <option key={p.id} value={p.id}>{p.label}{p.cerrado ? " (cerrado)" : ""}</option>
@@ -151,13 +151,13 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
         </label>
         <button
           onClick={guardarTodos}
-          className="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-[#09090B] hover:bg-[#27272A] text-white text-[12px] font-semibold"
+          className="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-[#09090B] hover:bg-[#27272A] text-white text-[13px] font-semibold"
         >
           <Save size={13} /> Guardar todo
         </button>
         <button
           onClick={regenerarAlertas}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-white hover:bg-[#FAFAFA] border border-[#E4E4E7] text-[12px] font-semibold text-[#52525B]"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-white hover:bg-[#FAFAFA] border border-[#E4E4E7] text-[13px] font-semibold text-[#52525B]"
         >
           <RefreshCw size={13} /> Regenerar alertas
         </button>
@@ -165,7 +165,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
       {globalMsg && (
         <div className={clsx(
-          "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[12px]",
+          "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[13px]",
           globalMsg.type === "ok"
             ? "bg-[#F0FDF4] border border-[#BBF7D0] text-[#15803D]"
             : "bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C]"
@@ -177,9 +177,9 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
       {/* Tabla editable */}
       <div className="overflow-x-auto rounded-[10px] border border-[#E4E4E7] bg-white">
-        <table className="w-full text-[12px]">
+        <table className="w-full text-[13px]">
           <thead className="bg-[#FAFAFA] border-b border-[#E4E4E7]">
-            <tr className="text-[10px] uppercase tracking-wider text-[#71717A]">
+            <tr className="text-[11px] uppercase tracking-wider text-[#71717A]">
               <th className="px-3 py-2 text-left">ID</th>
               <th className="px-3 py-2 text-left">Modelo</th>
               <th className="px-2 py-2 text-right">DFM%</th>
@@ -205,7 +205,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
               return (
                 <tr key={r.equipoId} className="border-t border-[#F4F4F5] hover:bg-[#FAFAFA]">
                   <td className="px-3 py-1.5 font-mono font-bold text-[#09090B]">{r.equipoId}</td>
-                  <td className="px-3 py-1.5 text-[#71717A] text-[11px]">{r.modelo}</td>
+                  <td className="px-3 py-1.5 text-[#71717A] text-[12px]">{r.modelo}</td>
                   <Num value={r.dfm} onChange={(v) => patch(idx, { dfm: v })} />
                   <Num value={r.tmef} onChange={(v) => patch(idx, { tmef: v })} />
                   <Num value={r.tmpr} onChange={(v) => patch(idx, { tmpr: v })} />
@@ -226,7 +226,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
                   <Num value={r.pctDetProgramada} onChange={(v) => patch(idx, { pctDetProgramada: v })} />
                   <Num value={r.pctDetNoProg}     onChange={(v) => patch(idx, { pctDetNoProg: v })} />
                   <Num value={r.pctPerdidaOp}     onChange={(v) => patch(idx, { pctPerdidaOp: v })} />
-                  <td className={clsx("px-1.5 py-1.5 text-right font-mono text-[11px]", sumOk ? "text-[#15803D]" : "text-[#B91C1C] font-bold")}>
+                  <td className={clsx("px-1.5 py-1.5 text-right font-mono text-[12px]", sumOk ? "text-[#15803D]" : "text-[#B91C1C] font-bold")}>
                     {sumAsarco.toFixed(1)}
                   </td>
                   <td className="px-2 py-1.5 text-center">
@@ -234,7 +234,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
                       onClick={() => guardarFila(idx)}
                       disabled={r.status === "saving"}
                       className={clsx(
-                        "inline-flex items-center justify-center w-7 h-7 rounded-[5px] text-[10px] font-bold",
+                        "inline-flex items-center justify-center w-7 h-7 rounded-[5px] text-[11px] font-bold",
                         r.status === "ok"      && "bg-[#F0FDF4] text-[#15803D]",
                         r.status === "error"   && "bg-[#FEF2F2] text-[#B91C1C]",
                         r.status === "saving"  && "bg-[#FFFBEB] text-[#B45309]",
@@ -252,7 +252,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
         </table>
       </div>
 
-      <p className="text-[10px] text-[#A1A1AA]">
+      <p className="text-[11px] text-[#A1A1AA]">
         Σ = suma de los 5 segmentos ASARCO (debe ser 100% ± 0.5). Op = Operativo, Rsv = Reserva, DP = Det. Programada,
         DNP = Det. No Programada, PO = Pérdida Operacional.
       </p>
@@ -276,7 +276,7 @@ function Num({
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-        className="w-[58px] px-1.5 py-1 rounded-[4px] bg-white border border-[#E4E4E7] focus:border-[#B45309] focus:outline-none text-right text-[11px] font-mono"
+        className="w-[58px] px-1.5 py-1 rounded-[4px] bg-white border border-[#E4E4E7] focus:border-[#B45309] focus:outline-none text-right text-[12px] font-mono"
       />
     </td>
   );

@@ -12,7 +12,7 @@ export function SectionTitle({ children, className, accent = true }: SectionTitl
       {accent && (
         <div className="h-3.5 w-[3px] rounded-full bg-[#B45309] shrink-0" aria-hidden="true" />
       )}
-      <h2 className="text-[11px] font-bold text-[#09090B] uppercase tracking-[0.12em]">
+      <h2 className="text-[12px] font-bold text-[#09090B] uppercase tracking-[0.12em]">
         {children}
       </h2>
     </div>

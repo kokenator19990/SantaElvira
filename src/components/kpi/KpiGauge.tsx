@@ -61,14 +61,14 @@ export function KpiGauge({ label, valor, max = 100, unidad = "%", estado, invert
 
         {/* Center value */}
         <div className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-0.5">
-          <span className="text-[17px] font-mono font-bold leading-none" style={{ color }}>
+          <span className="text-[19px] font-mono font-bold leading-none" style={{ color }}>
             {valor === 0 ? "—" : valor}
           </span>
-          <span className="text-[9px] text-[#A1A1AA] font-medium mt-0.5">{unidad}</span>
+          <span className="text-[10px] text-[#A1A1AA] font-medium mt-0.5">{unidad}</span>
         </div>
       </div>
 
-      <span className="text-[10px] font-medium text-[#71717A] text-center leading-tight max-w-[80px]">
+      <span className="text-[11px] font-medium text-[#71717A] text-center leading-tight max-w-[80px]">
         {label}
       </span>
     </div>

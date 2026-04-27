@@ -37,24 +37,24 @@ export function AlertasRecientes({ alertas, max = 5 }: AlertasRecientesProps) {
         <div className="flex items-center gap-2">
           <AlertCircle size={14} className="text-[#71717A]" />
           <Tooltip short="Equipos con KPIs fuera de umbral, ordenados por criticidad" help={HELP.alertasPrioritarias}>
-            <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
+            <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
               Alertas Activas
             </span>
           </Tooltip>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-[4px] bg-[#FFFBEB] text-[#92400E]">
+          <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-[4px] bg-[#FFFBEB] text-[#92400E]">
             {alertas.length}
           </span>
         </div>
         <Link
           href="/alertas"
-          className="flex items-center gap-0.5 text-[11px] text-[#B45309] hover:text-[#92400E] transition-colors"
+          className="flex items-center gap-0.5 text-[12px] text-[#B45309] hover:text-[#92400E] transition-colors"
         >
           Ver todas <ChevronRight size={11} />
         </Link>
       </div>
 
       {top.length === 0 && (
-        <div className="flex items-center justify-center h-24 text-[12px] text-[#A1A1AA]">
+        <div className="flex items-center justify-center h-24 text-[13px] text-[#A1A1AA]">
           Sin alertas activas
         </div>
       )}
@@ -69,14 +69,14 @@ export function AlertasRecientes({ alertas, max = 5 }: AlertasRecientesProps) {
             <SemaforoDot estado={alerta.estado} size="md" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-[13px] font-mono font-bold text-[#09090B]">{alerta.equipoId}</span>
-                <span className="text-[10px] text-[#71717A] hidden sm:block">{alerta.modelo}</span>
+                <span className="text-[15px] font-mono font-bold text-[#09090B]">{alerta.equipoId}</span>
+                <span className="text-[11px] text-[#71717A] hidden sm:block">{alerta.modelo}</span>
               </div>
-              <p className="text-[11px] text-[#71717A] truncate mt-0.5">{alerta.mensaje}</p>
+              <p className="text-[12px] text-[#71717A] truncate mt-0.5">{alerta.mensaje}</p>
             </div>
             <div className="text-right shrink-0">
-              <p className="text-[9px] text-[#A1A1AA] uppercase">{KPI_LABEL[alerta.kpi]}</p>
-              <p className="text-[15px] font-mono font-bold text-[#3F3F46] leading-tight">
+              <p className="text-[10px] text-[#A1A1AA] uppercase">{KPI_LABEL[alerta.kpi]}</p>
+              <p className="text-[17px] font-mono font-bold text-[#3F3F46] leading-tight">
                 {alerta.valorActual === 0 ? "—" : alerta.valorActual}
               </p>
             </div>

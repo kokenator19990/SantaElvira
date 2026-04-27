@@ -31,7 +31,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
   return (
     <div className="flex flex-col gap-5 max-w-[800px] mx-auto">
       <div className="flex items-center gap-2">
-        <Link href="/admin" className="text-[12px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1">
+        <Link href="/admin" className="text-[13px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1">
           <ArrowLeft size={13} /> Admin
         </Link>
       </div>
@@ -43,7 +43,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
 
       {msg && (
         <div className={clsx(
-          "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[12px]",
+          "flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] text-[13px]",
           msg.type === "ok"
             ? "bg-[#F0FDF4] border border-[#BBF7D0] text-[#15803D]"
             : "bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C]"
@@ -54,30 +54,30 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
       )}
 
       <div className="p-4 rounded-[10px] bg-white border border-[#E4E4E7]">
-        <p className="text-[12px] font-semibold text-[#09090B] mb-3">Crear nuevo período</p>
+        <p className="text-[13px] font-semibold text-[#09090B] mb-3">Crear nuevo período</p>
         <div className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-[#71717A] uppercase">Año</span>
+            <span className="text-[11px] font-bold text-[#71717A] uppercase">Año</span>
             <input
               type="number"
               value={anio}
               onChange={(e) => setAnio(parseInt(e.target.value) || 0)}
-              className="w-[90px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px] font-mono"
+              className="w-[90px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px] font-mono"
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-[#71717A] uppercase">Mes</span>
+            <span className="text-[11px] font-bold text-[#71717A] uppercase">Mes</span>
             <select
               value={mes}
               onChange={(e) => setMes(parseInt(e.target.value))}
-              className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[12px]"
+              className="px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px]"
             >
               {MESES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
             </select>
           </label>
           <button
             onClick={() => handle(crearPeriodo({ anio, mes }), `Período ${MESES[mes - 1]} ${anio} creado.`)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#09090B] hover:bg-[#27272A] text-white text-[12px] font-semibold"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#09090B] hover:bg-[#27272A] text-white text-[13px] font-semibold"
           >
             <Plus size={12} /> Crear
           </button>
@@ -85,9 +85,9 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
       </div>
 
       <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
-        <table className="w-full text-[12px]">
+        <table className="w-full text-[13px]">
           <thead className="bg-[#FAFAFA] border-b border-[#E4E4E7]">
-            <tr className="text-[10px] uppercase tracking-wider text-[#71717A]">
+            <tr className="text-[11px] uppercase tracking-wider text-[#71717A]">
               <th className="px-3 py-2 text-left">Período</th>
               <th className="px-3 py-2 text-right">Año / Mes</th>
               <th className="px-3 py-2 text-center">Estado</th>
@@ -101,11 +101,11 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
                 <td className="px-3 py-2 text-right font-mono text-[#71717A]">{p.anio}-{String(p.mes).padStart(2, "0")}</td>
                 <td className="px-3 py-2 text-center">
                   {p.cerrado ? (
-                    <span className="text-[10px] font-bold text-[#71717A] bg-[#F4F4F5] px-2 py-0.5 rounded inline-flex items-center gap-1">
+                    <span className="text-[11px] font-bold text-[#71717A] bg-[#F4F4F5] px-2 py-0.5 rounded inline-flex items-center gap-1">
                       <Lock size={10} /> Cerrado
                     </span>
                   ) : (
-                    <span className="text-[10px] font-medium text-[#15803D] bg-[#F0FDF4] px-2 py-0.5 rounded inline-flex items-center gap-1">
+                    <span className="text-[11px] font-medium text-[#15803D] bg-[#F0FDF4] px-2 py-0.5 rounded inline-flex items-center gap-1">
                       <Unlock size={10} /> Abierto
                     </span>
                   )}
@@ -116,7 +116,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
                       cerrarPeriodo(p.id, !p.cerrado),
                       `${p.label} ${p.cerrado ? "reabierto" : "cerrado"}.`
                     )}
-                    className="px-2 py-0.5 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[10px] font-medium text-[#52525B]"
+                    className="px-2 py-0.5 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[11px] font-medium text-[#52525B]"
                   >
                     {p.cerrado ? "Reabrir" : "Cerrar"}
                   </button>

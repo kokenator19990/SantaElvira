@@ -68,15 +68,15 @@ export function TopBar({ onMenuClick, totalEquipos }: TopBarProps) {
 
       {/* Breadcrumb + título */}
       <div className="flex flex-col leading-tight min-w-0">
-        <div className="flex items-center gap-1 text-[10px] text-[#A1A1AA] font-medium uppercase tracking-wider">
+        <div className="flex items-center gap-1 text-[11px] text-[#A1A1AA] font-medium uppercase tracking-wider">
           <span>MSG</span>
           <ChevronRight size={10} className="text-[#D4D4D8]" />
           <span className="text-[#71717A]">{titulo}</span>
         </div>
-        <p className="text-[15px] font-semibold text-[#09090B] tracking-tight truncate leading-snug">
+        <p className="text-[17px] font-semibold text-[#09090B] tracking-tight truncate leading-snug">
           {titulo}
           {subtitulo && (
-            <span className="ml-2 text-[12px] font-normal text-[#71717A]">{subtitulo}</span>
+            <span className="ml-2 text-[13px] font-normal text-[#71717A]">{subtitulo}</span>
           )}
         </p>
       </div>
@@ -84,8 +84,8 @@ export function TopBar({ onMenuClick, totalEquipos }: TopBarProps) {
       <div className="ml-auto flex items-center gap-3">
         {/* Fecha */}
         <div className="hidden md:flex flex-col items-end leading-tight">
-          <span className="text-[11px] font-mono text-[#A1A1AA] uppercase tracking-wider">{hoy}</span>
-          <span className="text-[13px] font-mono font-semibold text-[#52525B]">{hora}</span>
+          <span className="text-[12px] font-mono text-[#A1A1AA] uppercase tracking-wider">{hoy}</span>
+          <span className="text-[15px] font-mono font-semibold text-[#52525B]">{hora}</span>
         </div>
 
         {/* Divider */}
@@ -97,7 +97,7 @@ export function TopBar({ onMenuClick, totalEquipos }: TopBarProps) {
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${turno.color} opacity-50`} />
             <span className={`relative inline-flex h-2 w-2 rounded-full ${turno.color}`} />
           </span>
-          <span className="text-[12px] font-medium text-[#52525B] whitespace-nowrap">{turno.label}</span>
+          <span className="text-[13px] font-medium text-[#52525B] whitespace-nowrap">{turno.label}</span>
         </div>
       </div>
     </header>

@@ -64,12 +64,12 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
       <div className="px-6 py-5 border-b border-[#E4E4E7] flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-[18px] font-bold text-[#09090B] tracking-tight">
+            <h1 className="text-[20px] font-bold text-[#09090B] tracking-tight">
               Informe Mensual Flota
             </h1>
             {/* Badge estado — oculto en print, mostrado como texto */}
             <span
-              className="no-print inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider"
+              className="no-print inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-bold uppercase tracking-wider"
               style={{
                 backgroundColor: ESTADO_BG[estadoGeneral],
                 color: ESTADO_PRINT_COLOR[estadoGeneral],
@@ -78,20 +78,20 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
               {ESTADO_LABEL[estadoGeneral]}
             </span>
             <span
-              className="print-only hidden text-[11px] font-bold uppercase"
+              className="print-only hidden text-[12px] font-bold uppercase"
               style={{ color: ESTADO_PRINT_COLOR[estadoGeneral] }}
             >
               {ESTADO_LABEL[estadoGeneral]}
             </span>
           </div>
-          <p className="text-[13px] text-[#71717A]">
+          <p className="text-[15px] text-[#71717A]">
             Mining Services Group Ltda. — Faena El Salvador
           </p>
-          <p className="text-[12px] text-[#A1A1AA] mt-0.5">Período: {periodo}</p>
+          <p className="text-[13px] text-[#A1A1AA] mt-0.5">Período: {periodo}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[12px] text-[#71717A]">Generado: {fechaGeneracion}</p>
-          <p className="text-[10px] text-[#A1A1AA] font-mono mt-0.5">Dashboard KPI MSG v1.0</p>
+          <p className="text-[13px] text-[#71717A]">Generado: {fechaGeneracion}</p>
+          <p className="text-[11px] text-[#A1A1AA] font-mono mt-0.5">Dashboard KPI MSG v1.0</p>
         </div>
       </div>
 
@@ -103,9 +103,9 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
           { label: "TMPR promedio",  valor: `${tmprFlota}h`, nota: "≤ 5h meta",   color: tmprFlota <= 5 ? "#15803D" : tmprFlota <= 15 ? "#B45309" : "#DC2626" },
         ].map(({ label, valor, nota, color }) => (
           <div key={label} className="px-5 py-4 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-[0.1em]">{label}</span>
-            <span className="text-[24px] font-bold font-mono leading-none" style={{ color }}>{valor}</span>
-            <span className="text-[10px] text-[#A1A1AA]">{nota}</span>
+            <span className="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-[0.1em]">{label}</span>
+            <span className="text-[27px] font-bold font-mono leading-none" style={{ color }}>{valor}</span>
+            <span className="text-[11px] text-[#A1A1AA]">{nota}</span>
           </div>
         ))}
       </div>
@@ -113,19 +113,19 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
       <div className="p-6 space-y-6">
         {/* ── SECCIÓN 1: Resumen por flota ─────────────────────────────────── */}
         <section>
-          <h2 className="text-[14px] font-bold text-[#09090B] border-l-[3px] border-[#09090B] pl-3 mb-3">
+          <h2 className="text-[16px] font-bold text-[#09090B] border-l-[3px] border-[#09090B] pl-3 mb-3">
             1. Resumen por Flota
           </h2>
           <div className="overflow-x-auto rounded-lg border border-[#E4E4E7]">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-[#F4F4F5]">
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[#52525B]">Flota</th>
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">N°</th>
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">Dfm</th>
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">TMEF</th>
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">TMPR</th>
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">Estado</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Flota</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">N°</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Dfm</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">TMEF</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">TMPR</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Estado</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,7 +138,7 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
                     <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#52525B]">{f.tmprPromedio}h</td>
                     <td className="border border-[#F4F4F5] px-3 py-2.5 text-center">
                       <span
-                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider"
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider"
                         style={{
                           backgroundColor: ESTADO_BG[f.semaforoGeneral],
                           color: ESTADO_PRINT_COLOR[f.semaforoGeneral],
@@ -157,16 +157,16 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
         {/* ── SECCIÓN 2: Paros ─────────────────────────────────────────────── */}
         {equiposEnParo.length > 0 && (
           <section>
-            <h2 className="text-[14px] font-bold text-[#09090B] border-l-[3px] border-[#B91C1C] pl-3 mb-3">
+            <h2 className="text-[16px] font-bold text-[#09090B] border-l-[3px] border-[#B91C1C] pl-3 mb-3">
               2. Equipos en Paro Total ({equiposEnParo.length})
             </h2>
             <div className="overflow-x-auto rounded-lg border border-[#FECACA]">
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-[#FEF2F2]">
-                    <th className="border border-[#FECACA] px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[#B91C1C]">ID</th>
-                    <th className="border border-[#FECACA] px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[#B91C1C]">Modelo</th>
-                    <th className="border border-[#FECACA] px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[#B91C1C]">Motivo del paro</th>
+                    <th className="border border-[#FECACA] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#B91C1C]">ID</th>
+                    <th className="border border-[#FECACA] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#B91C1C]">Modelo</th>
+                    <th className="border border-[#FECACA] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#B91C1C]">Motivo del paro</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -186,18 +186,18 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
         {/* ── SECCIÓN 3: Críticos ──────────────────────────────────────────── */}
         {equiposCriticos.length > 0 && (
           <section>
-            <h2 className="text-[14px] font-bold text-[#09090B] border-l-[3px] border-[#B45309] pl-3 mb-3">
+            <h2 className="text-[16px] font-bold text-[#09090B] border-l-[3px] border-[#B45309] pl-3 mb-3">
               3. Equipos en Estado Crítico ({equiposCriticos.length})
             </h2>
             <div className="overflow-x-auto rounded-lg border border-[#E4E4E7]">
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-[#F4F4F5]">
-                    <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[#52525B]">ID</th>
-                    <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-[#52525B]">Modelo</th>
-                    <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">Dfm</th>
-                    <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">TMEF</th>
-                    <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-[#52525B]">TMPR</th>
+                    <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#52525B]">ID</th>
+                    <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Modelo</th>
+                    <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Dfm</th>
+                    <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">TMEF</th>
+                    <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">TMPR</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -220,7 +220,7 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
         <GraficosReporte flotas={flotas} />
 
         {/* ── PIE ──────────────────────────────────────────────────────────── */}
-        <footer className="pt-4 border-t border-[#E4E4E7] flex flex-col sm:flex-row justify-between gap-1 text-[10px] text-[#A1A1AA]">
+        <footer className="pt-4 border-t border-[#E4E4E7] flex flex-col sm:flex-row justify-between gap-1 text-[11px] text-[#A1A1AA]">
           <span>MSG — Dashboard KPI El Salvador</span>
           <span>Confidencial · Solo uso interno</span>
           <span>Generado automáticamente</span>

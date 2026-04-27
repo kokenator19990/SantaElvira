@@ -1548,7 +1548,7 @@ export default function ArquitecturaPage() {
                         {role.name}
                       </h3>
                       <p
-                        className="text-[11px] leading-snug mt-0.5"
+                        className="text-[12px] leading-snug mt-0.5"
                         style={{ color: "#71717A" }}
                       >
                         {role.description}
@@ -1672,7 +1672,7 @@ export default function ArquitecturaPage() {
                 >
                   <div className="flex items-center gap-2 justify-center flex-wrap">
                     <span
-                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded"
+                      className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded"
                       style={{
                         backgroundColor: point.color,
                         color: "#FFFFFF",
@@ -1758,7 +1758,7 @@ export default function ArquitecturaPage() {
                   style={{ color: "#71717A" }}
                 />
                 <span
-                  className="text-[10px] font-medium text-center leading-tight"
+                  className="text-[11px] font-medium text-center leading-tight"
                   style={{ color: "#71717A" }}
                 >
                   {row.label}

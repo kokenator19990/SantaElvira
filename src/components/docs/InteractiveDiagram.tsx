@@ -107,7 +107,7 @@ function SectionBtn({
     <button
       onClick={onClick}
       className={clsx(
-        "px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap",
+        "px-2.5 py-1 rounded-md text-[12px] font-medium whitespace-nowrap",
         "transition-all duration-150",
         active
           ? "bg-[#92400E] text-white shadow-sm"
@@ -329,7 +329,7 @@ function DiagramInner({
             {title}
           </div>
           {description && (
-            <div className="text-[10px] text-[#71717A] mt-0.5 leading-snug">
+            <div className="text-[11px] text-[#71717A] mt-0.5 leading-snug">
               {description}
             </div>
           )}

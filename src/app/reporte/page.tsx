@@ -48,14 +48,14 @@ export default function ReportePage() {
             <select
               value={periodo}
               onChange={(e) => setPeriodo(e.target.value)}
-              className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[13px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
+              className="px-3 py-2 rounded-[8px] bg-white border border-[#E4E4E7] text-[15px] text-[#3F3F46] focus:outline-none focus:border-[#B45309] transition-colors"
               aria-label="Seleccionar período del informe"
             >
               {LABELS_PERIODO.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
             <button
               onClick={imprimir}
-              className="flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#09090B] hover:bg-[#27272A] text-white text-[13px] font-semibold transition-colors duration-150 min-h-[40px]"
+              className="flex items-center gap-2 px-4 py-2 rounded-[8px] bg-[#09090B] hover:bg-[#27272A] text-white text-[15px] font-semibold transition-colors duration-150 min-h-[40px]"
               aria-label="Imprimir o exportar como PDF"
             >
               <Printer size={15} />
@@ -76,7 +76,7 @@ export default function ReportePage() {
             key={id}
             onClick={() => setTab(id)}
             className={clsx(
-              "flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-medium transition-all duration-150",
+              "flex items-center gap-2 px-4 py-2 rounded-[8px] text-[15px] font-medium transition-all duration-150",
               tab === id
                 ? "bg-white text-[#09090B] shadow-sm"
                 : "text-[#71717A] hover:text-[#09090B]"
@@ -92,7 +92,7 @@ export default function ReportePage() {
       {tab === "informe" && (
         <div className="no-print flex items-start gap-2.5 px-3.5 py-2.5 rounded-[8px] bg-[#FAFAFA] border border-[#E4E4E7]">
           <FileDown size={14} className="text-[#A1A1AA] shrink-0 mt-0.5" />
-          <p className="text-[11px] text-[#71717A] leading-relaxed">
+          <p className="text-[12px] text-[#71717A] leading-relaxed">
             En el diálogo de impresión, selecciona{" "}
             <strong className="text-[#52525B]">&ldquo;Guardar como PDF&rdquo;</strong>{" "}
             para exportar. El sidebar y controles se ocultan automáticamente.

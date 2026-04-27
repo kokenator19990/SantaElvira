@@ -60,7 +60,7 @@ export default async function DashboardPage() {
       <div className="flex flex-wrap items-center gap-3 px-1">
         <Tooltip short="Total de equipos en la faena El Salvador" help={HELP.columnaId}>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
-            <span className="text-[11px] text-[#52525B]">Total equipos</span>
+            <span className="text-[12px] text-[#52525B]">Total equipos</span>
             <span className="font-mono font-bold text-[#09090B]">{flota.length}</span>
           </div>
         </Tooltip>
@@ -71,20 +71,20 @@ export default async function DashboardPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-50" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
               </span>
-              <span className="text-[11px] text-[#991B1B] font-semibold">{EN_PARO} en paro total</span>
+              <span className="text-[12px] text-[#991B1B] font-semibold">{EN_PARO} en paro total</span>
             </div>
           </Tooltip>
         )}
         {CRITICOS > 0 && (
           <Tooltip short="Operan pero con KPIs en estado crítico (rojo)" help={HELP.criticos}>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-[#FEF2F2] border border-[#FECACA]">
-              <span className="text-[11px] text-[#B91C1C]">{CRITICOS} críticos</span>
+              <span className="text-[12px] text-[#B91C1C]">{CRITICOS} críticos</span>
             </div>
           </Tooltip>
         )}
         <Tooltip short="Total de alertas por KPIs fuera de umbral" help={HELP.alertasActivas}>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-[7px] bg-white border border-[#E4E4E7]">
-            <span className="text-[11px] text-[#52525B]">Alertas activas</span>
+            <span className="text-[12px] text-[#52525B]">Alertas activas</span>
             <span className="font-mono font-bold text-[#B45309]">{alertas.length}</span>
           </div>
         </Tooltip>
@@ -150,7 +150,7 @@ export default async function DashboardPage() {
                 <Tooltip key={label} short={label} help={HELP[helpKey]}>
                   <div className="flex items-center gap-1.5 cursor-help">
                     <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: color }} />
-                    <span className="text-[10px] text-[#71717A]">{label}</span>
+                    <span className="text-[11px] text-[#71717A]">{label}</span>
                   </div>
                 </Tooltip>
               ))}

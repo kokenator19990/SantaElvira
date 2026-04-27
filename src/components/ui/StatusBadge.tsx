@@ -26,7 +26,7 @@ export function StatusBadge({ estado, label, className }: StatusBadgeProps) {
     <span
       className={clsx(
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-[5px]",
-        "text-[11px] font-semibold uppercase tracking-wide border",
+        "text-[12px] font-semibold uppercase tracking-wide border",
         ESTILOS[estado],
         className
       )}

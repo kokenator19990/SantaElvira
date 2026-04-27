@@ -56,10 +56,10 @@ export function GlosarioRapido() {
               aria-expanded={isOpen}
             >
               <div className="flex items-center gap-3">
-                <span className="text-[11px] font-bold text-[#B45309] bg-[#FFFBEB] px-2 py-0.5 rounded font-mono tracking-wider">
+                <span className="text-[12px] font-bold text-[#B45309] bg-[#FFFBEB] px-2 py-0.5 rounded font-mono tracking-wider">
                   {sigla}
                 </span>
-                <span className="text-[13px] font-medium text-[#09090B]">{nombre}</span>
+                <span className="text-[15px] font-medium text-[#09090B]">{nombre}</span>
               </div>
               <ChevronDown
                 size={15}
@@ -68,12 +68,12 @@ export function GlosarioRapido() {
             </button>
             {isOpen && (
               <div className="px-4 pb-4 pt-1 space-y-2 bg-[#FAFAFA]">
-                <p className="text-[13px] text-[#3F3F46] leading-relaxed">{definicion}</p>
+                <p className="text-[15px] text-[#3F3F46] leading-relaxed">{definicion}</p>
                 <div className="flex items-start gap-2 rounded-lg bg-[#F4F4F5] px-3 py-2">
-                  <span className="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mt-0.5 shrink-0">Ej.</span>
-                  <p className="text-[12px] text-[#52525B] leading-relaxed">{ejemplo}</p>
+                  <span className="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mt-0.5 shrink-0">Ej.</span>
+                  <p className="text-[13px] text-[#52525B] leading-relaxed">{ejemplo}</p>
                 </div>
-                <p className="text-[11px] text-[#71717A]">{meta}</p>
+                <p className="text-[12px] text-[#71717A]">{meta}</p>
               </div>
             )}
           </div>

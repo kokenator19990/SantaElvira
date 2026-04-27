@@ -57,8 +57,8 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
           <Pickaxe size={15} className="text-white" strokeWidth={2.5} />
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-[13px] font-bold text-[#09090B] tracking-tight">MSG</span>
-          <span className="text-[10px] text-[#A1A1AA] font-medium">El Salvador · Faena</span>
+          <span className="text-[15px] font-bold text-[#09090B] tracking-tight">MSG</span>
+          <span className="text-[11px] text-[#A1A1AA] font-medium">El Salvador · Faena</span>
         </div>
         <button
           onClick={onClose}
@@ -72,7 +72,7 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
       {/* Nav section */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto" role="navigation" aria-label="Navegación principal">
         <div className="px-2 mb-3">
-          <span className="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-[0.12em]">
+          <span className="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-[0.12em]">
             Navegación
           </span>
         </div>
@@ -109,7 +109,7 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
                 <div className="flex flex-col leading-tight">
                   <span>{label}</span>
                   <span className={clsx(
-                    "text-[10px] font-normal transition-colors",
+                    "text-[11px] font-normal transition-colors",
                     activo ? "text-[#B45309]/70" : "text-[#A1A1AA] group-hover:text-[#71717A]"
                   )}>
                     {description}
@@ -141,10 +141,10 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
             strokeWidth={helpActive ? 2.5 : 1.8}
           />
           <div className="flex flex-col leading-tight">
-            <span className="text-[12px] font-semibold">
+            <span className="text-[13px] font-semibold">
               {helpActive ? "Ayuda activa" : "Modo Ayuda"}
             </span>
-            <span className={`text-[10px] font-normal ${helpActive ? "text-amber-100" : "text-[#A1A1AA]"}`}>
+            <span className={`text-[11px] font-normal ${helpActive ? "text-amber-100" : "text-[#A1A1AA]"}`}>
               {helpActive ? "ESC para salir" : "Explica cada indicador"}
             </span>
           </div>
@@ -157,9 +157,9 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
         </button>
         <div className="flex items-center gap-2 mb-1.5">
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-[11px] text-[#A1A1AA]">Sistema activo</span>
+          <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
         </div>
-        <p className="text-[10px] text-[#A1A1AA]">Dashboard KPI v1.0 · Abr 2025</p>
+        <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.0 · Abr 2025</p>
       </div>
     </aside>
   );

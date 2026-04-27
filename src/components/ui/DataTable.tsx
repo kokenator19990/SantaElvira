@@ -48,7 +48,7 @@ export function DataTable<T>({
               <th
                 key={col.key}
                 className={clsx(
-                  "px-4 py-3 text-left text-[10px] font-bold text-[#52525B] uppercase tracking-[0.1em] whitespace-nowrap",
+                  "px-4 py-3 text-left text-[11px] font-bold text-[#52525B] uppercase tracking-[0.1em] whitespace-nowrap",
                   stickyFirst && colIdx === 0 && "sticky left-0 z-10 bg-[#F4F4F5]",
                   col.headerClassName
                 )}
@@ -98,7 +98,7 @@ export function DataTable<T>({
         </tbody>
       </table>
       {datos.length === 0 && (
-        <div className="flex items-center justify-center h-24 text-[12px] text-[#A1A1AA]">
+        <div className="flex items-center justify-center h-24 text-[13px] text-[#A1A1AA]">
           Sin datos disponibles
         </div>
       )}

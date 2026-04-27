@@ -1278,7 +1278,7 @@ function AccordionEntity({
                         )}
                       </span>
                     </td>
-                    <td className="px-3 py-1.5 text-[#71717A] font-mono text-[11px]">
+                    <td className="px-3 py-1.5 text-[#71717A] font-mono text-[12px]">
                       {c.type}
                     </td>
                     <td className="px-3 py-1.5 text-[#71717A]">
@@ -1532,7 +1532,7 @@ export default function ModeloPage() {
                       {card.name}
                     </span>
                     {card.tag && (
-                      <span className="text-[9px] font-bold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] px-1.5 py-0.5 rounded">
                         [{card.tag}]
                       </span>
                     )}
@@ -1540,7 +1540,7 @@ export default function ModeloPage() {
                   <p className="text-xs text-[#71717A] mt-1 leading-relaxed">
                     {card.desc}
                   </p>
-                  <span className="text-[10px] text-[#A1A1AA] mt-2 block">
+                  <span className="text-[11px] text-[#A1A1AA] mt-2 block">
                     {card.fields} campos
                   </span>
                 </div>
@@ -1660,28 +1660,28 @@ export default function ModeloPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="rounded-lg border border-[#E4E4E7] bg-white p-3">
               <p className="text-xs font-bold text-[#09090B] mb-1">DFM</p>
-              <p className="text-[11px] text-[#3F3F46]">
+              <p className="text-[12px] text-[#3F3F46]">
                 Disponibilidad Fisica Mecanica
               </p>
-              <p className="text-[10px] text-[#15803D] mt-1 font-medium">
+              <p className="text-[11px] text-[#15803D] mt-1 font-medium">
                 &ge;85% verde &middot; &ge;75% ambar &middot; &lt;75% rojo
               </p>
             </div>
             <div className="rounded-lg border border-[#E4E4E7] bg-white p-3">
               <p className="text-xs font-bold text-[#09090B] mb-1">TMEF</p>
-              <p className="text-[11px] text-[#3F3F46]">
+              <p className="text-[12px] text-[#3F3F46]">
                 Tiempo Medio Entre Fallas
               </p>
-              <p className="text-[10px] text-[#15803D] mt-1 font-medium">
+              <p className="text-[11px] text-[#15803D] mt-1 font-medium">
                 &ge;80h verde &middot; &ge;50h ambar &middot; &lt;50h rojo
               </p>
             </div>
             <div className="rounded-lg border border-[#E4E4E7] bg-white p-3">
               <p className="text-xs font-bold text-[#09090B] mb-1">TMPR</p>
-              <p className="text-[11px] text-[#3F3F46]">
+              <p className="text-[12px] text-[#3F3F46]">
                 Tiempo Medio de Parada por Reparacion
               </p>
-              <p className="text-[10px] text-[#15803D] mt-1 font-medium">
+              <p className="text-[11px] text-[#15803D] mt-1 font-medium">
                 &le;5h verde &middot; &le;15h ambar &middot; &gt;15h rojo
               </p>
             </div>
@@ -1743,7 +1743,7 @@ export default function ModeloPage() {
             <div className="bg-[#F4ECF7] rounded-md px-3 py-2 text-xs text-[#7D3C98] font-mono">
               Viscosidad del motor CE-01: 14.2 cSt, limite 12-16 cSt = verde
             </div>
-            <p className="text-[11px] text-[#71717A] mt-2">
+            <p className="text-[12px] text-[#71717A] mt-2">
               El campo &quot;estado&quot; de MUESTRA_APD se calcula comparando
               el valor contra los limites minimo y maximo.
             </p>
@@ -1906,7 +1906,7 @@ export default function ModeloPage() {
               <div key={phase.phase} className="relative flex items-start gap-4">
                 {/* Dot on timeline */}
                 <span
-                  className="absolute -left-6 top-3 w-[22px] h-[22px] rounded-full flex items-center justify-center text-[10px] font-bold text-white z-10"
+                  className="absolute -left-6 top-3 w-[22px] h-[22px] rounded-full flex items-center justify-center text-[11px] font-bold text-white z-10"
                   style={{ backgroundColor: phase.border }}
                 >
                   {phase.phase}
