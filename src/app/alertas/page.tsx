@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import { getAlertas } from "@/lib/db/queries/alertas";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { SectionTitle } from "@/components/ui/SectionTitle";

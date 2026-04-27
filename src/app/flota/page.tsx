@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import { getFlota } from "@/lib/db/queries/flota";
 import { FlotaClientView } from "./FlotaClientView";
 

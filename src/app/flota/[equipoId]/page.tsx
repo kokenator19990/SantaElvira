@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import { notFound } from "next/navigation";
 import { getEquipoPorId } from "@/lib/db/queries/flota";
 import { getTendenciaPorTipo } from "@/lib/db/queries/tendencias";

@@ -10,6 +10,7 @@ import {
   FlaskConical,
   FileText,
   BookOpen,
+  Settings,
   X,
   Pickaxe,
   HelpCircle,
@@ -34,6 +35,7 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
     { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites", helpKey: "navApd" },
     { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual",  helpKey: "navReporte" },
     { href: "/docs",      label: "Documentacion", icon: BookOpen,       description: "Modelo y arquitectura", helpKey: "navDocs" },
+    { href: "/admin",     label: "Admin",       icon: Settings,        description: "Carga de datos",    helpKey: "navDocs" },
   ];
   const pathname = usePathname();
   const { isActive: helpActive, toggle: toggleHelp } = useHelpMode();
