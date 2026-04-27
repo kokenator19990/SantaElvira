@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ElementType } from "react";
 import type { Node, Edge } from "@xyflow/react";
 import {
   AlertCircle,
@@ -24,8 +24,7 @@ import Link from "next/link";
 import {
   InteractiveDiagram,
   type DiagramSection,
-} from "@/components/docs/InteractiveDiagram";
-import { DIAGRAM_NODE_TYPES } from "@/components/docs/diagram-nodes";
+} from "@/components/docs/lazy";
 import { StepNav, type Step } from "@/components/docs/StepNav";
 import { EntityDetail, type EntityInfo } from "@/components/docs/EntityDetail";
 
@@ -416,24 +415,24 @@ function getEntity(id: string): EntityInfo {
 }
 
 const ER_NODES: Node[] = [
-  makeEntityNode("TIPO_FLOTA", 50, 0, getEntity("TIPO_FLOTA")),
-  makeEntityNode("EQUIPO", 50, 200, getEntity("EQUIPO")),
-  makeEntityNode("PERIODO", 400, 0, getEntity("PERIODO")),
-  makeEntityNode(
-    "KPI_EQUIPO",
-    200,
-    420,
-    getEntity("KPI_EQUIPO"),
-    "CENTRAL"
-  ),
-  makeEntityNode("ASARCO_EQUIPO", 450, 420, getEntity("ASARCO_EQUIPO")),
-  makeEntityNode("UMBRAL_KPI", 650, 100, getEntity("UMBRAL_KPI")),
-  makeEntityNode("ALERTA", 0, 620, getEntity("ALERTA")),
-  makeEntityNode("ANALISIS_APD", 650, 300, getEntity("ANALISIS_APD")),
-  makeEntityNode("MUESTRA_APD", 650, 500, getEntity("MUESTRA_APD")),
+  /* ── Fila 0 — Referencia / configuracion (arriba) ── */
+  makeEntityNode("TIPO_FLOTA", 0, 0, getEntity("TIPO_FLOTA")),
+  makeEntityNode("UMBRAL_KPI", 320, 0, getEntity("UMBRAL_KPI")),
+
+  /* ── Fila 1 — Hubs centrales ── */
+  makeEntityNode("EQUIPO", 0, 350, getEntity("EQUIPO")),
+  makeEntityNode("PERIODO", 620, 230, getEntity("PERIODO")),
+  makeEntityNode("ANALISIS_APD", 940, 230, getEntity("ANALISIS_APD")),
+
+  /* ── Fila 2 — Entidades operacionales (datos mensuales) ── */
+  makeEntityNode("ALERTA", 0, 640, getEntity("ALERTA")),
+  makeEntityNode("KPI_EQUIPO", 310, 620, getEntity("KPI_EQUIPO"), "CENTRAL"),
+  makeEntityNode("ASARCO_EQUIPO", 630, 620, getEntity("ASARCO_EQUIPO")),
+  makeEntityNode("MUESTRA_APD", 940, 620, getEntity("MUESTRA_APD")),
 ];
 
 const ER_EDGES: Edge[] = [
+  /* ── TIPO_FLOTA -> EQUIPO ── */
   {
     id: "e-tf-eq",
     source: "TIPO_FLOTA",
@@ -441,80 +440,110 @@ const ER_EDGES: Edge[] = [
     type: "smoothstep",
     animated: true,
     label: "1:N clasifica",
-    style: { stroke: "#1A5276" },
+    style: { stroke: "#1A5276", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
+  },
+
+  /* ── EQUIPO -> hijos (azul) — 3 salidas bottom distribuidas ── */
+  {
+    id: "e-eq-ale",
+    source: "EQUIPO",
+    target: "ALERTA",
+    sourceHandle: "bottom-s-1",
+    type: "smoothstep",
+    animated: true,
+    label: "1:N",
+    style: { stroke: "#1A5276", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
   {
     id: "e-eq-kpi",
     source: "EQUIPO",
     target: "KPI_EQUIPO",
+    sourceHandle: "bottom-s-3",
+    targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1A5276" },
+    style: { stroke: "#1A5276", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
   {
     id: "e-eq-asc",
     source: "EQUIPO",
     target: "ASARCO_EQUIPO",
+    sourceHandle: "right-s",
+    targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1A5276" },
-  },
-  {
-    id: "e-eq-ale",
-    source: "EQUIPO",
-    target: "ALERTA",
-    type: "smoothstep",
-    animated: true,
-    label: "1:N",
-    style: { stroke: "#1A5276" },
+    style: { stroke: "#1A5276", strokeWidth: 1.5 },
+    labelStyle: { fontSize: 10 },
   },
   {
     id: "e-eq-map",
     source: "EQUIPO",
     target: "MUESTRA_APD",
+    sourceHandle: "right-s",
+    targetHandle: "left-t",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1A5276" },
+    style: { stroke: "#1A5276", strokeWidth: 1, strokeDasharray: "4 3" },
+    labelStyle: { fontSize: 10, opacity: 0.7 },
   },
+
+  /* ── PERIODO -> hijos (verde) — salidas distribuidas ── */
   {
     id: "e-per-kpi",
     source: "PERIODO",
     target: "KPI_EQUIPO",
+    sourceHandle: "bottom-s-1",
+    targetHandle: "top-t-3",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1E8449" },
+    style: { stroke: "#1E8449", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
   {
     id: "e-per-asc",
     source: "PERIODO",
     target: "ASARCO_EQUIPO",
+    sourceHandle: "bottom-s-3",
+    targetHandle: "top-t-3",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1E8449" },
+    style: { stroke: "#1E8449", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
   {
     id: "e-per-ale",
     source: "PERIODO",
     target: "ALERTA",
+    sourceHandle: "left-s",
+    targetHandle: "right-t",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1E8449" },
+    style: { stroke: "#1E8449", strokeWidth: 1, strokeDasharray: "4 3" },
+    labelStyle: { fontSize: 10, opacity: 0.7 },
   },
   {
     id: "e-per-apd",
     source: "PERIODO",
     target: "ANALISIS_APD",
+    sourceHandle: "right-s",
+    targetHandle: "left-t",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1E8449" },
+    style: { stroke: "#1E8449", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
+
+  /* ── APD cadena (purpura) ── */
   {
     id: "e-apd-mue",
     source: "ANALISIS_APD",
@@ -522,16 +551,20 @@ const ER_EDGES: Edge[] = [
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#7D3C98" },
+    style: { stroke: "#7D3C98", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
+
+  /* ── UMBRAL -> KPI_EQUIPO (ambar punteado, al centro) ── */
   {
     id: "e-umb-kpi",
     source: "UMBRAL_KPI",
     target: "KPI_EQUIPO",
     type: "smoothstep",
-    animated: true,
+    animated: false,
     label: "define semaforo",
-    style: { stroke: "#1E8449", strokeDasharray: "6 3" },
+    style: { stroke: "#B45309", strokeWidth: 1.5, strokeDasharray: "6 3" },
+    labelStyle: { fontSize: 10, fontWeight: 600, fill: "#92400E" },
   },
 ];
 
@@ -592,6 +625,7 @@ const NUCLEO_EDGES: Edge[] = [
     id: "n-eq-kpi",
     source: "EQUIPO",
     target: "KPI_EQUIPO",
+    targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
     label: "1:N",
@@ -601,6 +635,7 @@ const NUCLEO_EDGES: Edge[] = [
     id: "n-per-kpi",
     source: "PERIODO",
     target: "KPI_EQUIPO",
+    targetHandle: "top-t-3",
     type: "smoothstep",
     animated: true,
     label: "1:N",
@@ -622,17 +657,19 @@ const NUCLEO_EDGES: Edge[] = [
 /* ================================================================== */
 
 const APD_NODES: Node[] = [
-  makeEntityNode("EQUIPO", 0, 0, getEntity("EQUIPO")),
-  makeEntityNode("PERIODO", 300, 0, getEntity("PERIODO")),
-  makeEntityNode("ANALISIS_APD", 300, 200, getEntity("ANALISIS_APD")),
-  makeEntityNode("MUESTRA_APD", 140, 380, getEntity("MUESTRA_APD")),
+  makeEntityNode("EQUIPO",       680,   0, getEntity("EQUIPO")),
+  makeEntityNode("PERIODO",        0, 240, getEntity("PERIODO")),
+  makeEntityNode("ANALISIS_APD", 340, 240, getEntity("ANALISIS_APD")),
+  makeEntityNode("MUESTRA_APD",  680, 240, getEntity("MUESTRA_APD")),
 ];
 
 const APD_EDGES: Edge[] = [
   {
     id: "a-per-apd",
     source: "PERIODO",
+    sourceHandle: "right-s",
     target: "ANALISIS_APD",
+    targetHandle: "left-t",
     type: "smoothstep",
     animated: true,
     label: "1:N",
@@ -641,7 +678,9 @@ const APD_EDGES: Edge[] = [
   {
     id: "a-apd-mue",
     source: "ANALISIS_APD",
+    sourceHandle: "right-s",
     target: "MUESTRA_APD",
+    targetHandle: "left-t",
     type: "smoothstep",
     animated: true,
     label: "1:N",
@@ -650,7 +689,9 @@ const APD_EDGES: Edge[] = [
   {
     id: "a-eq-mue",
     source: "EQUIPO",
+    sourceHandle: "bottom-s-3",
     target: "MUESTRA_APD",
+    targetHandle: "top-t-3",
     type: "smoothstep",
     animated: true,
     label: "1:N",
@@ -867,6 +908,7 @@ const FLOW_EDGES: Edge[] = [
     id: "fe-4a",
     source: "f-api",
     target: "f-insert-kpi",
+    sourceHandle: "bottom-s-1",
     type: "smoothstep",
     animated: true,
     style: { stroke: "#1E8449" },
@@ -875,6 +917,7 @@ const FLOW_EDGES: Edge[] = [
     id: "fe-4b",
     source: "f-api",
     target: "f-insert-asarco",
+    sourceHandle: "bottom-s-3",
     type: "smoothstep",
     animated: true,
     style: { stroke: "#1E8449" },
@@ -891,6 +934,7 @@ const FLOW_EDGES: Edge[] = [
     id: "fe-6a",
     source: "f-check",
     target: "f-alert",
+    sourceHandle: "bottom-s-1",
     type: "smoothstep",
     animated: true,
     label: "Fuera",
@@ -900,6 +944,7 @@ const FLOW_EDGES: Edge[] = [
     id: "fe-6b",
     source: "f-check",
     target: "f-green",
+    sourceHandle: "bottom-s-3",
     type: "smoothstep",
     animated: true,
     label: "OK",
@@ -909,6 +954,7 @@ const FLOW_EDGES: Edge[] = [
     id: "fe-7a",
     source: "f-alert",
     target: "f-dashboard",
+    targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
     style: { stroke: "#71717A" },
@@ -917,6 +963,7 @@ const FLOW_EDGES: Edge[] = [
     id: "fe-7b",
     source: "f-green",
     target: "f-dashboard",
+    targetHandle: "top-t-3",
     type: "smoothstep",
     animated: true,
     style: { stroke: "#71717A" },
@@ -1099,7 +1146,7 @@ function SectionHeader({
   title,
 }: {
   stepIndex: number;
-  icon: React.ElementType;
+  icon: ElementType;
   title: string;
 }) {
   return (
@@ -1111,6 +1158,41 @@ function SectionHeader({
       <h2 className="text-lg font-bold text-[#09090B] tracking-tight">
         {title}
       </h2>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  EntityDetail Modal — with Escape key support                       */
+/* ================================================================== */
+
+function EntityDetailModal({
+  entity,
+  onClose,
+}: {
+  entity: EntityInfo;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div
+        className="absolute inset-0 bg-black/20"
+        onClick={onClose}
+        role="button"
+        tabIndex={-1}
+        aria-label="Cerrar panel"
+      />
+      <div className="relative w-[380px] max-w-full">
+        <EntityDetail entity={entity} onClose={onClose} />
+      </div>
     </div>
   );
 }
@@ -1135,6 +1217,7 @@ function AccordionEntity({
     >
       <button
         onClick={onToggle}
+        aria-expanded={isOpen}
         className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#FAFAFA] transition-colors"
       >
         <span
@@ -1251,7 +1334,7 @@ export default function ModeloPage() {
             }
           });
         },
-        { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
+        { root: document.getElementById("main-content"), rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
       );
 
       observer.observe(el);
@@ -1259,6 +1342,24 @@ export default function ModeloPage() {
     });
 
     return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  /* ---- JS-based sticky for StepNav (CSS sticky breaks due to overflow-hidden ancestors) ---- */
+  const navSentinelRef = useRef<HTMLDivElement>(null);
+  const [isNavFixed, setIsNavFixed] = useState(false);
+
+  useEffect(() => {
+    const main = document.getElementById("main-content");
+    if (!main) return;
+    const onScroll = () => {
+      if (!navSentinelRef.current) return;
+      const sr = navSentinelRef.current.getBoundingClientRect();
+      const mr = main.getBoundingClientRect();
+      setIsNavFixed(sr.top < mr.top);
+    };
+    main.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => main.removeEventListener("scroll", onScroll);
   }, []);
 
   /* Entity lookup for detail panel */
@@ -1301,8 +1402,18 @@ export default function ModeloPage() {
         </div>
       </div>
 
-      {/* Sticky step nav — fuera del flex-col para que sticky funcione */}
-      <div className="sticky top-0 z-30 bg-[#F8FAFC] border-b border-[#E4E4E7] -mx-4 px-4 md:-mx-6 md:px-6 py-2">
+      {/* Sentinel: marca la posicion natural del StepNav */}
+      <div ref={navSentinelRef} className="h-0" />
+
+      {/* StepNav — JS-based fixed cuando se hace scroll */}
+      <div
+        className={clsx(
+          "z-30 bg-[#F8FAFC] border-b border-[#E4E4E7] py-2",
+          isNavFixed
+            ? "fixed top-[56px] left-0 lg:left-[240px] right-0 px-4 md:px-6 shadow-sm"
+            : "-mx-4 px-4 md:-mx-6 md:px-6"
+        )}
+      >
         <div className="max-w-[960px] mx-auto">
           <StepNav
             steps={STEPS}
@@ -1311,6 +1422,9 @@ export default function ModeloPage() {
           />
         </div>
       </div>
+
+      {/* Spacer cuando el nav esta fixed para evitar salto de layout */}
+      {isNavFixed && <div className="h-12" />}
 
       <div className="max-w-[960px] mx-auto flex flex-col gap-6 pt-6 pb-16">
       {/* =========================== */}
@@ -1413,18 +1527,10 @@ export default function ModeloPage() {
 
         {/* EntityDetail panel for card clicks */}
         {selectedEntityInfo && (
-          <div className="fixed inset-0 z-50 flex justify-end">
-            <div
-              className="absolute inset-0 bg-black/20"
-              onClick={() => setSelectedEntity(null)}
-            />
-            <div className="relative w-[380px] max-w-full">
-              <EntityDetail
-                entity={selectedEntityInfo}
-                onClose={() => setSelectedEntity(null)}
-              />
-            </div>
-          </div>
+          <EntityDetailModal
+            entity={selectedEntityInfo}
+            onClose={() => setSelectedEntity(null)}
+          />
         )}
       </section>
 
@@ -1447,10 +1553,9 @@ export default function ModeloPage() {
             id="er-completo-diagram"
             nodes={ER_NODES}
             edges={ER_EDGES}
-            nodeTypes={DIAGRAM_NODE_TYPES}
             title="Modelo Entidad-Relacion"
             description="9 entidades del sistema KPI MSG"
-            height="620px"
+            height="700px"
             sections={ER_SECTIONS}
             onNodeClick={(nodeId) => setSelectedEntity(nodeId)}
             selectedNodeId={selectedEntity}
@@ -1512,7 +1617,6 @@ export default function ModeloPage() {
           id="nucleo-diagram"
           nodes={NUCLEO_NODES}
           edges={NUCLEO_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Nucleo del Sistema"
           description="EQUIPO x PERIODO = KPI_EQUIPO"
           height="480px"
@@ -1584,10 +1688,9 @@ export default function ModeloPage() {
           id="apd-diagram"
           nodes={APD_NODES}
           edges={APD_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Modulo Analisis de Aceite"
           description="ANALISIS_APD contiene MUESTRA_APD"
-          height="420px"
+          height="500px"
           onNodeClick={(nodeId) => setSelectedEntity(nodeId)}
           selectedNodeId={selectedEntity}
         />
@@ -1642,7 +1745,6 @@ export default function ModeloPage() {
           id="flujo-diagram"
           nodes={FLOW_NODES}
           edges={FLOW_EDGES}
-          nodeTypes={DIAGRAM_NODE_TYPES}
           title="Flujo de Carga de Datos"
           description="Dos caminos paralelos: KPIs y APD"
           height="600px"
