@@ -35,10 +35,11 @@ export default function DocsAnalisisPage() {
         <div className="flex-1">
           <SectionTitle>Análisis Estratégico — Origen del proyecto</SectionTitle>
           <p className="text-[16px] text-[#3F3F46] mt-3 leading-relaxed max-w-2xl">
-            El dashboard MSG no nació de la nada. Fue la respuesta a un análisis exhaustivo de
-            ~100 páginas de documentación operacional de Santa Elvira S.A., aplicando 4
-            metodologías profesionales (Think Tank, RICE, MoSCoW, DDD). Esta página explica
-            <strong> qué se analizó, qué se decidió construir y por qué</strong>.
+            El dashboard MSG es el resultado de un análisis exhaustivo sobre aproximadamente
+            100 páginas de documentación operacional de Santa Elvira S.A., aplicando cuatro
+            metodologías profesionales (Think Tank, RICE, MoSCoW, DDD). Esta sección detalla
+            <strong> el material analizado, las decisiones de implementación adoptadas y la
+            justificación de cada una</strong>.
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             <Pill text="Faena El Salvador" />
@@ -54,7 +55,7 @@ export default function DocsAnalisisPage() {
         n={1}
         icon={Folder}
         title="Documentos analizados"
-        intro="La carpeta original /StaElvira/ tenía 3 fuentes: PDFs estratégicos de alto nivel, documentación operacional histórica (Word/Excel/PDF de 2014–2015), y screenshots del sistema EBSYS legacy. Aquí el resumen de cada una."
+        intro="El directorio original /StaElvira/ contenía tres fuentes documentales: PDFs estratégicos de alto nivel, documentación operacional histórica (Word/Excel/PDF del período 2014–2015) y capturas del sistema EBSYS legacy. A continuación, el resumen de cada una."
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Carpeta
@@ -101,11 +102,12 @@ export default function DocsAnalisisPage() {
           />
         </div>
         <Note tone="info">
-          <strong>Decisión:</strong> el dashboard nuevo NO reemplaza el sistema EBSYS
-          (mantención de OT, planificación) — lo <em>complementa</em> con la capa de visibilidad
-          y reportería que faltaba. Cada KPI, umbral y categoría ASARCO viene de los archivos de
-          la carpeta Documentos. El frontend se inspiró en patrones modernos pero respetando la
-          terminología del negocio (DFM, TMEF, TMPR, Reserva, Operativo, Det. Programada, etc.).
+          <strong>Decisión de alcance:</strong> el dashboard no reemplaza al sistema EBSYS
+          (gestión de OT y planificación). Lo <em>complementa</em> con la capa de visibilidad
+          y reportería previamente inexistente. Cada KPI, umbral y categoría ASARCO se deriva
+          directamente de los documentos del directorio original. La interfaz adopta patrones
+          de diseño contemporáneos manteniendo la terminología operacional del negocio (DFM,
+          TMEF, TMPR, Reserva, Operativo, Detención Programada, entre otros).
         </Note>
       </Section>
 
@@ -114,7 +116,7 @@ export default function DocsAnalisisPage() {
         n={2}
         icon={Target}
         title="North Star Metric — la métrica que guía todo"
-        intro="Antes de cualquier feature, el análisis estableció el indicador único que captura el valor que MSG entrega a CODELCO. Todo lo demás son leading indicators que alimentan ese número."
+        intro="Previo a cualquier definición funcional, el análisis estableció el indicador único que captura el valor entregado por MSG a CODELCO. Los demás indicadores actúan como leading indicators que alimentan esta métrica principal."
       >
         <div className="rounded-2xl bg-gradient-to-br from-[#0A2540] to-[#1A5276] text-white p-8 text-center">
           <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-white/70 mb-3">
@@ -122,8 +124,9 @@ export default function DocsAnalisisPage() {
           </p>
           <h3 className="text-[36px] font-bold tracking-tight mb-2">% Tiempo Operativo de Flota</h3>
           <p className="text-[14px] text-white/80 max-w-xl mx-auto leading-relaxed">
-            Cuántas horas por mes la flota produce valor para CODELCO. Estado actual: 40–65%.
-            Target: 85%. Cada +1% ≈ USD 2–3 M/año en capacidad productiva.
+            Total de horas mensuales en que la flota genera valor productivo para CODELCO.
+            Estado actual: 40–65%. Objetivo: 85%. Cada punto porcentual adicional equivale a
+            USD 2–3 M/año en capacidad productiva.
           </p>
         </div>
         <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
@@ -154,8 +157,8 @@ export default function DocsAnalisisPage() {
       <Section
         n={3}
         icon={CircleAlert}
-        title="6 brechas detectadas"
-        intro="El análisis identificó 6 problemas concretos con evidencia cuantitativa y, en varios casos, cifra de impacto financiero. Estas brechas justifican cada decisión de producto."
+        title="Seis brechas operacionales detectadas"
+        intro="El análisis identificó seis problemáticas concretas con evidencia cuantitativa y, en varios casos, estimación de impacto financiero. Estas brechas constituyen el fundamento de cada decisión de producto."
       >
         <div className="flex flex-col gap-3">
           {BRECHAS.map((b) => (
@@ -163,11 +166,12 @@ export default function DocsAnalisisPage() {
           ))}
         </div>
         <Note tone="warn">
-          <strong>Insight clave de Goldratt (Theory of Constraints):</strong> el TMPR de 127 hrs en
-          la flota 777F NO significa que los mecánicos tardan 127 horas en reparar — significa que
-          el equipo <em>espera 127 horas hasta que llegan los repuestos</em>. La restricción está
-          en logística, no en técnica. Por eso el dashboard mide TMPR y lo expone con semáforo —
-          para hacer visible esa fricción.
+          <strong>Hallazgo clave (Theory of Constraints, Goldratt):</strong> el TMPR de 127 horas
+          en la flota 777F no representa el tiempo de reparación efectivo del equipo de
+          mantención. Refleja el tiempo que el equipo <em>permanece detenido a la espera de
+          componentes</em>. La restricción se localiza en la cadena logística, no en la
+          capacidad técnica del taller. Por esta razón, el dashboard mide y expone el TMPR
+          mediante semáforo, para visibilizar dicha fricción operacional.
         </Note>
       </Section>
 
@@ -176,13 +180,13 @@ export default function DocsAnalisisPage() {
         n={4}
         icon={Brain}
         title="Metodologías aplicadas"
-        intro="El análisis se hizo con un proceso explícito y reproducible. No es opinión — es ranking de iniciativas con datos."
+        intro="El análisis se condujo mediante un proceso explícito y reproducible. La priorización de iniciativas se sustenta en evidencia cuantitativa, no en juicios subjetivos."
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Metodologia
             color="#1A5276"
             titulo="Virtual Think Tank"
-            desc="Debate estructurado de 5 expertos para evitar sesgo de perspectiva única."
+            desc="Debate estructurado entre cinco expertos para mitigar el sesgo de perspectiva única."
             puntos={[
               "Peter Drucker — moderador (Management por Objetivos)",
               "Eliyahu Goldratt — Theory of Constraints",
@@ -205,10 +209,10 @@ export default function DocsAnalisisPage() {
           <Metodologia
             color="#92400E"
             titulo="RICE Framework"
-            desc="Priorización cuantitativa: (Reach × Impact × Confidence) ÷ Effort."
+            desc="Priorización cuantitativa mediante la fórmula: (Reach × Impact × Confidence) ÷ Effort."
             puntos={[
-              "8 iniciativas evaluadas",
-              "Quick Wins: alertas KPI (RICE 40), APD auto (24)",
+              "Ocho iniciativas evaluadas",
+              "Quick Wins: alertas KPI (RICE 40), APD automático (24)",
               "Big Bets: kanban repuestos (24), inventario+OC (12)",
               "Strategic Bets: motor PM (8), predicción Weibull (5)",
             ]}
@@ -216,35 +220,35 @@ export default function DocsAnalisisPage() {
           <Metodologia
             color="#7D3C98"
             titulo="MoSCoW Global"
-            desc="Clasificación de los 28 procesos: Must / Should / Could / Won't en esta fase."
+            desc="Clasificación de los 28 procesos identificados: Must / Should / Could / Won't en la fase actual."
             puntos={[
-              "16 MUST — sin esto el sistema no sirve",
-              "10 SHOULD — importantes en primera release mayor",
-              "2 COULD — diferibles si hay capacidad",
-              "0 WON'T — todo agrega valor en algún momento",
+              "16 MUST — funcionalidad crítica del sistema",
+              "10 SHOULD — relevantes para la primera release mayor",
+              "2 COULD — diferibles según capacidad disponible",
+              "0 WON'T — todas las iniciativas aportan valor",
             ]}
           />
           <Metodologia
             color="#0369A1"
             titulo="Clean Architecture + DDD"
-            desc="5 Bounded Contexts independientes, comunicados por eventos de dominio."
+            desc="Cinco Bounded Contexts independientes, comunicados a través de eventos de dominio."
             puntos={[
-              "Maintenance Context (existente)",
-              "Analytics Context ← este dashboard",
-              "Procurement Context (Solución 2 pendiente)",
-              "Inventory Context (Solución 2 pendiente)",
-              "Planning + Predictive (Solución 3 pendiente)",
+              "Maintenance Context (existente en EBSYS)",
+              "Analytics Context — implementado en este dashboard",
+              "Procurement Context (Solución 2 — pendiente)",
+              "Inventory Context (Solución 2 — pendiente)",
+              "Planning + Predictive Contexts (Solución 3 — pendiente)",
             ]}
           />
           <Metodologia
             color="#B45309"
             titulo="Value vs. Effort Matrix"
-            desc="Clasificación visual para decidir el orden de ataque."
+            desc="Clasificación visual para definir el orden de implementación."
             puntos={[
-              "Quick Wins: alto valor, bajo esfuerzo → primero",
-              "Big Bets: alto valor, alto esfuerzo → planificar",
-              "Fill-ins: bajo valor, bajo esfuerzo → si hay tiempo",
-              "Time Sinks: bajo valor, alto esfuerzo → evitar",
+              "Quick Wins: alto valor, bajo esfuerzo — implementación prioritaria",
+              "Big Bets: alto valor, alto esfuerzo — requieren planificación",
+              "Fill-ins: bajo valor, bajo esfuerzo — opcionales",
+              "Time Sinks: bajo valor, alto esfuerzo — evitar",
             ]}
           />
         </div>
@@ -255,7 +259,7 @@ export default function DocsAnalisisPage() {
         n={5}
         icon={ListChecks}
         title="28 procesos identificados"
-        intro="Cada proceso operacional fue clasificado con MoSCoW. Esto define qué se construye antes y qué se difiere."
+        intro="Cada proceso operacional fue clasificado mediante MoSCoW. Esta clasificación determina el orden de implementación y qué módulos pueden diferirse."
       >
         <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
           <table className="w-full text-[12px]">
@@ -299,10 +303,11 @@ export default function DocsAnalisisPage() {
           </table>
         </div>
         <Note tone="info">
-          De los 28 procesos, el dashboard cubre principalmente <strong>KPIs (8/8) y Reporting
-          (parcial)</strong>. Los procesos de Mantenimiento (OT, PM, Backlog) viven en EBSYS y no
-          fueron migrados — el dashboard los lee como datos. Abastecimiento, RRHH y Predictivo
-          quedan como Big Bet (Solución 2) y Strategic Bet (Solución 3).
+          De los 28 procesos identificados, el dashboard implementa principalmente
+          <strong> KPIs (8 de 8) y Reporting (cobertura parcial)</strong>. Los procesos de
+          Mantenimiento (OT, PM, Backlog) residen en EBSYS y no fueron migrados — el dashboard
+          los consume como datos. Los módulos de Abastecimiento, RRHH y Predictivo se
+          encuentran clasificados como Big Bet (Solución 2) y Strategic Bet (Solución 3).
         </Note>
       </Section>
 
@@ -310,8 +315,8 @@ export default function DocsAnalisisPage() {
       <Section
         n={6}
         icon={Workflow}
-        title="3 soluciones priorizadas"
-        intro="Después del análisis RICE y la matriz Value vs. Effort, el plan se cristaliza en 3 soluciones con orden claro de ejecución."
+        title="Tres soluciones priorizadas"
+        intro="Tras la aplicación del análisis RICE y la matriz Value vs. Effort, el plan se consolida en tres soluciones con orden de ejecución definido."
       >
         <div className="flex flex-col gap-4">
           {SOLUCIONES.map((s) => (
@@ -324,8 +329,8 @@ export default function DocsAnalisisPage() {
       <Section
         n={7}
         icon={Layers}
-        title="5 Bounded Contexts (DDD)"
-        intro="El sistema completo, según el análisis, tiene 5 contextos delimitados que se comunican por eventos. Aquí el estado real de cada uno."
+        title="Cinco Bounded Contexts (DDD)"
+        intro="El sistema completo, según el análisis, se compone de cinco contextos delimitados que se comunican mediante eventos. A continuación, el estado actual de cada uno."
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {BOUNDED_CONTEXTS.map((bc) => (
@@ -333,10 +338,10 @@ export default function DocsAnalisisPage() {
           ))}
         </div>
         <Note tone="ok">
-          La arquitectura DDD permite construir <strong>Procurement</strong> e
-          <strong> Inventory</strong> sin tocar el código actual. Cada contexto es un módulo
-          independiente que se comunica por eventos. El dashboard ya emite los eventos correctos
-          (alertas KPI) — solo falta agregar quién los consume.
+          La arquitectura DDD permite implementar los contextos <strong>Procurement</strong> e
+          <strong> Inventory</strong> sin afectar el código actual. Cada contexto es un módulo
+          independiente comunicado por eventos. El dashboard ya emite los eventos
+          correspondientes (alertas KPI); resta únicamente desarrollar los consumidores.
         </Note>
       </Section>
 
@@ -344,8 +349,8 @@ export default function DocsAnalisisPage() {
       <Section
         n={8}
         icon={CheckCircle2}
-        title="Mapeo: del análisis al producto real"
-        intro="Cada feature del dashboard tiene una línea directa con un hallazgo del análisis. Aquí la trazabilidad completa."
+        title="Trazabilidad: del análisis al producto"
+        intro="Cada funcionalidad del dashboard se vincula directamente con un hallazgo del análisis. La siguiente tabla presenta la trazabilidad completa."
       >
         <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
           <table className="w-full text-[12px]">
@@ -377,8 +382,8 @@ export default function DocsAnalisisPage() {
       <Section
         n={9}
         icon={Wrench}
-        title="¿Qué queda pendiente?"
-        intro="El dashboard cubre la Solución 1 (Quick Win) completa. Las Soluciones 2 y 3 son las próximas fases del plan."
+        title="Funcionalidades pendientes"
+        intro="El dashboard implementa la Solución 1 (Quick Win) en su totalidad. Las Soluciones 2 y 3 corresponden a las próximas fases del plan."
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Pendiente
@@ -387,7 +392,7 @@ export default function DocsAnalisisPage() {
             border="#FECACA"
             badge="BIG BET"
             titulo="Solución 2 — Procurement + Inventory"
-            descripcion="La restricción real (Goldratt). Hoy CE-04 y CE-19 llevan 6+ meses parados esperando repuestos. Hay que digitalizar el ciclo de OC y el inventario crítico con kanban pull."
+            descripcion="La restricción operacional principal (Goldratt). Actualmente, los equipos CE-04 y CE-19 acumulan más de seis meses detenidos a la espera de componentes. La solución requiere la digitalización del ciclo de OC y la implementación de un inventario crítico con kanban pull."
             features={[
               "Catálogo de componentes críticos con stock min/max calculado por TMEF",
               "Ciclo digital OC: Solicitud → Aprobación → Compra → Recepción",
@@ -405,7 +410,7 @@ export default function DocsAnalisisPage() {
             border="#DDD6FE"
             badge="STRATEGIC BET"
             titulo="Solución 3 — Plataforma Predictiva"
-            descripcion="Mantenimiento que se anticipa a la falla. Motor de PM inteligente, Weibull por sistema, integración APD predictiva."
+            descripcion="Mantenimiento con capacidad de anticipación a la falla. Comprende motor de PM inteligente, modelos Weibull por sistema e integración APD predictiva."
             features={[
               "Proyección automática de horómetros → próximo PM",
               "Verificación pre-PM: ¿están repuestos y mecánicos?",
@@ -434,7 +439,7 @@ export default function DocsAnalisisPage() {
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <div className="rounded-xl bg-[#F4F4F5] p-5 text-[13px] text-[#52525B] leading-relaxed">
-        <strong className="text-[#09090B]">Continúa con:</strong>
+        <strong className="text-[#09090B]">Continuar con:</strong>
         <div className="flex flex-wrap gap-3 mt-2">
           <Link href="/docs/modelo" className="underline text-[#B45309] hover:text-[#92400E]">
             Modelo de Datos (las 9 entidades)
@@ -443,12 +448,13 @@ export default function DocsAnalisisPage() {
             Arquitectura (capas y flujos)
           </Link>
           <Link href="/docs/supabase" className="underline text-[#B45309] hover:text-[#92400E]">
-            Supabase (BD en producción)
+            Supabase (Base de datos en producción)
           </Link>
         </div>
-        <p className="text-[12px] text-[#71717A] mt-3">
-          La idea: análisis → modelo → arquitectura → Supabase. Recorridos en ese orden, cada
-          decisión de la app queda explicada.
+        <p className="text-[13px] text-[#71717A] mt-3">
+          Recorrido pedagógico: Análisis → Modelo → Arquitectura → Supabase. La consulta
+          secuencial de estas secciones permite comprender la totalidad de las decisiones de
+          implementación del sistema.
         </p>
       </div>
     </div>
@@ -874,7 +880,7 @@ const SOLUCIONES = [
     esfuerzo: "2 P-M",
     inversion: "USD 30–60K",
     retorno: "USD 0.5–1M + intangibles",
-    descripcion: "Visibilidad de datos en tiempo real. Semáforo de flota, cálculo automático de DFM/TMEF/TMPR, alertas por umbral, informe mensual auto-generado, APD integrado. Es el cimiento de todo lo demás — sin esta visibilidad, las otras soluciones no se pueden validar.",
+    descripcion: "Visibilidad de datos en tiempo real. Comprende semáforo de flota, cálculo automático de DFM/TMEF/TMPR, alertas por umbral, informe mensual auto-generado e integración APD. Constituye el fundamento operacional del sistema; sin esta capa de visibilidad, las soluciones subsiguientes no son validables.",
     estado: "construido" as const,
     ruta: "/dashboard",
   },
@@ -883,12 +889,12 @@ const SOLUCIONES = [
     badge: "BIG BET",
     badgeColor: "#B91C1C",
     badgeBg: "#FEF2F2",
-    titulo: "Procurement + Inventory — la restricción real",
+    titulo: "Procurement + Inventory — la restricción operacional",
     rice: "12.2",
     esfuerzo: "6 P-M",
     inversion: "USD 80–150K",
     retorno: "USD 15–30M/año",
-    descripcion: "Atacar la cadena de abastecimiento. Inventario crítico con stock mínimo calculado por TMEF, ciclo digital de OC con escalamiento automático, kanban pull (TPS) que solicita repuestos antes de que se agoten. Recupera CE-04 y CE-19.",
+    descripcion: "Intervención sobre la cadena de abastecimiento. Comprende inventario crítico con stock mínimo calculado por TMEF, ciclo digital de OC con escalamiento automático y kanban pull (TPS) que dispara solicitudes anticipadas de repuestos. Recupera la disponibilidad de CE-04 y CE-19.",
     estado: "pendiente" as const,
   },
   {
@@ -901,7 +907,7 @@ const SOLUCIONES = [
     esfuerzo: "12 P-M",
     inversion: "USD 200–400K",
     retorno: "USD 40–80M/año",
-    descripcion: "Mantenimiento que se anticipa a la falla. Motor de PM con proyección de horómetros, optimizador de Reserva, predicción Weibull de falla por sistema, integración APD predictiva. Reduce DNP en 40–60% y baja Reserva a <8%.",
+    descripcion: "Mantenimiento con capacidad de anticipación a la falla. Comprende motor de PM con proyección de horómetros, optimizador de Reserva, predicción Weibull de falla por sistema e integración APD predictiva. Reduce la DNP entre 40 y 60% y baja la Reserva por debajo del 8%.",
     estado: "pendiente" as const,
   },
 ];

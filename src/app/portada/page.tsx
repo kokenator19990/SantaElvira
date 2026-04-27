@@ -23,10 +23,10 @@ export default async function PortadaPage() {
 
   const sinAlertas = paros === 0 && criticos === 0 && advertencias === 0;
   const proximoPaso = paros > 0 || criticos > 0
-    ? { titulo: "Hay equipos en alerta crítica", url: "/alertas", color: "#B91C1C", bg: "#FEF2F2", border: "#FECACA" }
+    ? { titulo: "Equipos en estado crítico requieren atención inmediata", url: "/alertas", color: "#B91C1C", bg: "#FEF2F2", border: "#FECACA" }
     : advertencias > 0
-    ? { titulo: "Revisa las advertencias", url: "/alertas", color: "#92400E", bg: "#FFFBEB", border: "#FDE68A" }
-    : { titulo: "Flota estable. Revisa los KPIs del día", url: "/dashboard", color: "#15803D", bg: "#F0FDF4", border: "#BBF7D0" };
+    ? { titulo: "Revisión de advertencias activas", url: "/alertas", color: "#92400E", bg: "#FFFBEB", border: "#FDE68A" }
+    : { titulo: "Flota estable — consultar KPIs operacionales del día", url: "/dashboard", color: "#15803D", bg: "#F0FDF4", border: "#BBF7D0" };
 
   return (
     <div className="flex flex-col gap-10 max-w-[960px] mx-auto animate-fade-in-up pb-8">
@@ -86,7 +86,7 @@ export default async function PortadaPage() {
           </div>
           <div className="flex-1">
             <p className="text-[12px] font-bold uppercase tracking-wider" style={{ color: proximoPaso.color, opacity: 0.8 }}>
-              Te sugiero empezar por
+              Acción recomendada
             </p>
             <p className="text-[17px] font-semibold mt-0.5" style={{ color: proximoPaso.color }}>
               {proximoPaso.titulo}
@@ -96,45 +96,45 @@ export default async function PortadaPage() {
         </Link>
       </section>
 
-      {/* ── GUÍA: ENTRO AL SITIO Y... ────────────────────────────────────────── */}
+      {/* ── GUÍA OPERATIVA ───────────────────────────────────────────────────── */}
       <section>
         <div className="flex items-baseline gap-3 mb-4">
           <h2 className="text-[20px] font-bold text-[#09090B] tracking-tight">
-            Entro al sitio. ¿Ahora qué?
+            Procedimiento operativo recomendado
           </h2>
-          <span className="text-[13px] text-[#A1A1AA]">— guía paso a paso</span>
+          <span className="text-[13px] text-[#A1A1AA]">— pasos al iniciar la sesión</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Paso
             n="1"
-            titulo="Mira los chips de arriba"
-            desc="¿Hay paros o críticos rojos? Ve directo a /alertas. Si todo está verde, sigue al paso 2."
+            titulo="Revisar indicadores de estado"
+            desc="Verificar la presencia de paros o equipos críticos en los indicadores superiores. En caso afirmativo, dirigirse al Panel de Alertas. De lo contrario, continuar al paso 2."
             url="/alertas"
-            urlLabel="Ir a Alertas"
+            urlLabel="Acceder al Panel de Alertas"
             color="#B91C1C"
           />
           <Paso
             n="2"
-            titulo="Revisa el panorama del día"
-            desc="En el Dashboard ves los KPIs promedio (DFM, TMEF, TMPR), el semáforo por tipo de flota y la tendencia 6 meses."
+            titulo="Análisis del panorama operacional"
+            desc="El Dashboard presenta los KPIs promedio de la flota (DFM, TMEF, TMPR), el semáforo por tipo de equipo y la tendencia histórica de los últimos 6 meses."
             url="/dashboard"
-            urlLabel="Ir al Dashboard"
+            urlLabel="Acceder al Dashboard"
             color="#B45309"
           />
           <Paso
             n="3"
-            titulo="¿Hay un equipo sospechoso?"
-            desc="En Flota filtras por tipo (785D, 777F, 992, PC-2000) y haces clic en una fila para ver el detalle individual."
+            titulo="Análisis individual de equipos"
+            desc="En la sección Flota es posible filtrar por tipo de equipo (785D, 777F, 992, PC-2000) y seleccionar una fila para acceder al detalle individual con KPIs y distribución ASARCO."
             url="/flota"
-            urlLabel="Ir a Flota"
+            urlLabel="Acceder a Flota"
             color="#1D4ED8"
           />
           <Paso
             n="4"
-            titulo="Generar reporte mensual"
-            desc="Selecciona el período y haz clic en 'Imprimir / PDF'. El reporte se exporta sin sidebar ni controles."
+            titulo="Generación del reporte mensual"
+            desc="Seleccionar el período correspondiente y ejecutar la acción 'Imprimir / PDF'. El reporte se exporta sin sidebar ni controles, listo para distribución a supervisión."
             url="/reporte"
-            urlLabel="Ir a Reporte"
+            urlLabel="Acceder a Reporte"
             color="#7C3AED"
           />
         </div>
@@ -146,27 +146,27 @@ export default async function PortadaPage() {
           icon={Sun}
           color="#B45309"
           bg="#FFFBEB"
-          titulo="Rutina diaria"
+          titulo="Procedimiento diario"
           subtitulo="Al inicio del turno"
           items={[
-            { url: "/portada", text: "Abre la portada — chips de paros/críticos visibles arriba" },
-            { url: "/alertas", text: "Si hay rojos: lista priorizada de paros y equipos críticos" },
-            { url: "/dashboard", text: "Mira KPIs flota + tendencia 6 meses" },
-            { url: "/flota", text: "Drill-down en equipos sospechosos" },
+            { url: "/portada", text: "Acceder al panel de portada — los indicadores de paros y críticos se muestran en la parte superior" },
+            { url: "/alertas", text: "Ante alertas críticas: revisar la lista priorizada de paros y equipos en estado rojo" },
+            { url: "/dashboard", text: "Consultar los KPIs de flota y la tendencia histórica de 6 meses" },
+            { url: "/flota", text: "Realizar análisis detallado de los equipos con desviaciones" },
           ]}
         />
         <Rutina
           icon={CalendarCheck}
           color="#15803D"
           bg="#F0FDF4"
-          titulo="Cierre de mes"
-          subtitulo="Para cargar datos nuevos"
+          titulo="Cierre mensual"
+          subtitulo="Carga de datos del período"
           items={[
-            { url: "/admin/periodos", text: "Crear el período del mes (Año + Mes)" },
-            { url: "/admin/kpis", text: "Cargar DFM, TMEF, TMPR, T.Op, Reserva y ASARCO de cada equipo" },
-            { url: "/admin/alertas", text: "Regenerar alertas (calcula desde KPIs y umbrales)" },
-            { url: "/apd", text: "Subir CSV de análisis de aceite y guardarlo en BD" },
-            { url: "/reporte", text: "Imprimir / Exportar PDF del informe" },
+            { url: "/admin/periodos", text: "Crear el período correspondiente al mes (año y mes)" },
+            { url: "/admin/kpis", text: "Ingresar los KPIs DFM, TMEF, TMPR, T.Op, Reserva y la distribución ASARCO de cada equipo" },
+            { url: "/admin/alertas", text: "Regenerar las alertas (cálculo automático según KPIs y umbrales)" },
+            { url: "/apd", text: "Cargar el archivo CSV del análisis de aceites y persistirlo en base de datos" },
+            { url: "/reporte", text: "Generar el informe mensual en formato PDF" },
           ]}
         />
       </section>
@@ -174,11 +174,12 @@ export default async function PortadaPage() {
       {/* ── GLOSARIO ─────────────────────────────────────────────────────────── */}
       <section>
         <h2 className="text-[17px] font-bold text-[#09090B] uppercase tracking-[0.08em] mb-3">
-          Glosario rápido
+          Glosario de términos técnicos
         </h2>
         <p className="text-[15px] text-[#52525B] mb-3 leading-relaxed">
-          Si no te suena algún término, expandelo aquí. También cada KPI del dashboard tiene
-          tooltip — activa el <strong>Modo Ayuda</strong> (botón en el sidebar abajo) para verlos en detalle.
+          Definiciones de los indicadores y conceptos operacionales utilizados en el sistema.
+          Cada KPI del dashboard cuenta con tooltip explicativo. El <strong>Modo Ayuda</strong>{" "}
+          (panel inferior del sidebar) habilita las definiciones detalladas en cada métrica.
         </p>
         <GlosarioRapido />
       </section>

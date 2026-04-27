@@ -415,21 +415,25 @@ function getEntity(id: string): EntityInfo {
   return ENTITIES.find((e) => e.id === id)!;
 }
 
+// Layout en 3 filas:
+//  Fila 0 (y=0):     TIPO_FLOTA · UMBRAL_KPI · ANALISIS_APD       (catálogos/referencia)
+//  Fila 1 (y=240):   EQUIPO     · PERIODO                          (hubs centrales)
+//  Fila 2 (y=620):   ALERTA · KPI_EQUIPO · ASARCO_EQUIPO · MUESTRA_APD (datos mensuales)
 const ER_NODES: Node[] = [
-  /* ── Fila 0 — Referencia / configuracion (arriba) ── */
-  makeEntityNode("TIPO_FLOTA", 0, 0, getEntity("TIPO_FLOTA")),
-  makeEntityNode("UMBRAL_KPI", 320, 0, getEntity("UMBRAL_KPI")),
+  /* ── Fila 0 — Catálogos y referencia ── */
+  makeEntityNode("TIPO_FLOTA",   0,   0, getEntity("TIPO_FLOTA")),
+  makeEntityNode("UMBRAL_KPI",   320, 0, getEntity("UMBRAL_KPI")),
+  makeEntityNode("ANALISIS_APD", 940, 0, getEntity("ANALISIS_APD")),
 
   /* ── Fila 1 — Hubs centrales ── */
-  makeEntityNode("EQUIPO", 0, 350, getEntity("EQUIPO")),
-  makeEntityNode("PERIODO", 620, 230, getEntity("PERIODO")),
-  makeEntityNode("ANALISIS_APD", 940, 230, getEntity("ANALISIS_APD")),
+  makeEntityNode("EQUIPO",       0,   240, getEntity("EQUIPO")),
+  makeEntityNode("PERIODO",      620, 240, getEntity("PERIODO")),
 
-  /* ── Fila 2 — Entidades operacionales (datos mensuales) ── */
-  makeEntityNode("ALERTA", 0, 640, getEntity("ALERTA")),
-  makeEntityNode("KPI_EQUIPO", 310, 620, getEntity("KPI_EQUIPO"), "CENTRAL"),
-  makeEntityNode("ASARCO_EQUIPO", 630, 620, getEntity("ASARCO_EQUIPO")),
-  makeEntityNode("MUESTRA_APD", 940, 620, getEntity("MUESTRA_APD")),
+  /* ── Fila 2 — Datos mensuales operacionales ── */
+  makeEntityNode("ALERTA",        0,   620, getEntity("ALERTA")),
+  makeEntityNode("KPI_EQUIPO",    310, 620, getEntity("KPI_EQUIPO"), "CENTRAL"),
+  makeEntityNode("ASARCO_EQUIPO", 620, 620, getEntity("ASARCO_EQUIPO")),
+  makeEntityNode("MUESTRA_APD",   940, 620, getEntity("MUESTRA_APD")),
 ];
 
 const ER_EDGES: Edge[] = [
@@ -473,7 +477,7 @@ const ER_EDGES: Edge[] = [
     id: "e-eq-asc",
     source: "EQUIPO",
     target: "ASARCO_EQUIPO",
-    sourceHandle: "right-s",
+    sourceHandle: "bottom-s-3",
     targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
@@ -486,7 +490,7 @@ const ER_EDGES: Edge[] = [
     source: "EQUIPO",
     target: "MUESTRA_APD",
     sourceHandle: "right-s",
-    targetHandle: "left-t",
+    targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
     label: "1:N",
@@ -598,58 +602,68 @@ const ER_SECTIONS: DiagramSection[] = [
 /*  NUCLEO — 5 entidades centrales                                    */
 /* ================================================================== */
 
+// Layout: tres tablas-cabecera arriba (TIPO_FLOTA, PERIODO, UMBRAL_KPI),
+// EQUIPO debajo de TIPO_FLOTA, KPI_EQUIPO al centro recibe las flechas desde
+// EQUIPO (izquierda), PERIODO (arriba) y UMBRAL_KPI (arriba-derecha).
 const NUCLEO_NODES: Node[] = [
-  makeEntityNode("TIPO_FLOTA", 30, 0, getEntity("TIPO_FLOTA")),
-  makeEntityNode("EQUIPO", 30, 160, getEntity("EQUIPO")),
-  makeEntityNode("PERIODO", 350, 0, getEntity("PERIODO")),
-  makeEntityNode(
-    "KPI_EQUIPO",
-    180,
-    350,
-    getEntity("KPI_EQUIPO"),
-    "CENTRAL"
-  ),
-  makeEntityNode("UMBRAL_KPI", 480, 200, getEntity("UMBRAL_KPI")),
+  makeEntityNode("TIPO_FLOTA",  0,   0, getEntity("TIPO_FLOTA")),
+  makeEntityNode("PERIODO",     320, 0, getEntity("PERIODO")),
+  makeEntityNode("UMBRAL_KPI",  640, 0, getEntity("UMBRAL_KPI")),
+  makeEntityNode("EQUIPO",      0,   220, getEntity("EQUIPO")),
+  makeEntityNode("KPI_EQUIPO",  320, 240, getEntity("KPI_EQUIPO"), "CENTRAL"),
 ];
 
 const NUCLEO_EDGES: Edge[] = [
+  // TIPO_FLOTA → EQUIPO: vertical recto en la columna izquierda
   {
     id: "n-tf-eq",
     source: "TIPO_FLOTA",
+    sourceHandle: "bottom-s-2",
     target: "EQUIPO",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1A5276" },
+    style: { stroke: "#1A5276", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
+  // EQUIPO → KPI_EQUIPO: horizontal limpio (right → left)
   {
     id: "n-eq-kpi",
     source: "EQUIPO",
+    sourceHandle: "right-s",
+    target: "KPI_EQUIPO",
+    targetHandle: "left-t",
+    type: "smoothstep",
+    animated: true,
+    label: "1:N",
+    style: { stroke: "#1A5276", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
+  },
+  // PERIODO → KPI_EQUIPO: vertical en la columna central
+  {
+    id: "n-per-kpi",
+    source: "PERIODO",
+    sourceHandle: "bottom-s-2",
     target: "KPI_EQUIPO",
     targetHandle: "top-t-1",
     type: "smoothstep",
     animated: true,
     label: "1:N",
-    style: { stroke: "#1A5276" },
+    style: { stroke: "#1E8449", strokeWidth: 2 },
+    labelStyle: { fontSize: 11, fontWeight: 600 },
   },
-  {
-    id: "n-per-kpi",
-    source: "PERIODO",
-    target: "KPI_EQUIPO",
-    targetHandle: "top-t-3",
-    type: "smoothstep",
-    animated: true,
-    label: "1:N",
-    style: { stroke: "#1E8449" },
-  },
+  // UMBRAL_KPI → KPI_EQUIPO: diagonal arriba-derecha hacia top-derecha
   {
     id: "n-umb-kpi",
     source: "UMBRAL_KPI",
+    sourceHandle: "bottom-s-2",
     target: "KPI_EQUIPO",
+    targetHandle: "top-t-3",
     type: "smoothstep",
-    animated: true,
-    label: "define semaforo",
-    style: { stroke: "#1E8449", strokeDasharray: "6 3" },
+    animated: false,
+    label: "define semáforo",
+    style: { stroke: "#B45309", strokeWidth: 1.5, strokeDasharray: "6 3" },
+    labelStyle: { fontSize: 11, fontWeight: 600, fill: "#92400E" },
   },
 ];
 
@@ -1643,7 +1657,7 @@ export default function ModeloPage() {
           edges={NUCLEO_EDGES}
           title="Nucleo del Sistema"
           description="EQUIPO x PERIODO = KPI_EQUIPO"
-          height="480px"
+          height="540px"
           onNodeClick={(nodeId) => setSelectedEntity(nodeId)}
           selectedNodeId={selectedEntity}
         />

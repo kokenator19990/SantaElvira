@@ -11,8 +11,8 @@ const SECCIONES = [
   {
     href: "/admin/kpis",
     icon: Activity,
-    titulo: "Cargar KPIs Mensuales",
-    descripcion: "Ingresa los DFM, TMEF, TMPR y ASARCO de cada equipo del mes seleccionado. Los datos se guardan al instante en la base de datos.",
+    titulo: "Carga de KPIs Mensuales",
+    descripcion: "Registro de los KPIs DFM, TMEF, TMPR y la distribución ASARCO de cada equipo del período seleccionado. Los datos se persisten en la base de datos en tiempo real.",
     helpKey: "adminKpis",
     color: "#B45309",
     bg: "#FFFBEB",
@@ -20,8 +20,8 @@ const SECCIONES = [
   {
     href: "/admin/equipos",
     icon: Truck,
-    titulo: "Gestionar Flota",
-    descripcion: "Agrega un equipo nuevo, da de baja uno existente, o corrige metadata (modelo, año de fabricación).",
+    titulo: "Gestión de Flota",
+    descripcion: "Alta de equipos nuevos, baja de equipos existentes y modificación de metadatos operacionales (modelo, año de fabricación, tipo de flota).",
     helpKey: "adminEquipos",
     color: "#1D4ED8",
     bg: "#EFF6FF",
@@ -29,8 +29,8 @@ const SECCIONES = [
   {
     href: "/admin/periodos",
     icon: Calendar,
-    titulo: "Períodos",
-    descripcion: "Crea el período del próximo mes antes de cargar sus KPIs. Cierra meses que ya no se editan.",
+    titulo: "Gestión de Períodos",
+    descripcion: "Creación del período correspondiente al mes previo a la carga de KPIs. Cierre de períodos consolidados para evitar modificaciones posteriores.",
     helpKey: "adminPeriodos",
     color: "#059669",
     bg: "#ECFDF5",
@@ -38,8 +38,8 @@ const SECCIONES = [
   {
     href: "/admin/alertas",
     icon: ShieldAlert,
-    titulo: "Regenerar Alertas",
-    descripcion: "Recalcula las alertas activas según los KPIs y umbrales vigentes. Útil tras cargar nuevos datos.",
+    titulo: "Regeneración de Alertas",
+    descripcion: "Recálculo de las alertas activas según los KPIs vigentes y los umbrales operacionales definidos. Operación recomendada tras cada carga de datos.",
     helpKey: "adminAlertas",
     color: "#DC2626",
     bg: "#FEF2F2",
@@ -57,15 +57,15 @@ export default async function AdminPage() {
             Administración
           </Tooltip>
         </SectionTitle>
-        <p className="text-[13px] text-[#71717A] mt-2 max-w-2xl leading-relaxed">
-          Carga manual de datos. Si ya están los KPIs del mes en una planilla Excel,
-          aquí los pasas al sistema. Cada cambio se guarda directamente en Postgres y
-          se refleja en el dashboard.
+        <p className="text-[13px] text-[#52525B] mt-2 max-w-2xl leading-relaxed">
+          Módulo de carga de datos operacionales. Permite migrar los KPIs mensuales
+          desde planillas Excel al sistema. Cada operación se persiste en la base de
+          datos PostgreSQL y se refleja automáticamente en el dashboard.
         </p>
         {periodoActual && (
-          <p className="text-[12px] text-[#52525B] mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A]">
+          <p className="text-[13px] text-[#52525B] mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#B45309]" />
-            Último período con datos: <strong className="text-[#92400E]">{periodoActual.label}</strong>
+            Período activo: <strong className="text-[#92400E]">{periodoActual.label}</strong>
             {periodoActual.cerrado && <span className="text-[#71717A]">· cerrado</span>}
           </p>
         )}

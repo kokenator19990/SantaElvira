@@ -228,22 +228,25 @@ const S1_EDGES: Edge[] = [
     type: "default",
     style: { stroke: "#1A5276" },
   },
+  // o-db está en (700, 250). o-dash está en (900, 100), o-export en (900, 250).
+  // right-s-1 (35% top) y right-s (50%, default) distribuyen las dos salidas
+  // para que no se superpongan al lado derecho del cilindro de la BD.
   {
     id: "e-o5",
     source: "o-db",
     target: "o-dash",
     sourceHandle: "right-s-1",
     targetHandle: "left-t",
-    type: "default",
+    type: "smoothstep",
     style: { stroke: "#CA6F1E" },
   },
   {
     id: "e-o6",
     source: "o-db",
     target: "o-export",
-    sourceHandle: "right-s",
+    sourceHandle: "right-s-3",
     targetHandle: "left-t",
-    type: "default",
+    type: "smoothstep",
     style: { stroke: "#CA6F1E" },
   },
 ];
