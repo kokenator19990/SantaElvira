@@ -53,6 +53,22 @@ export function UmbralesAdminClient({ umbrales, hayDatosBd }: Props) {
 
   async function guardarFila(idx: number): Promise<{ ok: boolean; error?: string }> {
     const r = rows[idx];
+
+    // Validar coherencia verde/ámbar según dirección del KPI
+    if (r.invertido) {
+      if (r.nivelVerde > r.nivelAmbar) {
+        const msg = "En KPI invertido, verde (≤) debe ser menor o igual que ámbar";
+        patch(idx, { status: "error", errorMsg: msg });
+        return { ok: false, error: msg };
+      }
+    } else {
+      if (r.nivelVerde < r.nivelAmbar) {
+        const msg = "Verde (≥) debe ser mayor o igual que ámbar";
+        patch(idx, { status: "error", errorMsg: msg });
+        return { ok: false, error: msg };
+      }
+    }
+
     patch(idx, { status: "saving", errorMsg: undefined });
 
     const result = await actualizarUmbral({

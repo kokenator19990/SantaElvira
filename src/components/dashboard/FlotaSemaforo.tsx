@@ -23,11 +23,12 @@ const SEMAFORO_LABEL: Record<EstadoSemaforo, string> = {
 };
 
 function MiniBar({ valor, max = 100, color }: { valor: number; max?: number; color: string }) {
+  const pct = Number.isFinite(valor / max) ? Math.max(0, Math.min((valor / max) * 100, 100)) : 0;
   return (
     <div className="h-[3px] rounded-full bg-[#F4F4F5] overflow-hidden mt-1">
       <div
         className="h-full rounded-full transition-all duration-700"
-        style={{ width: `${(valor / max) * 100}%`, backgroundColor: color }}
+        style={{ width: `${pct}%`, backgroundColor: color }}
       />
     </div>
   );

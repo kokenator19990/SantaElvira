@@ -163,7 +163,7 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
               {(() => {
                 const insight = interpretarKpi(item.label, item.valor, item.estado, item.objetivo, item.delta);
                 return insight ? (
-                  <p className="text-[10px] leading-tight mt-0.5" style={{ color }}>
+                  <p className="text-[10px] leading-tight mt-0.5 line-clamp-2" style={{ color }}>
                     {insight}
                   </p>
                 ) : null;

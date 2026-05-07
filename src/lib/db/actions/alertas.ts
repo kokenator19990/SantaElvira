@@ -21,6 +21,9 @@ export async function resolverAlerta(
   if (!params.accionTomada?.trim()) {
     return { ok: false, error: "La acción tomada es obligatoria" };
   }
+  if (params.accionTomada.trim().length > 500) {
+    return { ok: false, error: "La acción tomada no puede exceder 500 caracteres" };
+  }
 
   const resultado = await db
     .update(t.alerta)
@@ -99,6 +102,9 @@ export async function resolverTodasPorEstado(
 
   if (!params.accionTomada?.trim()) {
     return { ok: false, error: "La acción tomada es obligatoria" };
+  }
+  if (params.accionTomada.trim().length > 500) {
+    return { ok: false, error: "La acción tomada no puede exceder 500 caracteres" };
   }
 
   const usuario = params.usuario?.trim() || "supervisor";

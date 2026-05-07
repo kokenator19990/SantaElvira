@@ -13,12 +13,18 @@ interface Props {
 
 export function ReabrirButton({ alertaId, equipoId, kpiLabel }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
 
   function handleConfirm() {
+    setError("");
     startTransition(async () => {
-      await reabrirAlerta(Number(alertaId));
-      setShowConfirm(false);
+      const result = await reabrirAlerta(Number(alertaId));
+      if (result.ok) {
+        setShowConfirm(false);
+      } else {
+        setError(result.error);
+      }
     });
   }
 
@@ -33,14 +39,17 @@ export function ReabrirButton({ alertaId, equipoId, kpiLabel }: Props) {
         <RotateCcw size={11} />
         {pending ? "Reabriendo…" : "Reabrir"}
       </button>
+      {error && (
+        <p className="text-[11px] text-[#B91C1C] mt-0.5">{error}</p>
+      )}
       <ConfirmDialog
         open={showConfirm}
         titulo="Reabrir alerta"
-        mensaje={`Se reabrirá la alerta de ${equipoId} (${kpiLabel}). La acción registrada y los datos de resolución se eliminarán. La alerta volverá al panel de alertas activas y se registrará en el log de auditoría.`}
+        mensaje={`Se reabrirá la alerta de ${equipoId} (${kpiLabel}). La acción registrada y los datos de resolución se eliminarán. La alerta volverá al panel de alertas activas y se registrará en el log de auditoría.${error ? ` Error: ${error}` : ""}`}
         textoConfirmar="Reabrir alerta"
         variante="advertencia"
         onConfirm={handleConfirm}
-        onCancel={() => setShowConfirm(false)}
+        onCancel={() => { setShowConfirm(false); setError(""); }}
       />
     </>
   );
