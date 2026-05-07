@@ -44,6 +44,7 @@ export function BottomNav({ alertasCriticas }: { alertasCriticas: number }) {
               className={clsx(
                 "relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 min-h-[56px]",
                 "transition-colors duration-150",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B45309] focus-visible:ring-inset",
                 activo ? "text-[#B45309]" : "text-[#71717A]"
               )}
               aria-label={label}

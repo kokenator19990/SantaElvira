@@ -1184,6 +1184,8 @@ function SectionHeader({
 /*  EntityDetail Modal — with Escape key support                       */
 /* ================================================================== */
 
+const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 function EntityDetailModal({
   entity,
   onClose,
@@ -1191,10 +1193,29 @@ function EntityDetailModal({
   entity: EntityInfo;
   onClose: () => void;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    // Move focus inside modal on open
+    const first = panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE)?.[0];
+    first?.focus();
+
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") { onClose(); return; }
+      if (e.key !== "Tab") return;
+
+      const els = Array.from(panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []);
+      if (!els.length) return;
+      const firstEl = els[0];
+      const lastEl  = els[els.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) { e.preventDefault(); lastEl.focus(); }
+      } else {
+        if (document.activeElement === lastEl) { e.preventDefault(); firstEl.focus(); }
+      }
     };
+
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
@@ -1204,11 +1225,15 @@ function EntityDetailModal({
       <div
         className="absolute inset-0 bg-black/20"
         onClick={onClose}
-        role="button"
-        tabIndex={-1}
-        aria-label="Cerrar panel"
+        aria-hidden="true"
       />
-      <div className="relative w-[380px] max-w-full">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Detalle de ${entity.nombre}`}
+        className="relative w-[380px] max-w-full"
+      >
         <EntityDetail entity={entity} onClose={onClose} />
       </div>
     </div>
@@ -1442,7 +1467,7 @@ export default function ModeloPage() {
       </div>
 
       {/* Spacer cuando el nav esta fixed para evitar salto de layout */}
-      {isNavFixed && <div className="h-12" />}
+      {isNavFixed && <div className="h-14" />}
 
       <div className="max-w-[960px] mx-auto flex flex-col gap-6 pt-6 pb-16">
       {/* =========================== */}

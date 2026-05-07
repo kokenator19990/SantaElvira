@@ -9,6 +9,7 @@ import {
   BellRing,
   FlaskConical,
   FileText,
+  Table2,
   BookOpen,
   Settings,
   X,
@@ -24,18 +25,20 @@ interface SidebarProps {
   open: boolean;
   onClose: () => void;
   totalEquipos: number;
+  alertasCriticas?: number;
 }
 
-export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
+export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: SidebarProps) {
   const NAV_ITEMS = [
-    { href: "/portada",   label: "Portada",     icon: Home,            description: "Bienvenida",       helpKey: "navDashboard" },
+    { href: "/portada",   label: "Portada",     icon: Home,            description: "Bienvenida",       helpKey: "navPortada" },
     { href: "/dashboard", label: "Dashboard",   icon: LayoutDashboard, description: "KPIs y estado",    helpKey: "navDashboard" },
     { href: "/flota",     label: "Flota",       icon: Truck,           description: `${totalEquipos} equipos`, helpKey: "navFlota" },
     { href: "/alertas",   label: "Alertas",     icon: BellRing,        description: "Activas ahora",    helpKey: "navAlertas" },
     { href: "/apd",       label: "APD Aceites", icon: FlaskConical,    description: "Análisis aceites", helpKey: "navApd" },
     { href: "/reporte",   label: "Reporte",     icon: FileText,        description: "Informe mensual",  helpKey: "navReporte" },
+    { href: "/explorador", label: "Explorador", icon: Table2,          description: "Vista planilla",   helpKey: "navExplorador" },
     { href: "/docs",      label: "Documentacion", icon: BookOpen,       description: "Modelo y arquitectura", helpKey: "navDocs" },
-    { href: "/admin",     label: "Admin",       icon: Settings,        description: "Carga de datos",    helpKey: "navDocs" },
+    { href: "/admin",     label: "Admin",       icon: Settings,        description: "Carga de datos",    helpKey: "navAdmin" },
   ];
   const pathname = usePathname();
   const { isActive: helpActive, toggle: toggleHelp } = useHelpMode();
@@ -43,7 +46,7 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
   return (
     <aside
       className={clsx(
-        "no-print flex-shrink-0 flex flex-col w-[240px] h-screen",
+        "no-print flex-shrink-0 flex flex-col w-[240px] max-w-[calc(100vw-48px)] h-screen",
         "bg-white border-r border-[#E4E4E7]",
         "fixed top-0 left-0 z-30",
         "transition-transform duration-220 ease-[cubic-bezier(0.16,1,0.3,1)]",
@@ -52,7 +55,7 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
       )}
     >
       {/* Logo / Brand */}
-      <div className="flex items-center gap-3 px-5 h-[56px] border-b border-[#E4E4E7]">
+      <Link href="/portada" className="flex items-center gap-3 px-5 h-[56px] border-b border-[#E4E4E7] hover:bg-[#FAFAFA] transition-colors">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-500 shadow-glow">
           <Pickaxe size={15} className="text-white" strokeWidth={2.5} />
         </div>
@@ -61,13 +64,13 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
           <span className="text-[11px] text-[#A1A1AA] font-medium">El Salvador · Faena</span>
         </div>
         <button
-          onClick={onClose}
+          onClick={(e) => { e.preventDefault(); onClose(); }}
           className="lg:hidden ml-auto flex items-center justify-center w-7 h-7 rounded text-[#71717A] hover:text-[#09090B] transition-colors"
           aria-label="Cerrar menú"
         >
           <X size={15} />
         </button>
-      </div>
+      </Link>
 
       {/* Nav section */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto" role="navigation" aria-label="Navegación principal">
@@ -84,6 +87,7 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
               key={href}
               href={href}
               onClick={onClose}
+              aria-current={activo ? "page" : undefined}
               className={clsx(
                 "group flex items-center gap-3 px-3 py-2.5 rounded-[8px]",
                 "text-sm font-medium min-h-[44px]",
@@ -116,6 +120,11 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
                   </span>
                 </div>
               </Tooltip>
+              {href === "/alertas" && alertasCriticas > 0 && !activo && (
+                <span className="ml-auto flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#DC2626] text-white text-[10px] font-bold leading-none">
+                  {alertasCriticas > 99 ? "99+" : alertasCriticas}
+                </span>
+              )}
               {activo && (
                 <div className="ml-auto w-1 h-4 rounded-full bg-[#B45309] opacity-80" />
               )}
@@ -149,17 +158,17 @@ export function Sidebar({ open, onClose, totalEquipos }: SidebarProps) {
             </span>
           </div>
           {helpActive && (
-            <span className="ml-auto relative flex h-2 w-2 shrink-0">
+            <span className="ml-auto relative flex h-2 w-2 shrink-0" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
           )}
         </button>
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" aria-hidden="true" />
           <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
         </div>
-        <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.0 · Abr 2025</p>
+        <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.2 · MSG 2026</p>
       </div>
     </aside>
   );

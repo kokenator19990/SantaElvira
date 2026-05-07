@@ -16,38 +16,85 @@ export function Tooltip({ short, help, children, className }: TooltipProps) {
   const { isActive: helpMode } = useHelpMode();
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [tapped, setTapped] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { setMounted(true); }, []);
 
-  const show = useCallback(() => {
+  const showImmediate = useCallback(() => {
     if (!ref.current) return;
     const r = ref.current.getBoundingClientRect();
     let x = r.left + r.width / 2;
     const y = r.bottom + 6;
-    // Clamp to viewport
-    const width = helpMode ? 304 : 200;
+    const width = helpMode ? 304 : 220;
     x = Math.max(width / 2 + 8, Math.min(window.innerWidth - width / 2 - 8, x));
     setPos({ x, y });
   }, [helpMode]);
 
-  const hide = useCallback(() => setPos(null), []);
+  const show = useCallback(() => {
+    timerRef.current = setTimeout(showImmediate, 150);
+  }, [showImmediate]);
+
+  const hide = useCallback(() => {
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+    setPos(null);
+    setTapped(false);
+  }, []);
+
+  // Dismiss on scroll
+  useEffect(() => {
+    if (!pos) return;
+    const dismiss = () => hide();
+    window.addEventListener("scroll", dismiss, { passive: true, capture: true });
+    return () => window.removeEventListener("scroll", dismiss, { capture: true });
+  }, [pos, hide]);
+
+  const toggle = useCallback(() => {
+    if (tapped) {
+      hide();
+    } else {
+      if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+      showImmediate();
+      setTapped(true);
+    }
+  }, [tapped, showImmediate, hide]);
+
+  // Cerrar al tocar fuera (mobile)
+  useEffect(() => {
+    if (!tapped) return;
+    const handler = (e: TouchEvent | MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        hide();
+      }
+    };
+    document.addEventListener("touchstart", handler, { passive: true });
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("touchstart", handler);
+      document.removeEventListener("mousedown", handler);
+    };
+  }, [tapped, hide]);
 
   return (
     <>
       <span
         ref={ref}
-        className={`inline-flex items-center gap-0.5 ${className ?? ""}`}
+        tabIndex={0}
+        role="button"
+        aria-label={short}
+        className={`inline-flex items-center gap-0.5 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B45309] ${className ?? ""}`}
         onMouseEnter={show}
         onMouseLeave={hide}
-        onFocus={show}
+        onFocus={showImmediate}
         onBlur={hide}
+        onClick={toggle}
       >
         {children}
       </span>
       {mounted && pos && createPortal(
         <div
-          className="pointer-events-none z-[9999]"
+          className="pointer-events-auto z-[9999]"
           style={{ position: "fixed", top: pos.y, left: pos.x, transform: "translateX(-50%)" }}
         >
           {helpMode && help ? (
@@ -75,7 +122,7 @@ export function Tooltip({ short, help, children, className }: TooltipProps) {
               )}
             </div>
           ) : (
-            <div className="bg-zinc-900 text-white text-[12px] px-2.5 py-1.5 rounded-lg shadow-lg max-w-[200px] leading-relaxed">
+            <div className="bg-zinc-900 text-white text-[12px] px-3 py-2 rounded-lg shadow-lg max-w-[220px] leading-relaxed">
               {/* Arrow */}
               <div className="absolute -top-[4px] left-1/2 -translate-x-1/2 w-[8px] h-[8px] bg-zinc-900 rotate-45" />
               {short}

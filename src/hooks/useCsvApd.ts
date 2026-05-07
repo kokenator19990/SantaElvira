@@ -13,7 +13,14 @@ export function useCsvApd() {
   const [contenidoRaw, setContenidoRaw] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
+  const MAX_CSV_BYTES = 5 * 1024 * 1024; // 5 MB
+
   function procesarArchivo(archivo: File) {
+    if (archivo.size > MAX_CSV_BYTES) {
+      setError(`El archivo excede el límite de 5 MB (${(archivo.size / 1024 / 1024).toFixed(1)} MB).`);
+      setEstado("error");
+      return;
+    }
     setEstado("parsing");
     setNombreArchivo(archivo.name);
     setError(null);

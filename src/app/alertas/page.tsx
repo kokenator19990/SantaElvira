@@ -1,19 +1,28 @@
-export const revalidate = 300;
+export const revalidate = 0; // siempre fresco — las alertas cambian con frecuencia
 
-import { getAlertas } from "@/lib/db/queries/alertas";
+import { getAlertas, getAlertasResueltas } from "@/lib/db/queries/alertas";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import Link from "next/link";
+import { CheckCircle2, History } from "lucide-react";
 import type { Alerta, EstadoSemaforo } from "@/lib/domain/tipos";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
+import { ResolverTodasButton } from "./ResolverTodasButton";
+import { AlertaRowClient } from "./AlertaRowClient";
+import { ReabrirButton } from "./ReabrirButton";
 
 const KPI_LABEL: Record<string, string> = {
-  dfm:             "Disponibilidad Física",
-  tmef:            "TMEF",
-  tmpr:            "TMPR",
-  tiempoOperativo: "Tiempo Operativo",
+  dfm:             "Disponibilidad",
+  tmef:            "Tiempo entre Fallas",
+  tmpr:            "Tiempo de Reparación",
+  tiempoOperativo: "Tiempo Productivo",
   reserva:         "Reserva",
+  apd:             "Análisis de Aceite",
+};
+
+const KPI_UNIDAD: Record<string, string> = {
+  dfm: "%", tmef: "h", tmpr: "h", tiempoOperativo: "%", reserva: "%", apd: "",
 };
 
 const SECCION_CONFIG: Record<EstadoSemaforo, { titulo: string; headerBg: string; borderColor: string }> = {
@@ -22,42 +31,6 @@ const SECCION_CONFIG: Record<EstadoSemaforo, { titulo: string; headerBg: string;
   ambar: { titulo: "Advertencia",  headerBg: "bg-[#B45309]",   borderColor: "border-[#FDE68A]" },
   verde: { titulo: "OK",           headerBg: "bg-[#15803D]",   borderColor: "border-[#BBF7D0]" },
 };
-
-function AlertaRow({ alerta }: { alerta: Alerta }) {
-  return (
-    <Link
-      href={`/flota/${alerta.equipoId}`}
-      className="flex items-center gap-3 px-4 py-3.5 hover:bg-[#F4F4F5] transition-colors duration-150 min-h-[52px] group"
-    >
-      <SemaforoDot estado={alerta.estado} size="md" />
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-mono font-bold text-[15px] text-[#09090B]">{alerta.equipoId}</span>
-          <span className="text-[12px] text-[#71717A]">{alerta.modelo}</span>
-          <span className="text-[11px] px-1.5 py-0.5 rounded-[4px] bg-[#F4F4F5] text-[#71717A] font-mono">
-            {alerta.tipoFlota}
-          </span>
-        </div>
-        <p className="text-[13px] text-[#71717A] mt-0.5 truncate">{alerta.mensaje}</p>
-      </div>
-
-      <div className="text-right shrink-0 ml-2">
-        <p className="text-[11px] text-[#A1A1AA] uppercase tracking-wider">
-          {KPI_LABEL[alerta.kpi] ?? alerta.kpi}
-        </p>
-        <p className="font-mono font-bold text-[20px] text-[#09090B] leading-none mt-0.5">
-          {alerta.valorActual === 0 ? "—" : alerta.valorActual}
-        </p>
-        {alerta.valorActual > 0 && (
-          <p className="text-[11px] text-[#A1A1AA] mt-0.5">
-            Umbral: <span className="text-[#71717A]">{alerta.umbralCritico}</span>
-          </p>
-        )}
-      </div>
-    </Link>
-  );
-}
 
 function SeccionAlertas({ estado, alertas }: { estado: EstadoSemaforo; alertas: Alerta[] }) {
   if (alertas.length === 0) return null;
@@ -71,16 +44,94 @@ function SeccionAlertas({ estado, alertas }: { estado: EstadoSemaforo; alertas: 
         <span className="ml-auto text-[11px] font-mono text-white/50">
           {alertas.length} alerta{alertas.length !== 1 ? "s" : ""}
         </span>
+        {estado !== "verde" && (
+          <ResolverTodasButton
+            estado={estado as "paro" | "rojo" | "ambar"}
+            cantidad={alertas.length}
+            tituloSeccion={cfg.titulo}
+          />
+        )}
       </div>
-      <div className={`flex flex-col divide-y divide-[#F4F4F5] rounded-b-[10px] border-x border-b ${cfg.borderColor} bg-white overflow-hidden`}>
-        {alertas.map((a) => <AlertaRow key={a.id} alerta={a} />)}
+      <div className={`flex flex-col rounded-b-[10px] border-x border-b ${cfg.borderColor} bg-white overflow-hidden`}>
+        {alertas.map((a) => <AlertaRowClient key={a.id} alerta={a} />)}
+      </div>
+    </section>
+  );
+}
+
+function HistorialResueltas({ resueltas }: { resueltas: Alerta[] }) {
+  if (resueltas.length === 0) return null;
+
+  return (
+    <section>
+      <div className="flex items-center gap-2 mb-2">
+        <History size={15} className="text-[#71717A]" />
+        <SectionTitle>Historial de Resolución</SectionTitle>
+        <span className="text-[11px] text-[#A1A1AA] ml-auto">Últimas {resueltas.length}</span>
+      </div>
+      <p className="text-[11px] text-[#71717A] mb-3 leading-relaxed">
+        Alertas resueltas con su acción registrada. Si una resolución fue un error, usa <strong>Reabrir</strong> para devolver la alerta al panel activo.
+        {resueltas.length >= 50 && (
+          <span className="text-[#A1A1AA] ml-1">(mostrando las últimas 50)</span>
+        )}
+      </p>
+      <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
+        {resueltas.map((a) => (
+          <div key={a.id} className="flex items-start gap-3 px-4 py-3 border-t border-[#F4F4F5] first:border-t-0">
+            <CheckCircle2 size={14} className="text-[#BBF7D0] mt-0.5 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href={a.kpi === "apd" ? "/apd" : `/flota/${a.equipoId}`}
+                  className="font-mono font-bold text-[13px] text-[#52525B] hover:text-[#09090B] hover:underline"
+                >
+                  {a.equipoId}
+                </Link>
+                <span className="text-[11px] text-[#A1A1AA]">{a.modelo}</span>
+                <span className="text-[11px] px-1.5 py-0.5 rounded-[4px] bg-[#F4F4F5] text-[#A1A1AA] font-mono">
+                  {KPI_LABEL[a.kpi] ?? a.kpi}
+                </span>
+                {a.valorActual > 0 && (
+                  <span className="text-[11px] font-mono text-[#71717A]">
+                    {a.valorActual}{KPI_UNIDAD[a.kpi] ?? ""}
+                  </span>
+                )}
+              </div>
+              <p className="text-[12px] text-[#A1A1AA] mt-0.5 truncate">{a.mensaje}</p>
+              {a.accionTomada && (
+                <p className="text-[12px] text-[#52525B] mt-1.5 bg-[#F4F4F5] px-2.5 py-1.5 rounded-[6px] inline-block">
+                  <span className="font-semibold text-[#71717A]">Acción: </span>{a.accionTomada}
+                </p>
+              )}
+            </div>
+            <div className="text-right shrink-0 flex flex-col items-end gap-1">
+              {a.resueltaPor && (
+                <p className="text-[11px] text-[#A1A1AA]">{a.resueltaPor}</p>
+              )}
+              {a.resueltaEn && (
+                <p className="text-[11px] text-[#A1A1AA] font-mono">
+                  {new Date(a.resueltaEn).toLocaleDateString("es-CL", { day: "2-digit", month: "short" })}
+                </p>
+              )}
+              <ReabrirButton
+                alertaId={a.id}
+                equipoId={a.equipoId}
+                kpiLabel={KPI_LABEL[a.kpi] ?? a.kpi}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
 export default async function AlertasPage() {
-  const alertas  = await getAlertas();
+  const [alertas, resueltas] = await Promise.all([
+    getAlertas(),
+    getAlertasResueltas(),
+  ]);
+
   const paros    = alertas.filter((a) => a.estado === "paro");
   const criticos = alertas.filter((a) => a.estado === "rojo");
   const ambar    = alertas.filter((a) => a.estado === "ambar");
@@ -91,7 +142,7 @@ export default async function AlertasPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <SectionTitle>Panel de Alertas</SectionTitle>
         <span className="text-[12px] font-mono text-[#A1A1AA]">
-          {alertas.length} alertas · Actualizado ahora
+          {alertas.length} alerta{alertas.length !== 1 ? "s" : ""} · Período actual
         </span>
       </div>
 
@@ -100,7 +151,7 @@ export default async function AlertasPage() {
         {[
           { label: "Paros Totales", valor: paros.length,    textColor: "text-[#991B1B]",   bg: "bg-[#FEF2F2] border-[#FECACA]", helpKey: "paroTotal",      shortTip: "Equipos completamente detenidos por falla mayor" },
           { label: "Críticos",      valor: criticos.length, textColor: "text-[#B91C1C]",   bg: "bg-[#FEF2F2] border-[#FECACA]", helpKey: "criticos",       shortTip: "Operan pero con KPIs en estado rojo" },
-          { label: "Advertencias",  valor: ambar.length,    textColor: "text-[#B45309]", bg: "bg-[#FFFBEB] border-[#FDE68A]",   helpKey: "alertasActivas", shortTip: "Equipos con KPIs en zona de advertencia (ámbar)" },
+          { label: "Advertencias",  valor: ambar.length,    textColor: "text-[#B45309]",   bg: "bg-[#FFFBEB] border-[#FDE68A]", helpKey: "alertasActivas", shortTip: "Equipos con KPIs en zona de advertencia (ámbar)" },
         ].map((s) => (
           <Tooltip key={s.label} short={s.shortTip} help={HELP[s.helpKey]}>
             <div className={`flex flex-col gap-1 p-3.5 rounded-[10px] border ${s.bg}`}>
@@ -117,10 +168,15 @@ export default async function AlertasPage() {
       <SeccionAlertas estado="ambar" alertas={ambar} />
 
       {alertas.length === 0 && (
-        <div className="flex items-center justify-center h-40 rounded-[10px] bg-white border border-[#E4E4E7]">
+        <div className="flex flex-col items-center justify-center gap-2 h-48 rounded-[10px] bg-white border border-[#E4E4E7]">
+          <CheckCircle2 size={32} className="text-[#BBF7D0]" />
           <p className="text-[15px] text-[#A1A1AA]">No hay alertas activas</p>
+          <p className="text-[12px] text-[#71717A]">Todos los equipos están dentro de parámetros</p>
         </div>
       )}
+
+      {/* Historial de resueltas */}
+      <HistorialResueltas resueltas={resueltas} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { SectionTitle } from "@/components/ui/SectionTitle";
 import { useCsvApd } from "@/hooks/useCsvApd";
 import { AlertTriangle, Info, Database, Trash2, History, CheckCircle2 } from "lucide-react";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { HELP } from "@/lib/help-content";
 import type { Periodo } from "@/lib/db/schema";
 import type { AnalisisApdResumen } from "@/lib/db/queries/apd";
@@ -22,9 +23,10 @@ export function ApdClient({
 }) {
   const { estado, datos, nombreArchivo, contenidoRaw, error, procesarArchivo, limpiar } = useCsvApd();
   const [periodoId, setPeriodoId] = useState<number>(periodos[0]?.id ?? 0);
-  const [fechaAnalisis, setFechaAnalisis] = useState(new Date().toISOString().slice(0, 10));
+  const [fechaAnalisis, setFechaAnalisis] = useState(() => new Date().toISOString().slice(0, 10));
   const [msg, setMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
+  const [confirmBorrar, setConfirmBorrar] = useState<AnalisisApdResumen | null>(null);
 
   const criticos     = datos.filter((p) => p.estado === "rojo").length;
   const advertencias = datos.filter((p) => p.estado === "ambar").length;
@@ -41,7 +43,10 @@ export function ApdClient({
         creadoPor:     "admin",
       });
       if (r.ok) {
-        setMsg({ type: "ok", text: `Análisis guardado: ${r.data?.muestras} muestras (${r.data?.estados.rojo} en rojo, ${r.data?.estados.ambar} en ámbar).` });
+        const alertasTxt = r.data?.alertasGeneradas
+          ? ` Se generaron ${r.data.alertasGeneradas} alerta${r.data.alertasGeneradas !== 1 ? "s" : ""} predictiva${r.data.alertasGeneradas !== 1 ? "s" : ""}.`
+          : "";
+        setMsg({ type: "ok", text: `Análisis guardado: ${r.data?.muestras} muestras (${r.data?.estados.rojo} en rojo, ${r.data?.estados.ambar} en ámbar).${alertasTxt}` });
         limpiar();
       } else {
         setMsg({ type: "error", text: r.error });
@@ -50,11 +55,11 @@ export function ApdClient({
   }
 
   function borrarAnalisis(id: number) {
-    if (!confirm("¿Eliminar este análisis y todas sus muestras?")) return;
     startTransition(async () => {
       const r = await eliminarAnalisisApd(id);
       if (r.ok) setMsg({ type: "ok", text: "Análisis eliminado." });
       else      setMsg({ type: "error", text: r.error });
+      setConfirmBorrar(null);
     });
   }
 
@@ -149,6 +154,15 @@ CH-01,Motor,Fe,18,ppm,,30
 CH-01,Motor,Cu,5,ppm,,20
 CH-01,Transmisión,Fe,25,ppm,,40`}
             </pre>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-[#A1A1AA] mt-1">
+              <Tooltip short="Partes por millón — unidad de concentración en aceite" help={HELP.ppm}>
+                <span className="cursor-help underline decoration-dotted">ppm = Partes por millón</span>
+              </Tooltip>
+              <Tooltip short="Sección del equipo donde se toma la muestra" help={HELP.compartimento}>
+                <span className="cursor-help underline decoration-dotted">Compartimento = Motor, Transmisión, etc.</span>
+              </Tooltip>
+              <span>Fe = Hierro · Cu = Cobre · Al = Aluminio · Si = Sílice</span>
+            </div>
           </div>
         </div>
 
@@ -225,7 +239,7 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
                       <td className="px-3 py-1.5 text-right text-[#A1A1AA]">{a.creadoPor ?? "—"}</td>
                       <td className="px-3 py-1.5 text-center">
                         <button
-                          onClick={() => borrarAnalisis(a.id)}
+                          onClick={() => setConfirmBorrar(a)}
                           className="inline-flex items-center justify-center w-6 h-6 rounded-[4px] text-[#A1A1AA] hover:text-[#B91C1C] hover:bg-[#FEF2F2]"
                           title="Eliminar"
                         >
@@ -240,6 +254,16 @@ CH-01,Transmisión,Fe,25,ppm,,40`}
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmBorrar !== null}
+        titulo="Eliminar análisis APD"
+        mensaje={confirmBorrar ? `Se eliminará el análisis "${confirmBorrar.archivoOrigen}" del ${confirmBorrar.fechaAnalisis} con ${confirmBorrar.totalMuestras} muestras. Las alertas predictivas asociadas también se eliminarán. Esta acción no se puede deshacer.` : ""}
+        textoConfirmar="Eliminar"
+        variante="peligro"
+        onConfirm={() => confirmBorrar && borrarAnalisis(confirmBorrar.id)}
+        onCancel={() => setConfirmBorrar(null)}
+      />
     </div>
   );
 }

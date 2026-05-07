@@ -145,6 +145,12 @@ export const HELP: Record<string, HelpItem> = {
     que_es: "Genera el informe mensual de mantención con todos los KPIs, equipos críticos y tendencias. Exportable como PDF.",
     ejemplo: "Selecciona 'Abril 2025' y haz clic en 'Imprimir / PDF'. En el diálogo del navegador elige 'Guardar como PDF' para obtener el documento.",
   },
+  navExplorador: {
+    titulo: "Explorador de Datos — Vista Planilla",
+    que_es: "Vista interactiva tipo planilla de todos los datos del sistema: KPIs, registros diarios y fallas. Reemplaza la necesidad de abrir Excel para análisis ad-hoc.",
+    como_funciona: "Muestra todos los datos en tablas ordenables. Haz clic en cualquier encabezado de columna para ordenar. Usa los filtros para acotar por período, tipo de flota o componente. El buscador filtra por ID de equipo.",
+    ejemplo: "Filtra por flota '785D' y ordena por DFM descendente para ver qué camiones tienen peor disponibilidad. Exporta el resultado a Excel con un clic.",
+  },
   navDocs: {
     titulo: "Documentación Técnica",
     que_es: "Modelo de base de datos y arquitectura del sistema. Incluye diagramas ER interactivos con zoom, pantalla completa y exportación.",
@@ -199,6 +205,56 @@ export const HELP: Record<string, HelpItem> = {
     ejemplo: "Año 2015 → Equipo de 10 años. Los equipos CAT tienen vida útil de 15–20 años con mantención adecuada.",
   },
 
+  // ─── Portada y dashboard ────────────────────────────────────────────────────
+  navPortada: {
+    titulo: "Portada — Centro de Comando",
+    que_es: "Pantalla de bienvenida operativa. Muestra el estado general de la flota en un vistazo, la acción recomendada según la situación actual y las guías de procedimiento.",
+    como_funciona: "Los indicadores superiores (paros, críticos, advertencias) se calculan en tiempo real desde la BD. La acción recomendada cambia automáticamente según el estado de la flota.",
+    ejemplo: "Si hay 2 equipos en paro, la portada recomienda ir directamente al Panel de Alertas. Si todo está bien, sugiere consultar el Dashboard.",
+  },
+  flotaVistazo: {
+    titulo: "Flota en un Vistazo",
+    que_es: "Resumen de las 4 métricas operacionales más importantes de la flota, calculadas en tiempo real desde la base de datos.",
+    como_funciona: "Equipos registrados = total en BD. Operando = sin paro total. DFM flota = promedio de equipos activos (excluye paros). Alertas = KPIs fuera de umbral.",
+    ejemplo: "28 equipos, 25 operando, DFM 83% y 12 alertas indica una flota en estado aceptable pero con puntos de atención.",
+  },
+  totalEquipos: {
+    titulo: "Total de Equipos",
+    que_es: "Cantidad de equipos registrados en la base de datos para la faena El Salvador. Incluye todos los tipos de flota.",
+    ejemplo: "28 equipos: 8 camiones 785D, 10 camiones 777F, 6 cargadores 992 y 4 excavadoras PC-2000.",
+  },
+  kpiStripFlota: {
+    titulo: "KPIs Promedio de Flota Activa",
+    que_es: "Indicadores clave de rendimiento calculados como promedio de todos los equipos que NO están en paro total. Cada tarjeta muestra el valor, la meta, la barra de progreso y la variación respecto al período anterior.",
+    como_funciona: "Los equipos en paro total (DFM=0) se excluyen del promedio para no distorsionar los indicadores de la flota operativa. Las flechas de variación comparan el período actual con el inmediato anterior.",
+    ejemplo: "DFM Flota 83% con meta 85% y delta +2.0%: la flota mejoró 2 puntos respecto al mes anterior pero aún está bajo el objetivo.",
+    meta: "Las metas por KPI son: DFM ≥85%, TMEF ≥80h, TMPR ≤5h, T.Op. ≥80%, Reserva ≤8%",
+  },
+  periodoSelector: {
+    titulo: "Selector de Período",
+    que_es: "Permite consultar los datos de cualquier período histórico. El período marcado como '(actual)' es el más reciente que no ha sido cerrado.",
+    como_funciona: "Al cambiar de período, el dashboard recalcula todos los KPIs, semáforos y alertas con los datos de ese mes. Los deltas comparan el período seleccionado con su antecesor.",
+    ejemplo: "Seleccionar 'Marzo 2025' muestra los KPIs de ese mes. El delta compara Marzo vs Febrero, no vs el período actual.",
+  },
+  diagnosticoEquipo: {
+    titulo: "Diagnóstico del Equipo",
+    que_es: "Análisis causal que identifica qué KPIs están fuera de meta y ordena los problemas por severidad (mayor brecha primero).",
+    como_funciona: "Compara cada KPI del equipo contra su objetivo. Si está fuera de meta, calcula la brecha y sugiere una acción concreta. El problema con mayor desviación aparece primero como 'Problema principal'.",
+    ejemplo: "CE-04 con DFM 68% (meta 85%) y TMPR 12h (meta 5h): el diagnóstico muestra DFM como problema principal (brecha 17 puntos) y TMPR como factor secundario (brecha 7h).",
+  },
+  comparativaObjetivos: {
+    titulo: "Comparativa con Objetivos",
+    que_es: "Barras de progreso que muestran qué tan cerca o lejos está cada KPI del equipo respecto al objetivo definido.",
+    como_funciona: "Para KPIs normales (DFM, TMEF, T.Op.), la barra llena al 100% cuando alcanza la meta. Para KPIs invertidos (TMPR, Reserva), la barra llena al 100% cuando el valor es igual o mejor que la meta.",
+    ejemplo: "DFM 88% con objetivo 85% → barra al 100% (superó la meta). TMPR 8h con objetivo 5h → barra al 62% (aún lejos del objetivo).",
+  },
+  historicoEquipo: {
+    titulo: "Historial de KPIs del Equipo",
+    que_es: "Gráfico de evolución de todos los KPIs registrados para este equipo a lo largo del tiempo. Incluye todos los períodos cargados.",
+    como_funciona: "Cada punto es el valor del KPI en un período mensual. Las líneas de referencia punteadas marcan los umbrales verde y ámbar.",
+    ejemplo: "Si el DFM del equipo CE-01 baja de 90% a 72% en 4 meses, el gráfico muestra la tendencia descendente claramente. Es una señal de deterioro que requiere intervención.",
+  },
+
   // ─── Admin / carga de datos ────────────────────────────────────────────────
   navAdmin: {
     titulo: "Administración — Carga de Datos",
@@ -233,6 +289,20 @@ export const HELP: Record<string, HelpItem> = {
     ejemplo: "Cambias los umbrales de DFM (verde 90%, ámbar 80%) en la tabla umbral_kpi → /admin/alertas → seleccionas el período → Regenerar. Las alertas se recalculan con los nuevos límites.",
     meta: "El botón también está disponible en /admin/kpis para uso conjunto.",
   },
+  adminImportarCsv: {
+    titulo: "Importar KPIs desde CSV",
+    que_es: "Carga masiva de KPIs y distribución ASARCO desde un archivo CSV. Permite migrar datos desde planillas Excel exportadas a CSV sin tener que escribir cada valor manualmente.",
+    como_funciona: "El CSV debe tener 14 columnas: equipoId, dfm, tmef, tmpr, tiempoOperativo, reserva, horasAcumuladas, paroTotal, motivoParo, pctOperativo, pctReserva, pctDetProgramada, pctDetNoProg, pctPerdidaOp. Se valida antes de guardar.",
+    ejemplo: "Exporta la planilla Excel del mes como CSV. Sube el archivo, revisa la previsualización y haz clic en Guardar. El sistema valida que los equipos existan y que ASARCO sume 100%.",
+    meta: "Descarga la plantilla de ejemplo para ver el formato exacto requerido.",
+  },
+  adminUmbrales: {
+    titulo: "Configurar Umbrales de KPI",
+    que_es: "Editor visual para modificar los valores de referencia (verde/ámbar) de cada KPI. Estos umbrales determinan el color del semáforo y cuándo se genera una alerta.",
+    como_funciona: "Cada KPI tiene un umbral verde (valor óptimo) y un umbral ámbar (advertencia). Los cambios se guardan con versionado: el historial de umbrales anteriores se conserva. Después de cambiar, es necesario regenerar alertas.",
+    ejemplo: "Si cambias el DFM verde de 85% a 90%, los equipos con DFM entre 85% y 90% pasarán de verde a ámbar en el próximo recálculo de alertas.",
+    meta: "Los umbrales aplican a toda la flota por igual. No se pueden configurar por equipo individual.",
+  },
   apdGuardar: {
     titulo: "Guardar Análisis APD en BD",
     que_es: "Persiste el CSV procesado en la base de datos. Crea un registro en analisis_apd (cabecera) y un registro por muestra en muestra_apd.",
@@ -250,5 +320,167 @@ export const HELP: Record<string, HelpItem> = {
     que_es: "Resultado de comparar el valor medido contra los límites mínimo y máximo del parámetro.",
     como_funciona: "Verde: dentro del rango. Ámbar: dentro pero al 90% del límite (alerta temprana). Rojo: fuera del rango (intervención inmediata).",
     ejemplo: "Fe motor con LimMax=30. Valor 18 = verde (lejos del tope). Valor 28 = ámbar (cerca, vigilar). Valor 45 = rojo (desgaste acelerado).",
+  },
+
+  // ─── Registro diario y cálculo de KPIs ────────────────────────────────────
+  registroDiario: {
+    titulo: "Registro Diario de Horas",
+    que_es: "Formulario para ingresar las horas diarias de cada equipo distribuidas en las 5 categorías ASARCO: Operación, Reserva, Detención Programada, Detención No Programada y Pérdida Operacional.",
+    como_funciona: "Se selecciona una fecha y se llenan las horas por equipo. Las 5 columnas deben sumar como máximo 24 horas. Los registros se guardan con upsert: si ya existe uno para ese equipo y fecha, se sobrescribe.",
+    ejemplo: "CH-01 el día 15/04: Operación 8h, Reserva 1.5h, Det. Prog. 2h, Det. No Prog. 0.5h, Pérdida 0h = 12h total del turno.",
+    meta: "Este es el dato crudo que alimenta el cálculo automático de KPIs. Sin registros diarios, no hay cálculo posible.",
+  },
+  registroFallas: {
+    titulo: "Registro de Fallas",
+    que_es: "Lista de eventos de falla registrados para cada equipo. Cada falla incluye fecha, descripción, componente afectado y horas de reparación.",
+    como_funciona: "Las fallas alimentan directamente dos KPIs: TMEF (más fallas = menor TMEF) y TMPR (más horas de reparación por falla = mayor TMPR).",
+    ejemplo: "CH-01 el 15/04: 'Fuga bomba hidráulica principal', componente 'Sistema Hidráulico', 4.5h de reparación. Si tuvo 2 fallas en 200h operadas, TMEF = 100h.",
+    meta: "Registra todas las fallas aunque sean menores. Cuanto más completo el registro, más preciso el cálculo de TMEF y TMPR.",
+  },
+  calcularKpis: {
+    titulo: "Calcular KPIs desde Datos Crudos",
+    que_es: "Toma los registros diarios de horas y los eventos de falla del período seleccionado, y calcula automáticamente los 5 KPIs y la distribución ASARCO.",
+    como_funciona: "Fórmulas: DFM = (Operación + Reserva) / Total × 100. TMEF = Horas operadas / Nº fallas. TMPR = Horas reparación / Nº fallas. T.Op = Operación / Total × 100. Reserva = Reserva / Total × 100. ASARCO = cada categoría / Total × 100.",
+    ejemplo: "Período Mayo 2025: se leen 28 equipos × 30 días de registros + las fallas del mes. Se calculan los KPIs, se muestra preview, y al confirmar se guardan en la BD y se regeneran alertas.",
+    meta: "Los KPIs calculados se escriben en las mismas tablas que la carga manual. El dashboard no distingue entre datos manuales y calculados.",
+  },
+
+  // ─── Tipos de flota ───────────────────────────────────────────────────────
+  flotaTipo785D: {
+    titulo: "Flota CAT 785D — Camión de Acarreo Grande",
+    que_es: "Camión minero de gran tonelaje fabricado por Caterpillar. Capacidad de carga de ~150 toneladas. Es la columna vertebral del acarreo de mineral y estéril.",
+    como_funciona: "Transporta material desde el frente de carguío hasta la planta o el botadero. Su disponibilidad impacta directamente la producción diaria.",
+    ejemplo: "Una flota de 8 camiones 785D que opera al 85% de DFM mueve ~9.600 toneladas por turno de 12 horas.",
+    meta: "Costo estimado de paro: USD $1.250/hora",
+  },
+  flotaTipo777F: {
+    titulo: "Flota CAT 777F — Camión de Acarreo Mediano",
+    que_es: "Camión minero de Caterpillar con capacidad de ~100 toneladas. Más ágil que el 785D, se usa en rutas más cortas o con pendientes mayores.",
+    como_funciona: "Complementa la flota principal de acarreo. Su menor tamaño permite acceder a frentes donde el 785D no maniobra bien.",
+    ejemplo: "10 camiones 777F en la faena. Cuando uno falla, se redistribuyen las rutas entre los demás.",
+    meta: "Costo estimado de paro: USD $950/hora",
+  },
+  flotaTipo992: {
+    titulo: "Flota CAT 992 — Cargador Frontal",
+    que_es: "Cargador de ruedas de gran capacidad fabricado por Caterpillar. Equipo de carguío que llena los camiones de acarreo con mineral o estéril.",
+    como_funciona: "Es un equipo crítico en la cadena: si el cargador falla, los camiones quedan sin material que transportar. Un cargador sirve a 3–5 camiones.",
+    ejemplo: "6 cargadores 992 en la flota. Si 2 están en paro, los camiones asignados a esos frentes quedan en reserva.",
+    meta: "Costo estimado de paro: USD $1.100/hora",
+  },
+  flotaTipoPC2000: {
+    titulo: "Flota Komatsu PC-2000 — Excavadora Hidráulica",
+    que_es: "Excavadora hidráulica de gran tamaño fabricada por Komatsu. Equipo de carguío primario que excava y carga camiones en los frentes de trabajo.",
+    como_funciona: "La PC-2000 es el equipo más crítico por productividad: una falla detiene toda la operación del frente asignado. Sus componentes hidráulicos son los más costosos de reparar.",
+    ejemplo: "4 excavadoras PC-2000. Una excavadora parada por falla hidráulica deja 3–4 camiones sin cargar.",
+    meta: "Costo estimado de paro: USD $1.400/hora",
+  },
+
+  // ─── Términos de explorador y registros ──────────────────────────────────
+  turno: {
+    titulo: "Turno de Operación",
+    que_es: "Jornada de trabajo del equipo. La mina opera 24/7 en dos turnos de 12 horas: turno día (06:00–18:00) y turno noche (18:00–06:00).",
+    como_funciona: "Cada registro diario se asocia a un turno. Si se registra 'completo', las 24 horas se contabilizan sin distinción de turno.",
+    ejemplo: "CH-01 en turno día: 8h operación, 2h reserva, 1h det. programada, 0.5h det. no programada, 0.5h pérdida = 12h total.",
+  },
+  componenteFalla: {
+    titulo: "Componente Afectado",
+    que_es: "Sistema o parte principal del equipo donde ocurrió la falla. Permite agrupar fallas por componente para detectar patrones de desgaste.",
+    como_funciona: "Los componentes estándar son: Motor, Transmisión, Sistema Hidráulico, Sistema Eléctrico, Chasis/Estructura, Neumáticos, Frenos, Dirección y Otro.",
+    ejemplo: "Si el 60% de las fallas son en 'Sistema Hidráulico', indica un problema sistémico que requiere mantención preventiva focalizada.",
+  },
+  hrsReparacion: {
+    titulo: "Horas de Reparación",
+    que_es: "Tiempo total que tomó reparar la falla, desde que el equipo se detuvo hasta que volvió a operar. Se expresa en horas decimales.",
+    como_funciona: "Este valor alimenta directamente el cálculo de TMPR. A mayor total de horas de reparación dividido por el número de fallas, peor es el TMPR.",
+    ejemplo: "4.5 h → La reparación tomó 4 horas y 30 minutos. El objetivo de TMPR es mantener cada reparación en ≤5 horas.",
+    meta: "Objetivo TMPR: ≤ 5h promedio por reparación",
+  },
+  operativos: {
+    titulo: "Equipos Operativos",
+    que_es: "Equipos que tienen todos sus KPIs en estado verde (dentro del rango óptimo). Están operando sin problemas.",
+    como_funciona: "Un equipo es 'operativo' cuando DFM ≥85%, TMEF ≥80h, TMPR ≤5h, T.Op. ≥80% y Reserva ≤8%.",
+    ejemplo: "22 operativos de 28 = 79% de la flota está en óptimo estado. Objetivo: 100%.",
+  },
+  advertCriticos: {
+    titulo: "En Advertencia o Críticos",
+    que_es: "Equipos con al menos un KPI en estado ámbar (advertencia) o rojo (crítico). Operan pero requieren atención.",
+    como_funciona: "Ámbar: algún KPI está en zona de advertencia. Rojo: algún KPI está bajo el umbral crítico. No incluye equipos en paro total.",
+    ejemplo: "4 advert./críticos = 4 equipos necesitan revisión antes de convertirse en paros totales.",
+  },
+  compartimento: {
+    titulo: "Compartimento del Equipo",
+    que_es: "Sección interna del equipo donde se toma la muestra de aceite: Motor, Transmisión, Sistema Hidráulico, Diferencial, Mandos Finales, etc.",
+    como_funciona: "Cada compartimento tiene sus propios límites de desgaste. El aceite del motor tiene límites diferentes al aceite del diferencial.",
+    ejemplo: "Compartimento 'Motor': se analizan Fe (hierro), Cu (cobre), Al (aluminio), Si (sílice), Na (sodio) para detectar desgaste interno.",
+  },
+  ppm: {
+    titulo: "ppm — Partes por Millón",
+    que_es: "Unidad de medida de concentración utilizada en análisis de aceites. Indica cuántas partes de un elemento hay por cada millón de partes de aceite.",
+    como_funciona: "Cuanto mayor sea el ppm de metales de desgaste (Fe, Cu, Al), más desgaste interno tiene el componente. Los fabricantes definen límites máximos.",
+    ejemplo: "Fe = 45 ppm en el motor: hay 45 partes de hierro por cada millón de partes de aceite. Si el límite máximo es 30 ppm, hay desgaste excesivo.",
+  },
+  invertido: {
+    titulo: "KPI Invertido (Menor es Mejor)",
+    que_es: "Un KPI donde el valor más bajo es el deseado. El semáforo se calcula al revés: verde cuando el valor es MENOR al umbral, rojo cuando es MAYOR.",
+    como_funciona: "TMPR y Reserva son invertidos. TMPR verde ≤5h (poco tiempo de reparación = bueno). Reserva verde ≤8% (poca ociosidad = bueno).",
+    ejemplo: "TMPR 3h = verde (excelente, reparaciones rápidas). TMPR 18h = rojo (las reparaciones toman demasiado tiempo).",
+  },
+  analisisComponente: {
+    titulo: "Análisis por Componente",
+    que_es: "Tabla de estadísticas que agrupa todas las fallas por el componente afectado. Permite identificar los componentes más problemáticos.",
+    como_funciona: "Muestra: total de fallas, horas de reparación acumuladas, promedio de horas por falla (TMPR por componente), equipos y flotas afectados.",
+    ejemplo: "Si 'Sistema Hidráulico' tiene 12 fallas y 54h de reparación, el promedio es 4.5h/falla. Si afecta a 6 equipos distintos, es un problema sistémico.",
+  },
+  tipoFlota: {
+    titulo: "Tipo de Flota",
+    que_es: "Categoría del equipo según su modelo y función operacional: 785D y 777F son camiones de acarreo, 992 es cargador y PC2000 es excavadora.",
+    ejemplo: "El tipo de flota determina la función del equipo en la cadena productiva y el costo de parada por hora.",
+  },
+  modelo: {
+    titulo: "Modelo del Equipo",
+    que_es: "Designación comercial del fabricante (Caterpillar o Komatsu). Identifica las especificaciones técnicas y el programa de mantención aplicable.",
+    ejemplo: "CAT 785D, CAT 777F, CAT 992K, Komatsu PC-2000. El modelo determina qué repuestos, aceites y programas de mantención aplican.",
+  },
+  metaOperativo: {
+    titulo: "Meta de Operatividad: 80%",
+    que_es: "Línea de referencia que indica el objetivo mínimo de porcentaje operativo según ASARCO. Una flota eficiente debe mantener al menos 80% de tiempo productivo.",
+    como_funciona: "La línea punteada en los gráficos marca este objetivo. Cuando la barra de operativo cae bajo esta línea, indica ineficiencia.",
+    ejemplo: "Flota con 70% operativo: está 10 puntos bajo la meta. Hay que investigar si el problema es exceso de reserva, detenciones o pérdidas.",
+    meta: "≥ 80% del tiempo total",
+  },
+  reporteInforme: {
+    titulo: "Informe del Mes",
+    que_es: "Vista de informe mensual con los KPIs de toda la flota, resumen por tipo de equipo, equipos críticos y tendencias. Exportable como PDF.",
+    ejemplo: "Selecciona un período, revisa los indicadores y haz clic en 'Imprimir / PDF' para generar el documento mensual de mantención.",
+  },
+  reporteComparar: {
+    titulo: "Comparar Períodos",
+    que_es: "Vista que permite seleccionar dos o más períodos y comparar la evolución de los KPIs lado a lado. Útil para medir progreso entre meses.",
+    ejemplo: "Compara Marzo vs Abril para ver si las mejoras en mantención preventiva se reflejaron en un mejor DFM y menor TMPR.",
+  },
+  reporteIntegrar: {
+    titulo: "Integrar Datos",
+    que_es: "Herramienta para consolidar datos de múltiples fuentes: registros diarios, fallas, análisis de aceites y KPIs calculados en una vista unificada.",
+    ejemplo: "Selecciona un rango de períodos y exporta todos los datos integrados a Excel para análisis externo o presentaciones.",
+  },
+  explorerKpis: {
+    titulo: "Tabla de KPIs",
+    que_es: "Vista tipo planilla de todos los KPIs mensuales por equipo. Incluye DFM, TMEF, TMPR, Tiempo Operativo, Reserva, horas acumuladas y distribución ASARCO.",
+    ejemplo: "Filtra por período 'Abril 2025' y flota '785D' para ver solo los camiones grandes de ese mes. Ordena por DFM para encontrar los peores.",
+  },
+  explorerRegistros: {
+    titulo: "Tabla de Registros Diarios",
+    que_es: "Todos los registros diarios de horas por equipo en formato planilla. Muestra las 5 categorías ASARCO hora por hora.",
+    ejemplo: "Filtra por flota '992' para ver los registros de los cargadores. Ordena por Det. No Prog. para identificar los días con más fallas.",
+  },
+  explorerFallas: {
+    titulo: "Tabla de Fallas",
+    que_es: "Todos los eventos de falla registrados. Muestra equipo, fecha, componente afectado, descripción, horas de reparación y si fue resuelta.",
+    ejemplo: "Filtra por componente 'Motor' para ver todas las fallas de motor. Exporta a Excel para análisis detallado.",
+  },
+  explorerTurnos: {
+    titulo: "Comparativa por Turno",
+    que_es: "Comparación entre turno día y turno noche: operatividad, reserva, detenciones y pérdidas. Identifica si un turno tiene peor rendimiento.",
+    ejemplo: "Si el turno noche tiene 15% más detenciones no programadas, puede indicar falta de iluminación o personal de mantención insuficiente.",
   },
 };

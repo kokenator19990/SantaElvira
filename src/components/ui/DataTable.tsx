@@ -14,6 +14,10 @@ export interface ColumnaDef<T> {
   headerClassName?: string;
 }
 
+const EMPTY_MESSAGES: Record<string, string> = {
+  default: "No hay datos para mostrar",
+};
+
 interface DataTableProps<T> {
   columnas: ColumnaDef<T>[];
   datos: T[];
@@ -23,6 +27,8 @@ interface DataTableProps<T> {
   rowClassName?: (row: T) => string;
   /** Fija la primera columna al hacer scroll horizontal en móvil */
   stickyFirst?: boolean;
+  /** Mensaje personalizado cuando no hay datos */
+  emptyMessage?: string;
 }
 
 export function DataTable<T>({
@@ -33,6 +39,7 @@ export function DataTable<T>({
   onRowClick,
   rowClassName,
   stickyFirst = false,
+  emptyMessage,
 }: DataTableProps<T>) {
   if (cargando) return <SkeletonCard variant="table" className="w-full" />;
 
@@ -47,6 +54,7 @@ export function DataTable<T>({
             {columnas.map((col, colIdx) => (
               <th
                 key={col.key}
+                scope="col"
                 className={clsx(
                   "px-4 py-3 text-left text-[11px] font-bold text-[#52525B] uppercase tracking-[0.1em] whitespace-nowrap",
                   stickyFirst && colIdx === 0 && "sticky left-0 z-10 bg-[#F4F4F5]",
@@ -71,7 +79,6 @@ export function DataTable<T>({
               onClick={() => onRowClick?.(row)}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onRowClick?.(row); } }}
               tabIndex={onRowClick ? 0 : undefined}
-              role={onRowClick ? "button" : undefined}
               aria-label={onRowClick ? `Ver detalle de ${keyExtractor(row)}` : undefined}
               className={clsx(
                 "border-b border-[#F4F4F5] last:border-0",
@@ -98,8 +105,9 @@ export function DataTable<T>({
         </tbody>
       </table>
       {datos.length === 0 && (
-        <div className="flex items-center justify-center h-24 text-[13px] text-[#A1A1AA]">
-          Sin datos disponibles
+        <div className="flex flex-col items-center justify-center gap-1 h-28 text-[#A1A1AA]">
+          <p className="text-[13px]">{emptyMessage ?? EMPTY_MESSAGES.default}</p>
+          <p className="text-[11px]">Si esperabas ver datos, verifica los filtros o carga información desde Admin.</p>
         </div>
       )}
     </div>

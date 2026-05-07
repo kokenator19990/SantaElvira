@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "../index";
 import * as t from "../schema";
+import { verificarSesion } from "./session";
+import { errorSeguro } from "@/lib/utils/safe-parse";
 
 export type ActionResult<T = void> =
   | { ok: true; data?: T }
@@ -21,6 +23,7 @@ interface EquipoInput {
 }
 
 export async function crearEquipo(input: EquipoInput): Promise<ActionResult> {
+  await verificarSesion();
   const id = input.id.trim().toUpperCase();
   if (!ID_REGEX.test(id)) return { ok: false, error: "ID inválido (formato: CH-01, CE-04, CG-01, EX-01)" };
   if (!(TIPOS_VALIDOS as readonly string[]).includes(input.tipoFlotaId)) {
@@ -46,11 +49,12 @@ export async function crearEquipo(input: EquipoInput): Promise<ActionResult> {
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "equipos") };
   }
 }
 
 export async function actualizarEquipo(id: string, input: Partial<Omit<EquipoInput, "id">>): Promise<ActionResult> {
+  await verificarSesion();
   const cleanId = id.trim().toUpperCase();
   if (!ID_REGEX.test(cleanId)) return { ok: false, error: "ID inválido" };
 
@@ -82,7 +86,7 @@ export async function actualizarEquipo(id: string, input: Partial<Omit<EquipoInp
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "equipos") };
   }
 }
 

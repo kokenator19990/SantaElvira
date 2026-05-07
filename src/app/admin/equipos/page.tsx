@@ -1,9 +1,9 @@
 export const revalidate = 300;
 
-import { getFlota } from "@/lib/db/queries/flota";
+import { getFlota, getEquiposInactivos } from "@/lib/db/queries/flota";
 import { EquiposAdminClient } from "./EquiposAdminClient";
 
 export default async function AdminEquiposPage() {
-  const flota = await getFlota();
-  return <EquiposAdminClient flota={flota} />;
+  const [flota, inactivos] = await Promise.all([getFlota(), getEquiposInactivos()]);
+  return <EquiposAdminClient flota={flota} inactivos={inactivos} />;
 }

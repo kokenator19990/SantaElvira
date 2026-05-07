@@ -3,13 +3,16 @@ import { cache } from "react";
 import { db } from "../index";
 import * as t from "../schema";
 import type { AsarcoFlota, TipoFlota } from "../../domain/tipos";
+import { safeFloat } from "../../utils/safe-parse";
+import { getPeriodoActualId } from "./flota";
 
 /**
- * Promedios ASARCO por tipo de flota para el periodo actual.
- * Usado en el chart "Distribución ASARCO" del dashboard.
+ * Promedios ASARCO por tipo de flota para el periodo indicado (o el más reciente).
+ * Devuelve [] si no hay períodos con datos ASARCO.
  */
-export const getAsarcoPorFlota = cache(async (): Promise<AsarcoFlota[]> => {
-  const periodoId = await getPeriodoActualId();
+export const getAsarcoPorFlota = cache(async (periodoIdParam?: number): Promise<AsarcoFlota[]> => {
+  const periodoId = periodoIdParam ?? await getPeriodoActualId();
+  if (periodoId === null) return [];
 
   const filas = await db
     .select({
@@ -33,25 +36,14 @@ export const getAsarcoPorFlota = cache(async (): Promise<AsarcoFlota[]> => {
       tipoFlota: f.tipoFlota as TipoFlota,
       modelo:    cleanModelo(f.modelo),
       distribucion: {
-        operativo:             round1(parseFloat(f.pctOperativo)),
-        reserva:               round1(parseFloat(f.pctReserva)),
-        detencionProgramada:   round1(parseFloat(f.pctDetProgramada)),
-        detencionNoProgramada: round1(parseFloat(f.pctDetNoProg)),
-        perdidaOperacional:    round1(parseFloat(f.pctPerdidaOp)),
+        operativo:             round1(safeFloat(f.pctOperativo)),
+        reserva:               round1(safeFloat(f.pctReserva)),
+        detencionProgramada:   round1(safeFloat(f.pctDetProgramada)),
+        detencionNoProgramada: round1(safeFloat(f.pctDetNoProg)),
+        perdidaOperacional:    round1(safeFloat(f.pctPerdidaOp)),
       },
     }))
     .sort((a, b) => ordenTipo.indexOf(a.tipoFlota) - ordenTipo.indexOf(b.tipoFlota));
-});
-
-const getPeriodoActualId = cache(async (): Promise<number> => {
-  const [row] = await db
-    .select({ id: t.periodo.id })
-    .from(t.periodo)
-    .innerJoin(t.asarcoEquipo, eq(t.asarcoEquipo.periodoId, t.periodo.id))
-    .orderBy(sql`${t.periodo.id} DESC`)
-    .limit(1);
-  if (!row) throw new Error("No hay periodos con ASARCO cargado.");
-  return row.id;
 });
 
 function cleanModelo(m: string): string {

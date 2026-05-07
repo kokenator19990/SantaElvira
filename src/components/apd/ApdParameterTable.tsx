@@ -55,7 +55,7 @@ export function ApdParameterTable({ datos }: { datos: ParametroApd[] }) {
                     <Tooltip short="Valor máximo aceptable según fabricante" help={HELP.apdLimite}>Máx</Tooltip>
                   </th>
                   <th className="px-4 py-2 text-center text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
-                    <Tooltip short="Verde=OK, Ámbar=Advertencia, Rojo=Fuera de rango" help={HELP.semaforo}>Estado</Tooltip>
+                    <Tooltip short="Verde=OK, Ámbar=Advertencia, Rojo=Fuera de rango" help={HELP.apdEstado}>Estado</Tooltip>
                   </th>
                 </tr>
               </thead>

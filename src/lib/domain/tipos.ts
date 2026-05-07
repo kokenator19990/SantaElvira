@@ -59,12 +59,15 @@ export interface Alerta {
   equipoId: string;
   modelo: string;
   tipoFlota: TipoFlota;
-  kpi: keyof KpiEquipo;
+  kpi: keyof KpiEquipo | "apd";
   valorActual: number;
   umbralCritico: number;
   estado: EstadoSemaforo;
   mensaje: string;
   timestamp: string;
+  accionTomada?: string;
+  resueltaPor?: string;
+  resueltaEn?: string;
 }
 
 export interface SerieTemporal {

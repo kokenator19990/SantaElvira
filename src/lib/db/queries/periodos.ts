@@ -17,7 +17,7 @@ export const getPeriodoActual = cache(async (): Promise<Periodo | undefined> => 
     .select()
     .from(t.periodo)
     .innerJoin(t.kpiEquipo, eq(t.kpiEquipo.periodoId, t.periodo.id))
-    .orderBy(desc(t.periodo.id))
+    .orderBy(desc(t.periodo.anio), desc(t.periodo.mes))
     .limit(1);
   return p?.periodo;
 });

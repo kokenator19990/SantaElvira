@@ -2,10 +2,14 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Download } from "lucide-react";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { DataTable, type ColumnaDef } from "@/components/ui/DataTable";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
+import { exportarCsv } from "@/lib/utils/export-csv";
 import type { Equipo, TipoFlota } from "@/lib/domain/tipos";
 import { clsx } from "clsx";
 
@@ -15,12 +19,12 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const TABS: { id: TipoFlota | "todos"; label: string; count: number }[] = [
+  const TABS: { id: TipoFlota | "todos"; label: string; count: number; helpKey?: string }[] = [
     { id: "todos",  label: "Todos",   count: flota.length },
-    { id: "785D",   label: "785D",    count: flota.filter((e) => e.tipoFlota === "785D").length },
-    { id: "777F",   label: "777F",    count: flota.filter((e) => e.tipoFlota === "777F").length },
-    { id: "992",    label: "992",     count: flota.filter((e) => e.tipoFlota === "992").length },
-    { id: "PC2000", label: "PC-2000", count: flota.filter((e) => e.tipoFlota === "PC2000").length },
+    { id: "785D",   label: "785D",    count: flota.filter((e) => e.tipoFlota === "785D").length,   helpKey: "flotaTipo785D" },
+    { id: "777F",   label: "777F",    count: flota.filter((e) => e.tipoFlota === "777F").length,   helpKey: "flotaTipo777F" },
+    { id: "992",    label: "992",     count: flota.filter((e) => e.tipoFlota === "992").length,    helpKey: "flotaTipo992" },
+    { id: "PC2000", label: "PC-2000", count: flota.filter((e) => e.tipoFlota === "PC2000").length, helpKey: "flotaTipoPC2000" },
   ];
 
   const tipoParam = searchParams.get("tipo");
@@ -31,7 +35,15 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
     return "todos";
   });
 
-  const filtrados = tabActivo === "todos" ? flota : flota.filter((e) => e.tipoFlota === tabActivo);
+  const filtradosSinOrden = tabActivo === "todos" ? flota : flota.filter((e) => e.tipoFlota === tabActivo);
+
+  // Ordenar por criticidad: paros primero, luego rojos, ámbar, verdes
+  const CRITICIDAD: Record<string, number> = { paro: 0, rojo: 1, ambar: 2, verde: 3 };
+  const filtrados = [...filtradosSinOrden].sort((a, b) => {
+    const ca = a.paroTotal ? 0 : (CRITICIDAD[a.semaforo.general] ?? 3);
+    const cb = b.paroTotal ? 0 : (CRITICIDAD[b.semaforo.general] ?? 3);
+    return ca - cb;
+  });
 
   const stats = {
     total:    filtrados.length,
@@ -39,6 +51,29 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
     criticos: filtrados.filter((e) => ["ambar", "rojo"].includes(e.semaforo.general)).length,
     paros:    filtrados.filter((e) => e.paroTotal).length,
   };
+
+  function exportarFlota() {
+    const label = tabActivo === "todos" ? "Todos" : tabActivo;
+    exportarCsv(filtrados, [
+      { header: "ID",          value: (e) => e.id },
+      { header: "Modelo",      value: (e) => e.modelo },
+      { header: "Tipo Flota",  value: (e) => e.tipoFlota },
+      { header: "Año",         value: (e) => e.anio },
+      { header: "Estado",      value: (e) => e.paroTotal ? "PARO" : e.semaforo.general.toUpperCase() },
+      { header: "DFM %",       value: (e) => e.kpis.dfm },
+      { header: "TMEF h",      value: (e) => e.kpis.tmef },
+      { header: "TMPR h",      value: (e) => e.kpis.tmpr },
+      { header: "T.Operativo %", value: (e) => e.kpis.tiempoOperativo },
+      { header: "Reserva %",   value: (e) => e.kpis.reserva },
+      { header: "Horas Acum.", value: (e) => e.horasAcumuladas },
+      { header: "ASARCO Op %",       value: (e) => e.asarco.operativo },
+      { header: "ASARCO Res %",      value: (e) => e.asarco.reserva },
+      { header: "ASARCO Det.Prog %", value: (e) => e.asarco.detencionProgramada },
+      { header: "ASARCO Det.NoProg %", value: (e) => e.asarco.detencionNoProgramada },
+      { header: "ASARCO Pérdida %",  value: (e) => e.asarco.perdidaOperacional },
+      { header: "Motivo Paro", value: (e) => e.motivoParo ?? "" },
+    ], `MSG_Flota_${label}_${new Date().toISOString().slice(0, 10)}.csv`);
+  }
 
   const columnas: ColumnaDef<Equipo>[] = [
     {
@@ -128,7 +163,21 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
 
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto">
-      <SectionTitle>Flota Completa</SectionTitle>
+      <div className="flex items-center justify-between gap-3">
+        <SectionTitle>
+          <Tooltip short="Tabla completa de todos los equipos con sus KPIs y estado" help={HELP.navFlota}>
+            Flota Completa
+          </Tooltip>
+        </SectionTitle>
+        <button
+          onClick={exportarFlota}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-[7px] border border-[#E4E4E7] bg-white hover:bg-[#F4F4F5] text-[12px] font-semibold text-[#52525B] transition-colors"
+          title="Descargar tabla como CSV (compatible con Excel)"
+        >
+          <Download size={13} />
+          Exportar Excel
+        </button>
+      </div>
 
       <div className="flex gap-1.5 overflow-x-auto pb-0.5" role="tablist" aria-label="Filtro por tipo de flota">
         {TABS.map((tab) => (
@@ -145,7 +194,13 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
                 : "text-[#71717A] hover:text-[#09090B] hover:bg-[#F4F4F5] border-[#E4E4E7]"
             )}
           >
-            {tab.label}
+            {tab.helpKey ? (
+              <Tooltip short={HELP[tab.helpKey]?.titulo ?? tab.label} help={HELP[tab.helpKey]}>
+                <span className="cursor-help">{tab.label}</span>
+              </Tooltip>
+            ) : (
+              tab.label
+            )}
             <span className={clsx(
               "text-[11px] font-mono px-1 py-0.5 rounded-[3px]",
               tabActivo === tab.id ? "bg-[#FDE68A]/50 text-[#92400E]" : "bg-[#F4F4F5] text-[#A1A1AA]"
@@ -158,13 +213,15 @@ function FlotaContent({ flota }: { flota: Equipo[] }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Total",            valor: stats.total,    color: "#09090B", bg: "bg-white" },
-          { label: "Operativos",       valor: stats.ok,       color: "#15803D", bg: "bg-white" },
-          { label: "Advert./Críticos", valor: stats.criticos, color: "#B45309", bg: "bg-white" },
-          { label: "Paro Total",       valor: stats.paros,    color: "#B91C1C", bg: "bg-[#FEF2F2] border-[#FECACA]" },
+          { label: "Total",            valor: stats.total,    color: "#09090B", bg: "bg-white",                        helpKey: "totalEquipos" },
+          { label: "Operativos",       valor: stats.ok,       color: "#15803D", bg: "bg-white",                        helpKey: "operativos" },
+          { label: "Advert./Críticos", valor: stats.criticos, color: "#B45309", bg: "bg-white",                        helpKey: "advertCriticos" },
+          { label: "Paro Total",       valor: stats.paros,    color: "#B91C1C", bg: "bg-[#FEF2F2] border-[#FECACA]",  helpKey: "paroTotal" },
         ].map((s) => (
           <div key={s.label} className={clsx("flex flex-col gap-0.5 p-3.5 rounded-[9px] border border-[#E4E4E7]", s.bg)}>
-            <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">{s.label}</span>
+            <Tooltip short={HELP[s.helpKey]?.titulo ?? s.label} help={HELP[s.helpKey]}>
+              <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em] cursor-help">{s.label}</span>
+            </Tooltip>
             <span className="text-[31px] font-mono font-bold leading-tight" style={{ color: s.color }}>
               {s.valor}
             </span>

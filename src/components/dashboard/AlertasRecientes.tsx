@@ -8,11 +8,16 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
 
 const KPI_LABEL: Record<string, string> = {
-  dfm:             "Dfm",
-  tmef:            "TMEF",
-  tmpr:            "TMPR",
-  tiempoOperativo: "T.Op.",
+  dfm:             "Disponibilidad",
+  tmef:            "Entre Fallas",
+  tmpr:            "Reparación",
+  tiempoOperativo: "Productivo",
   reserva:         "Reserva",
+  apd:             "Aceites",
+};
+
+const KPI_UNIDAD: Record<string, string> = {
+  dfm: "%", tmef: "h", tmpr: "h", tiempoOperativo: "%", reserva: "%", apd: "",
 };
 
 const FONDO: Record<EstadoSemaforo, string> = {
@@ -63,7 +68,7 @@ export function AlertasRecientes({ alertas, max = 5 }: AlertasRecientesProps) {
         {top.map((alerta) => (
           <Link
             key={alerta.id}
-            href={`/flota/${alerta.equipoId}`}
+            href={alerta.kpi === "apd" ? "/apd" : `/flota/${alerta.equipoId}`}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-[7px] hover:bg-[#F4F4F5] transition-colors duration-150 min-h-[44px] ${FONDO[alerta.estado]}`}
           >
             <SemaforoDot estado={alerta.estado} size="md" />
@@ -77,9 +82,14 @@ export function AlertasRecientes({ alertas, max = 5 }: AlertasRecientesProps) {
             <div className="text-right shrink-0">
               <p className="text-[10px] text-[#A1A1AA] uppercase">{KPI_LABEL[alerta.kpi]}</p>
               <p className="text-[17px] font-mono font-bold text-[#3F3F46] leading-tight">
-                {alerta.valorActual === 0 ? "—" : alerta.valorActual}
+                {alerta.valorActual === 0 ? "—" : `${alerta.valorActual}${KPI_UNIDAD[alerta.kpi] ?? ""}`}
               </p>
             </div>
+            {(alerta.estado === "rojo" || alerta.estado === "paro") && (
+              <p className="sr-only sm:not-sr-only text-[10px] text-[#B45309] truncate max-w-[120px]">
+                Requiere atención
+              </p>
+            )}
           </Link>
         ))}
       </div>

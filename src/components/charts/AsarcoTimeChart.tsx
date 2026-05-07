@@ -7,6 +7,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
 import type { AsarcoFlota } from "@/lib/domain/tipos";
@@ -100,6 +101,19 @@ export function AsarcoTimeChart({ datos }: AsarcoTimeChartProps) {
               radius={i === segmentos.length - 1 ? [3, 3, 0, 0] : [0, 0, 0, 0]}
             />
           ))}
+          <ReferenceLine
+            y={80}
+            stroke="#15803D"
+            strokeDasharray="6 3"
+            strokeWidth={1.5}
+            label={{
+              value: "Meta Operativo: 80%",
+              position: "right",
+              fill: "#15803D",
+              fontSize: 10,
+              fontWeight: 600,
+            }}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

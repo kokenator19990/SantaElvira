@@ -2,6 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import { cache } from "react";
 import { db } from "../index";
 import * as t from "../schema";
+import { safeFloat } from "../../utils/safe-parse";
 import type { ParametroApd } from "@/lib/domain/tipos";
 
 export interface AnalisisApdResumen {
@@ -63,10 +64,10 @@ export const getMuestrasDeAnalisis = cache(async (analisisId: number): Promise<P
     equipo:        r.equipoId,
     compartimento: r.compartimento,
     parametro:     r.parametro,
-    valor:         parseFloat(r.valor),
+    valor:         safeFloat(r.valor),
     unidad:        r.unidad,
-    limiteMinimo:  r.limiteMinimo  ? parseFloat(r.limiteMinimo)  : null,
-    limiteMaximo:  r.limiteMaximo  ? parseFloat(r.limiteMaximo)  : null,
+    limiteMinimo:  r.limiteMinimo  ? safeFloat(r.limiteMinimo)  : null,
+    limiteMaximo:  r.limiteMaximo  ? safeFloat(r.limiteMaximo)  : null,
     estado:        r.estado as ParametroApd["estado"],
   }));
 });

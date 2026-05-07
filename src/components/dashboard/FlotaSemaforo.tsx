@@ -16,7 +16,7 @@ const BORDE: Record<EstadoSemaforo, string> = {
 };
 
 const SEMAFORO_LABEL: Record<EstadoSemaforo, string> = {
-  verde: "Operativa",
+  verde: "Sin problemas",
   ambar: "En advertencia",
   rojo:  "Estado crítico",
   paro:  "Paro total",
@@ -38,6 +38,14 @@ interface FlotaSemaforoProps {
 }
 
 export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
+  if (flotas.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-32 rounded-[10px] bg-white border border-[#E4E4E7]">
+        <p className="text-[13px] text-[#A1A1AA]">Sin datos de flota disponibles — carga KPIs desde Admin para ver el semáforo.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {flotas.map((flota, i) => {
@@ -56,7 +64,7 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
               "hover:bg-[#F4F4F5] transition-all duration-150 group",
               BORDE[flota.semaforoGeneral]
             )}
-            style={{ animationDelay: `${i * 60}ms` }}
+            style={{ animationDelay: `${Math.min(i * 30, 120)}ms` }}
           >
             {/* Header */}
             <div className="flex items-start justify-between gap-2">

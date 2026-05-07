@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   ComposedChart,
   Area,
@@ -37,13 +37,17 @@ const KPI_CFG: Record<KpiKey, { label: string; corto: string; unidad: string; um
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{
-      background: C_TOOLTIP_BG,
-      border: "1px solid #E4E4E7",
-      borderRadius: 8,
-      padding: "8px 12px",
-      boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-    }}>
+    <div
+      role="tooltip"
+      aria-live="polite"
+      style={{
+        background: C_TOOLTIP_BG,
+        border: "1px solid #E4E4E7",
+        borderRadius: 8,
+        padding: "8px 12px",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
+      }}
+    >
       <p style={{ color: "#09090B", fontWeight: 700, fontSize: 11, marginBottom: 4 }}>{label}</p>
       {payload.map((p: {name: string; value: number; payload: Record<string, number>}, i: number) => {
         const cfg = KPI_CFG[p.name as KpiKey];
@@ -60,6 +64,11 @@ function CustomTooltip({ active, payload, label }: any) {
 export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; titulo?: string }) {
   const [kpiActivo, setKpiActivo] = useState<KpiKey>("dfm");
   const cfg = KPI_CFG[kpiActivo];
+
+  const datosChart = useMemo(
+    () => datos.map((d) => ({ mes: d.mes, [kpiActivo]: d[kpiActivo] })),
+    [datos, kpiActivo],
+  );
 
   return (
     <div
@@ -89,7 +98,7 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
       {/* Chart */}
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={datos} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
+          <ComposedChart data={datosChart} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
             <defs>
               <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%"  stopColor={C_LINE} stopOpacity={0.12} />
@@ -138,7 +147,11 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
         </ResponsiveContainer>
       </div>
 
-      <p className="text-[10px] text-[#A1A1AA] text-right font-mono">Nov 2024 — Abr 2025</p>
+      {datos.length > 0 && (
+        <p className="text-[10px] text-[#A1A1AA] text-right font-mono">
+          {datos[0].mes} — {datos[datos.length - 1].mes}
+        </p>
+      )}
     </div>
   );
 }

@@ -27,11 +27,11 @@ export function EquipoKpiPanel({ equipo }: EquipoKpiPanelProps) {
       role="img"
       aria-label={`KPIs del equipo ${equipo.id}`}
     >
-      <KpiGauge label="Dfm"        valor={kpis.dfm}             max={100} unidad="%" estado={semaforo.dfm} />
-      <KpiGauge label="TMEF"       valor={kpis.tmef}            max={150} unidad="h" estado={semaforo.tmef} />
-      <KpiGauge label="TMPR"       valor={kpis.tmpr}            max={30}  unidad="h" estado={semaforo.tmpr} invertido />
-      <KpiGauge label="Tiempo Op." valor={kpis.tiempoOperativo} max={100} unidad="%" estado={semaforo.tiempoOperativo} />
-      <KpiGauge label="Reserva"    valor={kpis.reserva}         max={40}  unidad="%" estado={semaforo.reserva} invertido />
+      <KpiGauge label="Dfm"        valor={kpis.dfm}             max={100} unidad="%" estado={semaforo.dfm}             helpKey="dfm" />
+      <KpiGauge label="TMEF"       valor={kpis.tmef}            max={150} unidad="h" estado={semaforo.tmef}            helpKey="tmef" />
+      <KpiGauge label="TMPR"       valor={kpis.tmpr}            max={30}  unidad="h" estado={semaforo.tmpr} invertido  helpKey="tmpr" />
+      <KpiGauge label="Tiempo Op." valor={kpis.tiempoOperativo} max={100} unidad="%" estado={semaforo.tiempoOperativo} helpKey="tiempoOperativo" />
+      <KpiGauge label="Reserva"    valor={kpis.reserva}         max={40}  unidad="%" estado={semaforo.reserva} invertido helpKey="reserva" />
     </div>
   );
 }

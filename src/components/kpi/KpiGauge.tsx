@@ -1,4 +1,6 @@
 import type { EstadoSemaforo } from "@/lib/domain/tipos";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { HELP } from "@/lib/help-content";
 
 const COLORES: Record<EstadoSemaforo, string> = {
   verde: "#15803D",
@@ -17,9 +19,10 @@ interface KpiGaugeProps {
   estado: EstadoSemaforo;
   invertido?: boolean;
   className?: string;
+  helpKey?: string;
 }
 
-export function KpiGauge({ label, valor, max = 100, unidad = "%", estado, invertido = false, className }: KpiGaugeProps) {
+export function KpiGauge({ label, valor, max = 100, unidad = "%", estado, invertido = false, className, helpKey }: KpiGaugeProps) {
   const rawPct = Math.min(Math.max(valor / max, 0), 1);
   const pct    = invertido ? 1 - rawPct : rawPct;
   const r     = 36;
@@ -68,9 +71,17 @@ export function KpiGauge({ label, valor, max = 100, unidad = "%", estado, invert
         </div>
       </div>
 
-      <span className="text-[11px] font-medium text-[#71717A] text-center leading-tight max-w-[80px]">
-        {label}
-      </span>
+      {helpKey && HELP[helpKey] ? (
+        <Tooltip short={HELP[helpKey].titulo} help={HELP[helpKey]}>
+          <span className="text-[11px] font-medium text-[#71717A] text-center leading-tight max-w-[80px] cursor-help">
+            {label}
+          </span>
+        </Tooltip>
+      ) : (
+        <span className="text-[11px] font-medium text-[#71717A] text-center leading-tight max-w-[80px]">
+          {label}
+        </span>
+      )}
     </div>
   );
 }

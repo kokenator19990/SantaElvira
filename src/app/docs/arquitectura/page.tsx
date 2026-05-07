@@ -1373,7 +1373,7 @@ export default function ArquitecturaPage() {
       </div>
 
       {/* Spacer cuando el nav esta fixed para evitar salto de layout */}
-      {isNavFixed && <div className="h-12" />}
+      {isNavFixed && <div className="h-14" />}
 
       <div className="max-w-[960px] mx-auto flex flex-col gap-6 pt-6">
       {/* ============================================================ */}

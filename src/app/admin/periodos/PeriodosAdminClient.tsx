@@ -8,6 +8,7 @@ import type { Periodo } from "@/lib/db/schema";
 import { crearPeriodo, cerrarPeriodo } from "@/lib/db/actions/kpis";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { HELP } from "@/lib/help-content";
 
 const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -18,6 +19,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
   const [mes, setMes]   = useState(now.getMonth() + 1);
   const [msg, setMsg]   = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [, startTransition] = useTransition();
+  const [confirmAction, setConfirmAction] = useState<{ periodo: Periodo; accion: "cerrar" | "reabrir" } | null>(null);
 
   function handle(p: Promise<{ ok: boolean; error?: string }>, okText: string) {
     setMsg(null);
@@ -112,10 +114,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
                 </td>
                 <td className="px-3 py-2 text-center">
                   <button
-                    onClick={() => handle(
-                      cerrarPeriodo(p.id, !p.cerrado),
-                      `${p.label} ${p.cerrado ? "reabierto" : "cerrado"}.`
-                    )}
+                    onClick={() => setConfirmAction({ periodo: p, accion: p.cerrado ? "reabrir" : "cerrar" })}
                     className="px-2 py-0.5 rounded-[4px] bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[11px] font-medium text-[#52525B]"
                   >
                     {p.cerrado ? "Reabrir" : "Cerrar"}
@@ -126,6 +125,27 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={confirmAction !== null}
+        titulo={confirmAction?.accion === "cerrar" ? "Cerrar período" : "Reabrir período"}
+        mensaje={
+          confirmAction?.accion === "cerrar"
+            ? `Al cerrar "${confirmAction.periodo.label}" no se podrán editar KPIs ni registros de ese mes. Puedes reabrirlo después si es necesario.`
+            : `Al reabrir "${confirmAction?.periodo.label}" se permitirá editar los datos de ese período nuevamente.`
+        }
+        textoConfirmar={confirmAction?.accion === "cerrar" ? "Cerrar período" : "Reabrir período"}
+        variante={confirmAction?.accion === "cerrar" ? "advertencia" : "advertencia"}
+        onConfirm={() => {
+          if (!confirmAction) return;
+          handle(
+            cerrarPeriodo(confirmAction.periodo.id, !confirmAction.periodo.cerrado),
+            `${confirmAction.periodo.label} ${confirmAction.accion === "cerrar" ? "cerrado" : "reabierto"}.`
+          );
+          setConfirmAction(null);
+        }}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   );
 }

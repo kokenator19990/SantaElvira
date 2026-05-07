@@ -23,6 +23,33 @@ const KPI_SHORT: Record<string, string> = {
   "Reserva":     "% del turno en que el equipo estaba disponible pero sin tarea asignada",
 };
 
+/** Genera una línea de contexto interpretativo para el gerente */
+function interpretarKpi(label: string, valor: number, estado: EstadoSemaforo, objetivo: number, delta: number | null): string | null {
+  if (label === "Dfm Flota") {
+    if (estado === "rojo") return `Indisponibilidad alta: ~${((100 - valor) / 4).toFixed(0)}h/turno fuera de servicio`;
+    if (estado === "ambar") return `Cerca del límite — ${(objetivo - valor).toFixed(1)} pts bajo la meta`;
+    if (delta !== null && delta < -2) return `Deterioro acelerado: cae ${Math.abs(delta).toFixed(1)}% vs mes anterior`;
+    return null;
+  }
+  if (label === "TMEF Prom.") {
+    if (estado === "rojo") return `Fallas frecuentes: un equipo falla cada ${valor.toFixed(0)}h promedio`;
+    if (estado === "ambar") return `Confiabilidad moderada — evaluar equipos con TMEF < ${objetivo}h`;
+    return null;
+  }
+  if (label === "TMPR Prom.") {
+    if (estado === "rojo") return `Reparaciones lentas: cada falla tarda ${valor.toFixed(1)}h en resolverse`;
+    if (estado === "ambar") return `Revisar disponibilidad de repuestos — reparaciones por encima de ${objetivo}h`;
+    return null;
+  }
+  if (label === "Tiempo Op." && estado !== "verde") {
+    return `${(100 - valor).toFixed(0)}% del turno no se produce — evaluar causas`;
+  }
+  if (delta !== null && delta < -3) {
+    return `Caída significativa: ${Math.abs(delta).toFixed(1)} pts vs período anterior`;
+  }
+  return null;
+}
+
 const ESTADO_COLOR: Record<EstadoSemaforo, string> = {
   verde: "#15803D",
   ambar: "#B45309",
@@ -39,10 +66,11 @@ const ESTADO_BG: Record<EstadoSemaforo, string> = {
 
 interface KpiItem {
   label: string;
+  labelGerente?: string;
   valor: number;
   unidad: string;
   objetivo: number;
-  delta: number;
+  delta: number | null; // null = sin período anterior para comparar
   estado: EstadoSemaforo;
   invertido?: boolean;
 }
@@ -57,8 +85,8 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
       {items.map((item, i) => {
         const color = ESTADO_COLOR[item.estado];
         const bg    = ESTADO_BG[item.estado];
-        const up    = item.delta > 0;
-        const down  = item.delta < 0;
+        const up    = item.delta !== null && item.delta > 0;
+        const down  = item.delta !== null && item.delta < 0;
         const pctObj = item.invertido
           ? Math.min((item.objetivo / Math.max(item.valor, 0.01)) * 100, 100)
           : Math.min((item.valor / item.objetivo) * 100, 100);
@@ -67,7 +95,7 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
           <div
             key={item.label}
             className="animate-fade-in-up flex flex-col gap-3 p-4 rounded-[10px] bg-white border border-[#E4E4E7] relative overflow-hidden"
-            style={{ animationDelay: `${i * 50}ms` }}
+            style={{ animationDelay: `${Math.min(i * 30, 120)}ms` }}
           >
             {/* Subtle tinted bg from semaphore */}
             <div
@@ -76,16 +104,21 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
             />
 
             <div className="relative flex flex-col gap-2">
-              {/* Label */}
-              <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">
-                <Tooltip
-                  short={KPI_SHORT[item.label] ?? item.label}
-                  help={HELP[KPI_HELP_KEY[item.label] ?? "dfm"]}
-                  className="cursor-help"
-                >
-                  {item.label}
-                </Tooltip>
-              </span>
+              {/* Label — nombre amigable + técnico */}
+              <Tooltip
+                short={KPI_SHORT[item.label] ?? item.label}
+                help={HELP[KPI_HELP_KEY[item.label] ?? "dfm"]}
+                className="cursor-help"
+              >
+                <span className="text-[12px] font-bold text-[#52525B] leading-tight block">
+                  {item.labelGerente ?? item.label}
+                </span>
+                {item.labelGerente && (
+                  <span className="text-[10px] text-[#A1A1AA] uppercase tracking-[0.05em] block">
+                    {item.label}
+                  </span>
+                )}
+              </Tooltip>
 
               {/* Value */}
               <div className="flex items-end gap-1.5">
@@ -111,16 +144,30 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
                 <span className="text-[11px] text-[#A1A1AA]">
                   Meta <span className="text-[#52525B] font-mono">{item.objetivo}{item.unidad}</span>
                 </span>
-                <span className={clsx(
-                  "flex items-center gap-0.5 text-[12px] font-semibold",
-                  up   ? (item.invertido ? "text-red-700"   : "text-green-700") :
-                  down ? (item.invertido ? "text-green-700" : "text-red-700")   : "text-[#71717A]"
-                )}>
-                  {up   && <TrendingUp  size={11} />}
-                  {down && <TrendingDown size={11} />}
-                  {Math.abs(item.delta).toFixed(1)}%
-                </span>
+                {item.delta === null ? (
+                  <span className="text-[11px] text-[#A1A1AA]">Sin comparativa</span>
+                ) : (
+                  <span className={clsx(
+                    "flex items-center gap-0.5 text-[12px] font-semibold",
+                    up   ? (item.invertido ? "text-red-700"   : "text-green-700") :
+                    down ? (item.invertido ? "text-green-700" : "text-red-700")   : "text-[#71717A]"
+                  )}>
+                    {up   && <TrendingUp  size={11} />}
+                    {down && <TrendingDown size={11} />}
+                    {Math.abs(item.delta).toFixed(1)}{item.unidad}
+                  </span>
+                )}
               </div>
+
+              {/* Insight contextual para gerente */}
+              {(() => {
+                const insight = interpretarKpi(item.label, item.valor, item.estado, item.objetivo, item.delta);
+                return insight ? (
+                  <p className="text-[10px] leading-tight mt-0.5" style={{ color }}>
+                    {insight}
+                  </p>
+                ) : null;
+              })()}
             </div>
           </div>
         );

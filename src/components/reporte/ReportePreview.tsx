@@ -1,6 +1,8 @@
 "use client";
 
 import type { Equipo, FlotaResumen, EstadoSemaforo } from "@/lib/domain/tipos";
+import type { KpisDelta } from "@/lib/db/queries/tendencias";
+import { generarResumenEjecutivo, formatUsd } from "@/lib/domain/resumen-ejecutivo";
 import { GraficosReporte } from "./lazy";
 
 interface ReportePreviewProps {
@@ -8,6 +10,8 @@ interface ReportePreviewProps {
   flotas: FlotaResumen[];
   equiposCriticos: Equipo[];
   equiposEnParo: Equipo[];
+  flota?: Equipo[];
+  delta?: KpisDelta | null;
 }
 
 // ─── Color helpers ─────────────────────────────────────────────────────────────
@@ -41,7 +45,7 @@ function calcularEstadoGeneral(flotas: FlotaResumen[]): EstadoSemaforo {
 }
 
 // ─── Componente ───────────────────────────────────────────────────────────────
-export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo }: ReportePreviewProps) {
+export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo, flota, delta }: ReportePreviewProps) {
   const fechaGeneracion = new Date().toLocaleDateString("es-CL", {
     day: "2-digit", month: "long", year: "numeric",
   });
@@ -89,7 +93,7 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
           </p>
           <p className="text-[13px] text-[#A1A1AA] mt-0.5">Período: {periodo}</p>
         </div>
-        <div className="text-right shrink-0">
+        <div className="text-right shrink-0" suppressHydrationWarning>
           <p className="text-[13px] text-[#71717A]">Generado: {fechaGeneracion}</p>
           <p className="text-[11px] text-[#A1A1AA] font-mono mt-0.5">Dashboard KPI MSG v1.0</p>
         </div>
@@ -111,6 +115,43 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
       </div>
 
       <div className="p-6 space-y-6">
+        {/* ── SECCIÓN 0: Resumen Ejecutivo ─────────────────────────────────── */}
+        {flota && flota.length > 0 && (() => {
+          const resumen = generarResumenEjecutivo(flota, flotas, delta ?? null, periodo);
+          const borderColor = resumen.estado === "critico" ? "#FECACA"
+            : resumen.estado === "advertencia" ? "#FDE68A" : "#BBF7D0";
+          const bgColor = resumen.estado === "critico" ? "#FEF2F2"
+            : resumen.estado === "advertencia" ? "#FFFBEB" : "#F0FDF4";
+          const labelColor = resumen.estado === "critico" ? "#B91C1C"
+            : resumen.estado === "advertencia" ? "#B45309" : "#15803D";
+
+          return (
+            <section>
+              <h2 className="text-[16px] font-bold text-[#09090B] border-l-[3px] pl-3 mb-3" style={{ borderColor: labelColor }}>
+                Resumen Ejecutivo
+              </h2>
+              <div className="rounded-lg border p-4" style={{ borderColor, backgroundColor: bgColor }}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[12px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
+                    Estado: {resumen.estado === "critico" ? "CRÍTICO" : resumen.estado === "advertencia" ? "ADVERTENCIA" : "ESTABLE"}
+                  </span>
+                  <span className="text-[13px] font-mono font-bold" style={{ color: labelColor }}>
+                    Pérdida estimada: {formatUsd(resumen.perdidaEstimadaUsd)}/mes
+                  </span>
+                </div>
+                <ul className="space-y-1.5">
+                  {resumen.bullets.map((b, i) => (
+                    <li key={i} className="text-[13px] text-[#52525B] leading-snug flex gap-2">
+                      <span className="text-[#A1A1AA] shrink-0">•</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          );
+        })()}
+
         {/* ── SECCIÓN 1: Resumen por flota ─────────────────────────────────── */}
         <section>
           <h2 className="text-[16px] font-bold text-[#09090B] border-l-[3px] border-[#09090B] pl-3 mb-3">

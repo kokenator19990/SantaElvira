@@ -1,11 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "../index";
 import * as t from "../schema";
 import { calcularSemaforos } from "@/lib/domain/semaforo";
 import { UMBRALES } from "@/lib/constants/umbrales";
+import { safeFloat } from "@/lib/utils/safe-parse";
+import { verificarSesion } from "./session";
+import { errorSeguro } from "@/lib/utils/safe-parse";
+import { registrarAuditoria } from "./audit";
 import type { ActionResult } from "./equipos";
 
 interface KpiEquipoInput {
@@ -33,10 +37,12 @@ interface AsarcoEquipoInput {
 }
 
 const KPI_LABELS: Record<string, string> = {
-  dfm: "Dfm", tmef: "TMEF", tmpr: "TMPR", tiempo_operativo: "Tiempo Op.", reserva: "Reserva",
+  dfm: "Dfm", tmef: "TMEF", tmpr: "TMPR", tiempoOperativo: "Tiempo Op.", reserva: "Reserva",
 };
 
 function validarKpis(k: KpiEquipoInput): string | null {
+  const nums = [k.dfm, k.tmef, k.tmpr, k.tiempoOperativo, k.reserva, k.horasAcumuladas];
+  if (nums.some(Number.isNaN)) return "Uno o más valores KPI no son números válidos";
   if (k.dfm < 0 || k.dfm > 100) return "DFM debe estar entre 0 y 100";
   if (k.tmef < 0) return "TMEF no puede ser negativo";
   if (k.tmpr < 0) return "TMPR no puede ser negativo";
@@ -49,15 +55,20 @@ function validarKpis(k: KpiEquipoInput): string | null {
 
 function validarAsarco(a: AsarcoEquipoInput): string | null {
   const fields = [a.pctOperativo, a.pctReserva, a.pctDetProgramada, a.pctDetNoProg, a.pctPerdidaOp];
-  if (fields.some((f) => f < 0 || f > 100)) return "Cada porcentaje ASARCO debe estar entre 0 y 100";
+  if (fields.some((f) => Number.isNaN(f) || f < 0 || f > 100)) return "Cada porcentaje ASARCO debe ser un número válido entre 0 y 100";
   const total = fields.reduce((s, f) => s + f, 0);
-  if (Math.abs(total - 100) > 0.5) return `Los 5 segmentos ASARCO deben sumar ~100% (suman ${total.toFixed(1)}%)`;
+  if (Math.abs(total - 100) > 0.1) return `Los 5 segmentos ASARCO deben sumar ~100% (suman ${total.toFixed(1)}%)`;
   return null;
 }
 
 export async function upsertKpiEquipo(input: KpiEquipoInput): Promise<ActionResult> {
+  await verificarSesion();
   const error = validarKpis(input);
   if (error) return { ok: false, error };
+
+  // Verificar que el período no esté cerrado
+  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, input.periodoId)).limit(1);
+  if (per?.cerrado) return { ok: false, error: "No se pueden modificar KPIs de un período cerrado" };
 
   try {
     await db.insert(t.kpiEquipo).values({
@@ -87,16 +98,22 @@ export async function upsertKpiEquipo(input: KpiEquipoInput): Promise<ActionResu
       },
     });
 
+    await registrarAuditoria("kpi_equipo", `${input.equipoId}:${input.periodoId}`, "UPDATE", input.creadoPor ?? "admin", `KPI DFM=${input.dfm} TMEF=${input.tmef}`);
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
 
 export async function upsertAsarcoEquipo(input: AsarcoEquipoInput): Promise<ActionResult> {
+  await verificarSesion();
   const error = validarAsarco(input);
   if (error) return { ok: false, error };
+
+  // Verificar que el período no esté cerrado
+  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, input.periodoId)).limit(1);
+  if (per?.cerrado) return { ok: false, error: "No se pueden modificar datos ASARCO de un período cerrado" };
 
   try {
     await db.insert(t.asarcoEquipo).values({
@@ -121,7 +138,7 @@ export async function upsertAsarcoEquipo(input: AsarcoEquipoInput): Promise<Acti
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
 
@@ -130,6 +147,11 @@ export async function upsertAsarcoEquipo(input: AsarcoEquipoInput): Promise<Acti
  * Borra las alertas anteriores del período y reinserta las nuevas.
  */
 export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "admin"): Promise<ActionResult<{ creadas: number }>> {
+  await verificarSesion();
+  // Verificar que el período no esté cerrado
+  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, periodoId)).limit(1);
+  if (per?.cerrado) return { ok: false, error: "No se pueden regenerar alertas de un período cerrado" };
+
   try {
     const kpis = await db.select().from(t.kpiEquipo).where(eq(t.kpiEquipo.periodoId, periodoId));
     const equipos = await db.select().from(t.equipo);
@@ -139,11 +161,11 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
 
     for (const k of kpis) {
       const kpisN = {
-        dfm:             parseFloat(k.dfm),
-        tmef:            parseFloat(k.tmef),
-        tmpr:            parseFloat(k.tmpr),
-        tiempoOperativo: parseFloat(k.tiempoOperativo),
-        reserva:         parseFloat(k.reserva),
+        dfm:             safeFloat(k.dfm),
+        tmef:            safeFloat(k.tmef),
+        tmpr:            safeFloat(k.tmpr),
+        tiempoOperativo: safeFloat(k.tiempoOperativo),
+        reserva:         safeFloat(k.reserva),
       };
       const sem = calcularSemaforos(kpisN);
 
@@ -185,25 +207,34 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
       }
     }
 
-    await db.delete(t.alerta).where(eq(t.alerta.periodoId, periodoId));
-    if (nuevas.length > 0) {
-      // Chunked insert
-      for (let i = 0; i < nuevas.length; i += 200) {
-        await db.insert(t.alerta).values(nuevas.slice(i, i + 200));
+    // Transacción atómica: borrar alertas KPI no resueltas + insertar nuevas
+    await db.transaction(async (tx) => {
+      await tx.delete(t.alerta).where(
+        and(
+          eq(t.alerta.periodoId, periodoId),
+          eq(t.alerta.resuelta, false),
+          sql`${t.alerta.kpi} IN ('dfm', 'tmef', 'tmpr', 'tiempoOperativo', 'reserva')`
+        )
+      );
+      if (nuevas.length > 0) {
+        for (let i = 0; i < nuevas.length; i += 200) {
+          await tx.insert(t.alerta).values(nuevas.slice(i, i + 200));
+        }
       }
-    }
+    });
     void creadoPor; // marca de auditoría futura
 
     revalidatePath("/", "layout");
     return { ok: true, data: { creadas: nuevas.length } };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
 
 interface CrearPeriodoInput { anio: number; mes: number; label?: string; }
 
 export async function crearPeriodo({ anio, mes, label }: CrearPeriodoInput): Promise<ActionResult<{ id: number }>> {
+  await verificarSesion();
   if (anio < 2020 || anio > 2100) return { ok: false, error: "Año fuera de rango" };
   if (mes < 1 || mes > 12) return { ok: false, error: "Mes inválido" };
 
@@ -224,18 +255,19 @@ export async function crearPeriodo({ anio, mes, label }: CrearPeriodoInput): Pro
     revalidatePath("/", "layout");
     return { ok: true, data: { id: created.id } };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
 
 export async function cerrarPeriodo(periodoId: number, cerrado = true): Promise<ActionResult> {
+  await verificarSesion();
   try {
     const r = await db.update(t.periodo).set({ cerrado }).where(eq(t.periodo.id, periodoId)).returning({ id: t.periodo.id });
     if (r.length === 0) return { ok: false, error: "Período no existe" };
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
 

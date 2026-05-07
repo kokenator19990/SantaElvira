@@ -1,5 +1,6 @@
 import type { EstadoSemaforo, TipoFlota } from "../domain/tipos";
 import { TENDENCIAS } from "./tendencias";
+import { clasificarDfm, clasificarTmef, clasificarTmpr } from "../domain/semaforo";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 export interface FlotaPeriodo {
@@ -20,11 +21,12 @@ export interface PeriodoSnapshot {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function calcularEstado(tipo: TipoFlota, dfm: number): EstadoSemaforo {
-  if (tipo === "777F" && dfm === 0) return "paro";
-  if (dfm >= 85) return "verde";
-  if (dfm >= 75) return "ambar";
-  return "rojo";
+function calcularEstado(dfm: number, tmef: number, tmpr: number): EstadoSemaforo {
+  if (dfm === 0) return "paro";
+  const estados = [clasificarDfm(dfm), clasificarTmef(tmef), clasificarTmpr(tmpr)];
+  if (estados.includes("rojo")) return "rojo";
+  if (estados.includes("ambar")) return "ambar";
+  return "verde";
 }
 
 function buildSnapshot(label: string, mes: string): PeriodoSnapshot {
@@ -39,7 +41,7 @@ function buildSnapshot(label: string, mes: string): PeriodoSnapshot {
       dfm,
       tmef,
       tmpr,
-      estado: calcularEstado(serie.tipoFlota, dfm),
+      estado: calcularEstado(dfm, tmef, tmpr),
     };
   });
 

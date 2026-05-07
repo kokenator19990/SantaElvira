@@ -25,3 +25,8 @@ export const DisponibilidadBar = dynamic(
   () => import("./DisponibilidadBar").then((m) => ({ default: m.DisponibilidadBar })),
   { ssr: false, loading: () => <ChartSkeleton className="h-48" /> }
 );
+
+export const TendenciaFlotaSelector = dynamic(
+  () => import("./TendenciaFlotaSelector").then((m) => ({ default: m.TendenciaFlotaSelector })),
+  { ssr: false, loading: () => <ChartSkeleton className="h-72" /> }
+);

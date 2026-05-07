@@ -7,26 +7,16 @@ import {
 } from "recharts";
 import type { FlotaResumen, EstadoSemaforo, DistribucionAsarco } from "@/lib/domain/tipos";
 import { ASARCO_FLOTA } from "@/lib/data/asarco";
+import { COLORES_ASARCO, LABELS_ASARCO, COLORES_SEMAFORO } from "@/lib/constants/umbrales";
 
 // ─── Paleta ───────────────────────────────────────────────────────────────────
-const SEM: Record<EstadoSemaforo, string> = {
-  verde: "#16A34A",
-  ambar: "#D97706",
-  rojo:  "#DC2626",
-  paro:  "#DC2626",
-};
+const SEM: Record<EstadoSemaforo, string> = COLORES_SEMAFORO;
 
-const ASARCO_C = {
-  operativo:             "#16A34A",
-  reserva:               "#3A6AB0",
-  detencionProgramada:   "#D97706",
-  detencionNoProgramada: "#DC2626",
-  perdidaOperacional:    "#7C2D12",
-} as const;
+const ASARCO_C = COLORES_ASARCO;
 
 const ASARCO_L = {
-  operativo:             "Operativo",
-  reserva:               "Reserva",
+  operativo:             LABELS_ASARCO.operativo,
+  reserva:               LABELS_ASARCO.reserva,
   detencionProgramada:   "Det. Programada",
   detencionNoProgramada: "Det. No Prog.",
   perdidaOperacional:    "Pérdida Op.",

@@ -8,6 +8,13 @@
       "when": 1777318021950,
       "tag": "0000_gorgeous_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778086391665,
+      "tag": "0001_skinny_dark_beast",
+      "breakpoints": true
     }
   ]
 }

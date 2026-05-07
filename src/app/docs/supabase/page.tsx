@@ -64,11 +64,11 @@ export default function DocsSupabasePage() {
         </Note>
         <Specs
           items={[
-            ["Proyecto", "kokenator19990's Project"],
-            ["URL del proyecto", "ithyrsesbvitopvsgcpo.supabase.co"],
+            ["Proyecto", "(ver .env.local — NEXT_PUBLIC_SUPABASE_URL)"],
+            ["URL del proyecto", "(ver .env.local — NEXT_PUBLIC_SUPABASE_URL)"],
             ["Plan", "FREE (NANO tier · 500 MB · 60 conexiones)"],
             ["Región DB", "West US (Oregon) · us-west-2"],
-            ["Cluster pooler", "aws-1-us-west-2.pooler.supabase.com"],
+            ["Cluster pooler", "(ver DATABASE_URL en .env.local)"],
             ["Engine", "Postgres 17.6 sobre aarch64"],
           ]}
         />
@@ -157,9 +157,9 @@ export default function DocsSupabasePage() {
             color="#15803D"
             bg="#F0FDF4"
             titulo="Pooled (Transaction mode)"
-            host="aws-1-us-west-2.pooler.supabase.com"
+            host="(ver DATABASE_URL en .env.local)"
             puerto="6543"
-            usuario="postgres.ithyrsesbvitopvsgcpo"
+            usuario="(ver DATABASE_URL en .env.local)"
             uso="Runtime de Vercel: queries en RSC y server actions."
             puntos={[
               "Soporta IPv4 (free tier)",
@@ -172,9 +172,9 @@ export default function DocsSupabasePage() {
             color="#1A5276"
             bg="#EBF5FB"
             titulo="Direct connection"
-            host="db.ithyrsesbvitopvsgcpo.supabase.co"
+            host="(ver DIRECT_URL en .env.local)"
             puerto="5432"
-            usuario="postgres"
+            usuario="(ver DIRECT_URL en .env.local)"
             uso="Migraciones desde tu máquina con drizzle-kit."
             puntos={[
               "Solo IPv6 en free tier (IPv4 paid add-on)",

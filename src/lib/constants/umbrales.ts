@@ -51,3 +51,15 @@ export const OBJETIVO_TMEF   = 80;
 export const OBJETIVO_TMPR   = 5;
 export const OBJETIVO_OP     = 80;
 export const OBJETIVO_RESERVA = 8;
+
+/**
+ * Costo estimado por hora de paro por tipo de flota (USD/hora).
+ * Incluye: producción perdida + costo de mantención ociosa + impacto logístico.
+ * Estos valores son configurables — ajustar según contrato y condiciones de faena.
+ */
+export const COSTO_HORA_PARO: Record<string, number> = {
+  "785D":   1250,   // Camión de acarreo grande — alto tonelaje
+  "777F":    950,   // Camión de acarreo mediano
+  "992":    1100,   // Cargador frontal — impacto en cadena de carguío
+  "PC2000": 1400,   // Excavadora hidráulica — equipo crítico de producción
+};

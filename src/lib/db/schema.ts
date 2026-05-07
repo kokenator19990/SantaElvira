@@ -100,7 +100,43 @@ export const asarcoEquipo = pgTable("asarco_equipo", {
   uniqueEquipoPeriodo: uniqueIndex("asarco_equipo_periodo_uq").on(t.equipoId, t.periodoId),
 }));
 
-/* ─── 7. ALERTA ─────────────────────────────────────────────────────────────
+/* ─── 7. REGISTRO_DIARIO ───────────────────────────────────────────────────
+ * Horas diarias por equipo en las 5 categorías ASARCO.
+ * Este es el dato crudo que permite calcular KPIs automáticamente.
+ */
+export const registroDiario = pgTable("registro_diario", {
+  id:                  serial("id").primaryKey(),
+  equipoId:            text("equipo_id").notNull().references(() => equipo.id),
+  fecha:               date("fecha").notNull(),
+  turno:               text("turno").notNull().default("completo"),         // "dia" | "noche" | "completo"
+  hrsOperacion:        decimal("hrs_operacion",         { precision: 5, scale: 2 }).notNull(),
+  hrsReserva:          decimal("hrs_reserva",           { precision: 5, scale: 2 }).notNull(),
+  hrsDetProgramada:    decimal("hrs_det_programada",    { precision: 5, scale: 2 }).notNull(),
+  hrsDetNoProgramada:  decimal("hrs_det_no_programada", { precision: 5, scale: 2 }).notNull(),
+  hrsPerdidaOp:        decimal("hrs_perdida_op",        { precision: 5, scale: 2 }).notNull(),
+  observaciones:       text("observaciones"),
+  creadoPor:           text("creado_por"),
+  createdAt:           timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}, (t) => ({
+  uniqueEquipoFechaTurno: uniqueIndex("registro_diario_eq_fecha_turno_uq").on(t.equipoId, t.fecha, t.turno),
+}));
+
+/* ─── 8. EVENTO_FALLA ─────────────────────────────────────────────────────
+ * Cada falla registrada en un equipo. Alimenta el cálculo de TMEF y TMPR.
+ */
+export const eventoFalla = pgTable("evento_falla", {
+  id:              serial("id").primaryKey(),
+  equipoId:        text("equipo_id").notNull().references(() => equipo.id),
+  fecha:           timestamp("fecha", { withTimezone: true }).notNull(),
+  descripcion:     text("descripcion").notNull(),
+  componente:      text("componente"),                                      // "Motor", "Hidráulico", "Transmisión", etc.
+  hrsReparacion:   decimal("hrs_reparacion", { precision: 5, scale: 1 }).notNull(),
+  resuelta:        boolean("resuelta").notNull().default(false),
+  creadoPor:       text("creado_por"),
+  createdAt:       timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+/* ─── 9. ALERTA ────────────────────────────────────────────────────────────
  * Alertas generadas cuando un KPI supera un umbral
  */
 export const alerta = pgTable("alerta", {
@@ -113,6 +149,9 @@ export const alerta = pgTable("alerta", {
   estado:         text("estado").notNull(),                         // "verde" | "ambar" | "rojo" | "paro"
   mensaje:        text("mensaje").notNull(),
   resuelta:       boolean("resuelta").notNull().default(false),
+  accionTomada:   text("accion_tomada"),                            // qué se hizo para resolver
+  resueltaPor:    text("resuelta_por"),                             // quién resolvió
+  resueltaEn:     timestamp("resuelta_en", { withTimezone: true }), // cuándo se resolvió
   timestamp:      timestamp("timestamp", { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -152,11 +191,13 @@ export const tipoFlotaRelations = relations(tipoFlota, ({ many }) => ({
 }));
 
 export const equipoRelations = relations(equipo, ({ one, many }) => ({
-  tipoFlota: one(tipoFlota, { fields: [equipo.tipoFlotaId], references: [tipoFlota.id] }),
-  kpis:      many(kpiEquipo),
-  asarcos:   many(asarcoEquipo),
-  alertas:   many(alerta),
-  muestras:  many(muestraApd),
+  tipoFlota:  one(tipoFlota, { fields: [equipo.tipoFlotaId], references: [tipoFlota.id] }),
+  kpis:       many(kpiEquipo),
+  asarcos:    many(asarcoEquipo),
+  alertas:    many(alerta),
+  muestras:   many(muestraApd),
+  registros:  many(registroDiario),
+  fallas:     many(eventoFalla),
 }));
 
 export const periodoRelations = relations(periodo, ({ many }) => ({
@@ -191,6 +232,27 @@ export const muestraApdRelations = relations(muestraApd, ({ one }) => ({
   equipo:   one(equipo,      { fields: [muestraApd.equipoId],   references: [equipo.id] }),
 }));
 
+export const registroDiarioRelations = relations(registroDiario, ({ one }) => ({
+  equipo: one(equipo, { fields: [registroDiario.equipoId], references: [equipo.id] }),
+}));
+
+export const eventoFallaRelations = relations(eventoFalla, ({ one }) => ({
+  equipo: one(equipo, { fields: [eventoFalla.equipoId], references: [equipo.id] }),
+}));
+
+/* ─── 10. AUDIT_LOG ───────────────────────────────────────────────────────
+ * Registro de auditoría: quién hizo qué y cuándo. Inmutable (solo INSERT).
+ */
+export const auditLog = pgTable("audit_log", {
+  id:          serial("id").primaryKey(),
+  tabla:       text("tabla").notNull(),                            // "kpi_equipo", "alerta", etc.
+  registroId:  text("registro_id").notNull(),                      // ID del registro afectado
+  operacion:   text("operacion").notNull(),                        // "INSERT" | "UPDATE" | "DELETE"
+  usuario:     text("usuario").notNull().default("admin"),         // quién realizó la acción
+  detalles:    text("detalles"),                                   // descripción legible del cambio
+  createdAt:   timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 /* ─── Tipos derivados (insert / select) ─────────────────────────────────────
  * Drizzle infiere los tipos desde el schema → no hay drift entre BD y TS.
  */
@@ -211,5 +273,11 @@ export type NewUmbralKpi    = typeof umbralKpi.$inferInsert;
 export type NewKpiEquipo    = typeof kpiEquipo.$inferInsert;
 export type NewAsarcoEquipo = typeof asarcoEquipo.$inferInsert;
 export type NewAlerta       = typeof alerta.$inferInsert;
-export type NewAnalisisApd  = typeof analisisApd.$inferInsert;
-export type NewMuestraApd   = typeof muestraApd.$inferInsert;
+export type NewAnalisisApd    = typeof analisisApd.$inferInsert;
+export type NewMuestraApd     = typeof muestraApd.$inferInsert;
+export type AuditLog          = typeof auditLog.$inferSelect;
+export type NewAuditLog       = typeof auditLog.$inferInsert;
+export type RegistroDiario    = typeof registroDiario.$inferSelect;
+export type NewRegistroDiario = typeof registroDiario.$inferInsert;
+export type EventoFalla       = typeof eventoFalla.$inferSelect;
+export type NewEventoFalla    = typeof eventoFalla.$inferInsert;
