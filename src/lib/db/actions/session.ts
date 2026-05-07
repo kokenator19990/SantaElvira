@@ -11,7 +11,7 @@ const SESSION_COOKIE = "admin_session";
 export async function verificarSesion(): Promise<void> {
   const cookieStore = await cookies();
   const session = cookieStore.get(SESSION_COOKIE);
-  if (!session?.value || session.value.length < 10) {
+  if (!session?.value || session.value.length < 36) {
     throw new Error("No autorizado");
   }
 }

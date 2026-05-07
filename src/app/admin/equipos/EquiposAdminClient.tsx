@@ -90,8 +90,9 @@ export function EquiposAdminClient({ flota, inactivos = [] }: { flota: Equipo[];
           <Field label="ID (formato CH-01, CE-04, …)" helpKey="columnaId">
             <input
               value={nuevo.id}
-              onChange={(e) => setNuevo({ ...nuevo, id: e.target.value.toUpperCase() })}
+              onChange={(e) => setNuevo({ ...nuevo, id: e.target.value.toUpperCase().slice(0, 10) })}
               placeholder="CH-09"
+              maxLength={10}
               className="w-[110px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px] font-mono uppercase"
             />
           </Field>
@@ -115,7 +116,7 @@ export function EquiposAdminClient({ flota, inactivos = [] }: { flota: Equipo[];
             <input
               type="number"
               value={nuevo.anio}
-              onChange={(e) => setNuevo({ ...nuevo, anio: parseInt(e.target.value) || 0 })}
+              onChange={(e) => { const v = parseInt(e.target.value); setNuevo({ ...nuevo, anio: Number.isFinite(v) && v >= 1990 && v <= 2099 ? v : nuevo.anio }); }}
               className="w-[80px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px] font-mono"
             />
           </Field>
@@ -179,7 +180,7 @@ export function EquiposAdminClient({ flota, inactivos = [] }: { flota: Equipo[];
                       <input
                         type="number"
                         value={draft.anio}
-                        onChange={(ev) => setDraft({ ...draft, anio: parseInt(ev.target.value) || 0 })}
+                        onChange={(ev) => { const v = parseInt(ev.target.value); setDraft({ ...draft, anio: Number.isFinite(v) && v >= 1990 && v <= 2099 ? v : draft.anio }); }}
                         className="w-[70px] px-1.5 py-0.5 rounded-[4px] bg-white border border-[#E4E4E7] text-[12px] font-mono text-right"
                       />
                     ) : (

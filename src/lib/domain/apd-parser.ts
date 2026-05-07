@@ -15,8 +15,11 @@ export function parsearCsvApd(contenido: string): ParametroApd[] {
   return lineas.slice(1).flatMap((linea): ParametroApd[] => {
     const cols = linea.split(sep).map((c) => c.trim());
     if (cols.length < 5) return []; // skip malformed rows
-    const valorRaw = parseFloat(cols[3] ?? "0");
-    const valor = Number.isNaN(valorRaw) ? 0 : valorRaw;
+    const equipo = cols[0]?.trim() ?? "";
+    if (!equipo) return []; // skip rows without equipment ID
+    const valorRaw = parseFloat(cols[3] ?? "");
+    if (Number.isNaN(valorRaw)) return []; // skip rows with non-numeric value
+    const valor = valorRaw;
     const limMinRaw = cols[5] !== "" && cols[5] != null ? parseFloat(cols[5]) : NaN;
     const limMaxRaw = cols[6] !== "" && cols[6] != null ? parseFloat(cols[6]) : NaN;
     const limMin   = Number.isNaN(limMinRaw) ? null : limMinRaw;
@@ -29,7 +32,7 @@ export function parsearCsvApd(contenido: string): ParametroApd[] {
     else if (limMax !== null && limMax > 0 && valor > limMax * 0.9 && valor <= limMax) estado = "ambar";
 
     return [{
-      equipo:        cols[0] ?? "",
+      equipo,
       compartimento: cols[1] ?? "",
       parametro:     cols[2] ?? "",
       valor,

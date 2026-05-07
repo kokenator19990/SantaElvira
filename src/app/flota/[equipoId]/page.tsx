@@ -39,11 +39,16 @@ export default async function EquipoPage({ params }: Props) {
 
   // Objetivos KPI dinámicos desde BD con fallback a constantes
   const umbralMap = new Map(umbralesActivos.map((u) => [u.kpi, u]));
-  const OBJ_DFM  = Number(umbralMap.get("dfm")?.nivelVerde)  || OBJETIVO_DFM;
-  const OBJ_TMEF = Number(umbralMap.get("tmef")?.nivelVerde)  || OBJETIVO_TMEF;
-  const OBJ_TMPR = Number(umbralMap.get("tmpr")?.nivelVerde)  || OBJETIVO_TMPR;
-  const OBJ_OP   = Number(umbralMap.get("tiempoOperativo")?.nivelVerde) || OBJETIVO_OP;
-  const OBJ_RES  = Number(umbralMap.get("reserva")?.nivelVerde) || OBJETIVO_RESERVA;
+  const parseUmbral = (val: string | undefined, fallback: number) => {
+    if (val == null) return fallback;
+    const n = Number(val);
+    return Number.isFinite(n) ? n : fallback;
+  };
+  const OBJ_DFM  = parseUmbral(umbralMap.get("dfm")?.nivelVerde, OBJETIVO_DFM);
+  const OBJ_TMEF = parseUmbral(umbralMap.get("tmef")?.nivelVerde, OBJETIVO_TMEF);
+  const OBJ_TMPR = parseUmbral(umbralMap.get("tmpr")?.nivelVerde, OBJETIVO_TMPR);
+  const OBJ_OP   = parseUmbral(umbralMap.get("tiempoOperativo")?.nivelVerde, OBJETIVO_OP);
+  const OBJ_RES  = parseUmbral(umbralMap.get("reserva")?.nivelVerde, OBJETIVO_RESERVA);
 
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] mx-auto">

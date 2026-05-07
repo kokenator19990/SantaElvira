@@ -63,7 +63,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
             <input
               type="number"
               value={anio}
-              onChange={(e) => setAnio(parseInt(e.target.value) || 0)}
+              onChange={(e) => { const v = parseInt(e.target.value); if (Number.isFinite(v) && v >= 1990 && v <= 2099) setAnio(v); }}
               className="w-[90px] px-2 py-1.5 rounded-[5px] bg-white border border-[#E4E4E7] text-[13px] font-mono"
             />
           </label>

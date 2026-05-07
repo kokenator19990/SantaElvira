@@ -13,11 +13,17 @@ function resolverRuta(pathname: string, totalEquipos: number) {
     "/apd":       { titulo: "APD Aceites",   subtitulo: "Análisis predictivo" },
     "/reporte":     { titulo: "Reporte",       subtitulo: "Informe mensual" },
     "/explorador":  { titulo: "Explorador",    subtitulo: "Vista planilla interactiva" },
+    "/docs":        { titulo: "Documentación", subtitulo: "Modelo y arquitectura" },
+    "/admin":       { titulo: "Admin",         subtitulo: "Carga de datos" },
   };
   if (RUTAS[pathname]) return RUTAS[pathname];
   if (pathname.startsWith("/flota/")) {
     const id = pathname.split("/flota/")[1]?.toUpperCase();
     return { titulo: `Equipo ${id ?? ""}`, subtitulo: "Detalle individual" };
+  }
+  if (pathname.startsWith("/admin/")) {
+    const sub = pathname.split("/admin/")[1]?.replace(/-/g, " ") ?? "";
+    return { titulo: "Admin", subtitulo: sub.charAt(0).toUpperCase() + sub.slice(1) };
   }
   return { titulo: "MSG Dashboard" };
 }

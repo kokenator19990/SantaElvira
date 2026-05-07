@@ -33,13 +33,17 @@ interface Props {
 
 export function UmbralesAdminClient({ umbrales, hayDatosBd }: Props) {
   const [rows, setRows] = useState<UmbralRow[]>(() =>
-    umbrales.map((u) => ({
-      kpi:        u.kpi,
-      nivelVerde: parseFloat(u.nivelVerde),
-      nivelAmbar: parseFloat(u.nivelAmbar),
-      invertido:  u.invertido,
-      status:     "idle",
-    }))
+    umbrales.map((u) => {
+      const nv = parseFloat(u.nivelVerde);
+      const na = parseFloat(u.nivelAmbar);
+      return {
+        kpi:        u.kpi,
+        nivelVerde: Number.isFinite(nv) ? nv : 0,
+        nivelAmbar: Number.isFinite(na) ? na : 0,
+        invertido:  u.invertido,
+        status:     "idle" as const,
+      };
+    })
   );
   const [globalMsg, setGlobalMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
 

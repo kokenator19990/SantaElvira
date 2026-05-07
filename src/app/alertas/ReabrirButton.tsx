@@ -36,7 +36,7 @@ export function ReabrirButton({ alertaId, equipoId, kpiLabel }: Props) {
       <ConfirmDialog
         open={showConfirm}
         titulo="Reabrir alerta"
-        mensaje={`Se reabrirá la alerta de ${equipoId} (${kpiLabel}). La alerta volverá al panel de alertas activas y se registrará en el log de auditoría.`}
+        mensaje={`Se reabrirá la alerta de ${equipoId} (${kpiLabel}). La acción registrada y los datos de resolución se eliminarán. La alerta volverá al panel de alertas activas y se registrará en el log de auditoría.`}
         textoConfirmar="Reabrir alerta"
         variante="advertencia"
         onConfirm={handleConfirm}

@@ -27,7 +27,7 @@ export const COLORES_SEMAFORO = {
   verde: "#16A34A",
   ambar: "#D97706",
   rojo:  "#DC2626",
-  paro:  "#DC2626",
+  paro:  "#991B1B",
 } as const;
 
 export const COLORES_ASARCO = {

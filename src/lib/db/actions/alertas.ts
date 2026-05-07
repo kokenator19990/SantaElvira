@@ -93,7 +93,7 @@ export async function reabrirAlerta(alertaId: number): Promise<ActionResult> {
  */
 export async function resolverTodasPorEstado(
   estado: "paro" | "rojo" | "ambar",
-  params: { accionTomada: string }
+  params: { accionTomada: string; usuario?: string }
 ): Promise<ActionResult> {
   await verificarSesion();
 
@@ -101,12 +101,14 @@ export async function resolverTodasPorEstado(
     return { ok: false, error: "La acción tomada es obligatoria" };
   }
 
+  const usuario = params.usuario?.trim() || "supervisor";
+
   const resultado = await db
     .update(t.alerta)
     .set({
       resuelta: true,
       accionTomada: params.accionTomada.trim(),
-      resueltaPor: "supervisor",
+      resueltaPor: usuario,
       resueltaEn: new Date(),
     })
     .where(and(eq(t.alerta.estado, estado), eq(t.alerta.resuelta, false)))
@@ -116,7 +118,7 @@ export async function resolverTodasPorEstado(
     "alerta",
     `estado:${estado}`,
     "UPDATE",
-    "supervisor",
+    usuario,
     `${resultado.length} alertas '${estado}' resueltas en lote: ${params.accionTomada.trim()}`
   );
 

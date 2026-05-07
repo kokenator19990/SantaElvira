@@ -148,9 +148,10 @@ export async function upsertAsarcoEquipo(input: AsarcoEquipoInput): Promise<Acti
  */
 export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "admin"): Promise<ActionResult<{ creadas: number }>> {
   await verificarSesion();
-  // Verificar que el período no esté cerrado
+  // Verificar que el período exista y no esté cerrado
   const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, periodoId)).limit(1);
-  if (per?.cerrado) return { ok: false, error: "No se pueden regenerar alertas de un período cerrado" };
+  if (!per) return { ok: false, error: "El período no existe" };
+  if (per.cerrado) return { ok: false, error: "No se pueden regenerar alertas de un período cerrado" };
 
   try {
     const kpis = await db.select().from(t.kpiEquipo).where(eq(t.kpiEquipo.periodoId, periodoId));

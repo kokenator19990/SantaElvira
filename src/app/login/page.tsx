@@ -55,9 +55,8 @@ async function loginAction(formData: FormData) {
     redirect(`/login?error=config&from=${encodeURIComponent(from)}`);
   }
 
-  // Rate limiting por IP (usa header forwarded o fallback)
-  const ip = "server-action"; // En server actions no hay acceso directo a IP; usamos usuario como key
-  const ipKey = `${ip}:${usuario}`;
+  // Rate limiting por usuario (en server actions no hay acceso directo a IP)
+  const ipKey = `login:${usuario.toLowerCase()}`;
   if (!verificarRateLimit(ipKey)) {
     redirect(`/login?error=rate&from=${encodeURIComponent(from)}`);
   }
@@ -72,7 +71,9 @@ async function loginAction(formData: FormData) {
       path:     "/",
       sameSite: "strict",
     });
-    redirect(from.startsWith("/") ? from : "/admin");
+    // Validar redirect: solo rutas internas, sin path traversal ni open redirect
+    const safeFrom = from.startsWith("/") && !from.startsWith("//") && !from.includes("..") ? from : "/admin";
+    redirect(safeFrom);
   }
 
   redirect(`/login?error=1&from=${encodeURIComponent(from)}`);
@@ -165,7 +166,7 @@ export default function LoginPage({ searchParams }: Props) {
         </div>
 
         <p className="mt-4 text-center text-[11px] text-[#A1A1AA]">
-          Dashboard KPI v1.1 · Mining Services Group
+          Dashboard KPI v1.4 · Mining Services Group
         </p>
       </div>
     </div>

@@ -168,7 +168,7 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" aria-hidden="true" />
           <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
         </div>
-        <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.2 · MSG 2026</p>
+        <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.4 · MSG 2026</p>
       </div>
     </aside>
   );

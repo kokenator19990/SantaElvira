@@ -32,6 +32,8 @@ export function CalcularKpisClient({ periodos }: Props) {
     const result = await previewKpisDesdeRegistros(periodoId);
     if (!result.ok) {
       setMsg({ type: "error", text: result.error });
+      setAdvertencias([]);
+      setDiasEnMes(0);
     } else {
       setPreview(result.data!.kpis);
       setAdvertencias(result.data!.advertencias);

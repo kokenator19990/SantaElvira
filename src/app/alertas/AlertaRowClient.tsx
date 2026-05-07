@@ -236,6 +236,7 @@ export function AlertaRowClient({ alerta }: { alerta: Alerta }) {
                 if (error) setError("");
               }}
               placeholder="Ej: Se coordinó reparación con taller — OT #1234"
+              maxLength={500}
               className="w-full text-[13px] px-3 py-2 rounded-[6px] border border-[#E4E4E7] bg-white text-[#09090B] placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-[#15803D]/30 focus:border-[#15803D]"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && accionTomada.trim()) handleConfirm();

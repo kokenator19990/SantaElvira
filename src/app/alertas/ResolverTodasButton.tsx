@@ -131,6 +131,7 @@ export function ResolverTodasButton({ estado, cantidad, tituloSeccion }: Props) 
                 if (error) setError("");
               }}
               placeholder="Ej: Revisión general completada — turno día"
+              maxLength={500}
               className="w-full text-[13px] px-3 py-2 rounded-[6px] border border-[#E4E4E7] bg-white text-[#09090B] placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-[#B45309]/30 focus:border-[#B45309]"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && accionTomada.trim()) handleConfirm();
