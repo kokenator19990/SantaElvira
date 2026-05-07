@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Alertas" };
 export const revalidate = 0; // siempre fresco — las alertas cambian con frecuencia
 
 import { getAlertas, getAlertasResueltas } from "@/lib/db/queries/alertas";

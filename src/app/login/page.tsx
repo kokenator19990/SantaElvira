@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Login" };
+
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { Pickaxe, AlertTriangle } from "lucide-react";

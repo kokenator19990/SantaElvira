@@ -255,7 +255,11 @@ export async function crearPeriodo({ anio, mes, label }: CrearPeriodoInput): Pro
 
     revalidatePath("/", "layout");
     return { ok: true, data: { id: created.id } };
-  } catch (e) {
+  } catch (e: unknown) {
+    // Unique constraint violation (código PG 23505) — race condition con inserción concurrente
+    if (e && typeof e === "object" && "code" in e && e.code === "23505") {
+      return { ok: false, error: `Ya existe un período para ${MESES[mes - 1]} ${anio}` };
+    }
     return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }

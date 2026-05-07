@@ -16,6 +16,7 @@ export function generarResumenEjecutivo(
   flotas: FlotaResumen[],
   delta: KpisDelta | null,
   _periodoLabel: string,
+  periodo?: { anio: number; mes: number },
 ): ResumenEjecutivo {
   const bullets: string[] = [];
 
@@ -95,7 +96,10 @@ export function generarResumenEjecutivo(
   }
 
   // ── Pérdida estimada ──
-  const perdidaEstimadaUsd = calcularPerdidaEstimada(flota);
+  const horasMesPeriodo = periodo
+    ? new Date(periodo.anio, periodo.mes, 0).getDate() * 24
+    : undefined;
+  const perdidaEstimadaUsd = calcularPerdidaEstimada(flota, horasMesPeriodo);
 
   // ── Estado general ──
   const estado: ResumenEjecutivo["estado"] =

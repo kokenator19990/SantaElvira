@@ -47,32 +47,35 @@ export async function subirAnalisisApd(
   }
 
   try {
-    // Insertar análisis (cabecera)
-    const [created] = await db.insert(t.analisisApd).values({
-      periodoId:     input.periodoId,
-      fechaAnalisis: input.fechaAnalisis,
-      archivoOrigen: input.archivoOrigen,
-      creadoPor:     input.creadoPor ?? "admin",
-    }).returning({ id: t.analisisApd.id });
+    // Transacción atómica: cabecera + muestras (evita análisis huérfanos si falla la inserción de muestras)
+    const { analisisId, muestras } = await db.transaction(async (tx) => {
+      const [created] = await tx.insert(t.analisisApd).values({
+        periodoId:     input.periodoId,
+        fechaAnalisis: input.fechaAnalisis,
+        archivoOrigen: input.archivoOrigen,
+        creadoPor:     input.creadoPor ?? "admin",
+      }).returning({ id: t.analisisApd.id });
 
-    const analisisId = created.id;
+      const aid = created.id;
 
-    // Insertar muestras (chunked)
-    const muestras = parametros.map((p) => ({
-      analisisId,
-      equipoId:      p.equipo,
-      compartimento: p.compartimento,
-      parametro:     p.parametro,
-      valor:         String(p.valor),
-      unidad:        p.unidad,
-      limiteMinimo:  p.limiteMinimo == null ? null : String(p.limiteMinimo),
-      limiteMaximo:  p.limiteMaximo == null ? null : String(p.limiteMaximo),
-      estado:        p.estado,
-    }));
+      const rows = parametros.map((p) => ({
+        analisisId: aid,
+        equipoId:      p.equipo,
+        compartimento: p.compartimento,
+        parametro:     p.parametro,
+        valor:         String(p.valor),
+        unidad:        p.unidad,
+        limiteMinimo:  p.limiteMinimo == null ? null : String(p.limiteMinimo),
+        limiteMaximo:  p.limiteMaximo == null ? null : String(p.limiteMaximo),
+        estado:        p.estado,
+      }));
 
-    for (let i = 0; i < muestras.length; i += 200) {
-      await db.insert(t.muestraApd).values(muestras.slice(i, i + 200));
-    }
+      for (let i = 0; i < rows.length; i += 200) {
+        await tx.insert(t.muestraApd).values(rows.slice(i, i + 200));
+      }
+
+      return { analisisId: aid, muestras: rows };
+    });
 
     const estados = { rojo: 0, ambar: 0, verde: 0 };
     for (const m of muestras) {

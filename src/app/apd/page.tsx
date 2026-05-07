@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "APD Aceites" };
 export const revalidate = 300;
 
 import { getPeriodos } from "@/lib/db/queries/periodos";

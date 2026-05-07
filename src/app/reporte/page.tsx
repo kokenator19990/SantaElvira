@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Reporte" };
 export const revalidate = 300;
 
 import { getFlota } from "@/lib/db/queries/flota";

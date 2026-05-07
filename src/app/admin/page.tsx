@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Admin" };
 export const revalidate = 300;
 
 import Link from "next/link";

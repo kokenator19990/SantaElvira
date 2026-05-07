@@ -19,7 +19,10 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Dashboard KPI — MSG El Salvador",
+  title: {
+    default: "Dashboard KPI — MSG El Salvador",
+    template: "%s — MSG El Salvador",
+  },
   description: "Mining Services Group — Dashboard de disponibilidad y KPIs flota",
 };
 

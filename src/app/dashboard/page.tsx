@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Dashboard" };
+
 // No ISR fijo — la página lee searchParams (períodos), se renderiza dinámicamente
 export const dynamic = "force-dynamic";
 
@@ -217,7 +220,11 @@ export default async function DashboardPage({ searchParams }: Props) {
 
           {/* ─ Resumen Ejecutivo + Pérdida ──────────────────────────────────── */}
           {(() => {
-            const resumen = generarResumenEjecutivo(flota, FLOTAS, delta, periodoLabel);
+            const periodoSeleccionado = periodoIdParam
+              ? periodos.find((p) => p.id === periodoIdParam)
+              : periodoActual;
+            const resumen = generarResumenEjecutivo(flota, FLOTAS, delta, periodoLabel,
+              periodoSeleccionado ? { anio: periodoSeleccionado.anio, mes: periodoSeleccionado.mes } : undefined);
             const estadoColor = resumen.estado === "critico" ? "#DC2626"
               : resumen.estado === "advertencia" ? "#D97706" : "#16A34A";
             const estadoBg = resumen.estado === "critico" ? "bg-[#FEF2F2] border-[#FECACA]"

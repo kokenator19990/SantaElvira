@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Explorador" };
 export const revalidate = 300;
 
 import { getKpisExplorador, getRegistrosExplorador, getFallasExplorador } from "@/lib/db/queries/explorador";

@@ -210,6 +210,8 @@ input, select, textarea {
     color: #000 !important;
     font-size: 10pt;
     font-family: Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .print-target {

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { getFlota } from "@/lib/db/queries/flota";
 import { getAlertas } from "@/lib/db/queries/alertas";
 import { getKpisDeltaFlota } from "@/lib/db/queries/tendencias";
@@ -31,24 +32,10 @@ export async function GET(request: Request) {
   if (!cronSecret) {
     return NextResponse.json({ error: "CRON_SECRET no configurado" }, { status: 500 });
   }
-  const expected = `Bearer ${cronSecret}`;
-  const actual = authHeader ?? "";
-  if (expected.length !== actual.length || !crypto.subtle) {
-    // Fallback: si no hay Web Crypto, comparar directamente
-    if (expected !== actual) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
-  } else {
-    const enc = new TextEncoder();
-    const a = enc.encode(expected);
-    const b = enc.encode(actual.padEnd(expected.length).slice(0, expected.length));
-    const keyData = await crypto.subtle.importKey("raw", a, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-    const sigA = await crypto.subtle.sign("HMAC", keyData, a);
-    const sigB = await crypto.subtle.sign("HMAC", keyData, b);
-    const match = new Uint8Array(sigA).every((v, i) => v === new Uint8Array(sigB)[i]);
-    if (!match || expected.length !== actual.length) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
+  const expected = Buffer.from(`Bearer ${cronSecret}`);
+  const actual = Buffer.from(authHeader ?? "");
+  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   try {
@@ -67,7 +54,8 @@ export async function GET(request: Request) {
     ];
 
     const periodoLabel = periodoActual?.label ?? "Sin datos";
-    const resumen = generarResumenEjecutivo(flota, flotas, delta, periodoLabel);
+    const resumen = generarResumenEjecutivo(flota, flotas, delta, periodoLabel,
+      periodoActual ? { anio: periodoActual.anio, mes: periodoActual.mes } : undefined);
 
     const enParo = flota.filter((e) => e.paroTotal).length;
     const criticos = flota.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
@@ -183,7 +171,6 @@ export async function GET(request: Request) {
 
       return NextResponse.json({
         sent: true,
-        to: process.env.DIGEST_TO,
         estado: resumen.estado,
         alertas: alertas.length,
       });
@@ -194,8 +181,7 @@ export async function GET(request: Request) {
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
 
-  } catch (e) {
-    console.error("Digest error:", e);
+  } catch {
     return NextResponse.json({ error: "Error interno al generar el digest" }, { status: 500 });
   }
 }
