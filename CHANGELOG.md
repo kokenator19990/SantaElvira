@@ -1,5 +1,112 @@
 # Changelog — Dashboard KPI MSG El Salvador
 
+## v1.3 — 2026-05-07
+
+### Resumen
+
+Rediseño completo del flujo de alertas con trazabilidad, confirmación obligatoria y opción de deshacer. Auditoría integral UX desde perspectiva de operario y tomador de decisión. Diagnóstico causal en detalle de equipo. Ordenamiento por criticidad en flota.
+
+---
+
+### Sistema de alertas con trazabilidad
+
+**Problema:** Al resolver una alerta, se ejecutaba inmediatamente sin confirmación, sin registro de qué acción se tomó, y sin saber a dónde iba la alerta resuelta.
+
+**Solución completa:**
+
+| Funcionalidad | Detalle |
+|---------------|---------|
+| Confirmación obligatoria | Diálogo modal antes de resolver cualquier alerta individual |
+| Acción requerida | Campo de texto obligatorio "¿Qué acción se tomó?" |
+| Trazabilidad | La alerta pasa al historial de resolución visible al final de la página |
+| Deshacer | Botón "Reabrir" en cada alerta resuelta para devolver al panel activo |
+| Resolver en lote | "Resolver todas" también pide acción obligatoria y muestra confirmación |
+| Regenerar alertas | Diálogo de confirmación antes de regenerar alertas de un período |
+
+**Archivos creados:**
+
+| Archivo | Propósito |
+|---------|-----------|
+| `src/app/alertas/AlertaRowClient.tsx` | Componente client con diálogo de resolución individual |
+| `src/app/alertas/ReabrirButton.tsx` | Botón para deshacer resolución desde historial |
+
+**Archivos modificados:**
+
+| Archivo | Cambio |
+|---------|--------|
+| `src/lib/db/actions/alertas.ts` | Reescrito: `resolverAlerta` requiere `accionTomada`, nueva `reabrirAlerta`, `resolverTodasPorEstado` con acción obligatoria |
+| `src/app/alertas/ResolverTodasButton.tsx` | Diálogo custom con campo de acción obligatorio |
+| `src/app/alertas/page.tsx` | Usa AlertaRowClient, historial con links, ReabrirButton, indicador "últimas 50" |
+| `src/app/admin/alertas/AlertasAdminClient.tsx` | ConfirmDialog antes de regenerar alertas |
+
+---
+
+### Auditoría UX — Perspectiva de tomador de decisión
+
+**Problema:** Un gerente no podía responder "¿POR QUÉ este equipo está mal?" desde la app.
+
+#### Diagnóstico causal en detalle de equipo
+
+**Archivo:** `src/app/flota/[equipoId]/page.tsx`
+
+Nueva sección "Diagnóstico" que aparece cuando el equipo tiene KPIs fuera de meta:
+- Identifica qué KPIs están fuera de rango
+- Calcula la brecha respecto al objetivo
+- Ordena por severidad (mayor brecha primero)
+- Muestra "Problema principal" vs "También afecta"
+- Incluye impacto en lenguaje claro y acción recomendada
+
+#### Flota ordenada por criticidad
+
+**Archivo:** `src/app/flota/FlotaClientView.tsx`
+
+La tabla de flota ahora se ordena automáticamente: paros totales primero → rojo → ámbar → verde. El gerente ve lo más urgente arriba.
+
+#### APD informa alertas generadas
+
+**Archivos:** `src/lib/db/actions/apd.ts`, `src/app/apd/ApdClient.tsx`
+
+El mensaje de éxito al guardar un análisis APD ahora incluye cuántas alertas predictivas se generaron.
+
+#### Nota de resolución mejorada
+
+**Archivo:** `src/app/alertas/AlertaRowClient.tsx`
+
+Se eliminó la frase confusa "El valor del KPI no cambia automáticamente". Ahora solo dice que la alerta va al historial y se puede reabrir.
+
+---
+
+### Sistema de ayuda contextual (tooltips)
+
+**Archivo:** `src/lib/help-content.ts`
+
+22+ entradas de ayuda contextual cubriendo todos los KPIs, categorías ASARCO, tipos de flota, navegación, admin y más. Nueva entrada `diagnosticoEquipo`.
+
+**Componentes con tooltips:** Dashboard, Flota, Detalle equipo, Alertas, APD, Admin, Reporte, Explorador.
+
+---
+
+### Infraestructura y deploy
+
+| Item | Detalle |
+|------|---------|
+| URL producción | `https://dashboard-gold-nine-48.vercel.app` |
+| Deploy | Manual con `npx vercel --prod` (git push NO dispara auto-deploy) |
+| Build | Verificado sin errores antes de cada deploy |
+| Archivos totales | 115 archivos en el commit (+10.511 / -882 líneas) |
+
+---
+
+### Verificación
+
+- **Build:** exitoso, 0 errores
+- **Deploy:** producción actualizada y verificada
+- **Archivos creados:** 2 (AlertaRowClient, ReabrirButton)
+- **Archivos modificados:** 8+ (alertas, flota, APD, help-content)
+- **Versión:** v1.3 · MSG 2026
+
+---
+
 ## v1.2 — 2026-05-07
 
 ### Resumen
