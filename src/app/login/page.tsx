@@ -182,13 +182,13 @@ export default function LoginPage({ searchParams }: Props) {
           </form>
         </div>
 
-        <div className="mt-4 flex items-center justify-center">
+        <div className="mt-4 w-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/opencore-logo.png"
             alt="OpenCore Business Flow"
-            className="h-[18px] w-auto"
-            style={{ filter: "invert(1)", opacity: 0.5 }}
+            className="w-full h-auto"
+            style={{ filter: "invert(1)", opacity: 0.75 }}
           />
         </div>
       </div>
