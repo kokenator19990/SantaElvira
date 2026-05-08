@@ -188,8 +188,8 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
           <img
             src="/opencore-logo.png"
             alt="OpenCore Business Flow"
-            className="h-[20px] w-auto"
-            style={{ filter: "invert(1)", opacity: 0.55 }}
+            className="h-[28px] w-auto"
+            style={{ filter: "invert(1)", opacity: 0.7 }}
           />
           <form action={cerrarSesion}>
             <button
