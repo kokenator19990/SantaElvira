@@ -23,7 +23,7 @@ interface KpiGaugeProps {
 }
 
 export function KpiGauge({ label, valor, max = 100, unidad = "%", estado, invertido = false, className, helpKey }: KpiGaugeProps) {
-  const rawPct = Math.min(Math.max(valor / max, 0), 1);
+  const rawPct = max > 0 ? Math.min(Math.max(valor / max, 0), 1) : 0;
   const pct    = invertido ? 1 - rawPct : rawPct;
   const r     = 36;
   const circ  = Math.PI * r;

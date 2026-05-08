@@ -19,6 +19,12 @@ const VENTANA_MS = 15 * 60 * 1000; // 15 min
 
 function verificarRateLimit(ip: string): boolean {
   const ahora = Date.now();
+  // Lazy cleanup: si el Map crece más de 500 entradas, purgar expiradas
+  if (intentos.size > 500) {
+    Array.from(intentos.entries()).forEach(([key, entry]) => {
+      if (ahora > entry.resetAt) intentos.delete(key);
+    });
+  }
   const entry = intentos.get(ip);
   if (!entry || ahora > entry.resetAt) {
     intentos.set(ip, { count: 1, resetAt: ahora + VENTANA_MS });

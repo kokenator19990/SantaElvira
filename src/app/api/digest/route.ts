@@ -168,8 +168,8 @@ export async function GET(request: Request) {
       });
 
       if (!res.ok) {
-        const body = await res.text();
-        return NextResponse.json({ error: "Error enviando email", detail: body }, { status: 500 });
+        console.error("Resend API error:", await res.text());
+        return NextResponse.json({ error: "Error enviando email" }, { status: 500 });
       }
 
       return NextResponse.json({

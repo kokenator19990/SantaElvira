@@ -1,4 +1,4 @@
-export const revalidate = 300;
+export const revalidate = 0;
 
 import { db } from "@/lib/db/index";
 import * as t from "@/lib/db/schema";

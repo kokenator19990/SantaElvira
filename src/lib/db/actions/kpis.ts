@@ -58,7 +58,7 @@ function validarAsarco(a: AsarcoEquipoInput): string | null {
   const fields = [a.pctOperativo, a.pctReserva, a.pctDetProgramada, a.pctDetNoProg, a.pctPerdidaOp];
   if (fields.some((f) => Number.isNaN(f) || f < 0 || f > 100)) return "Cada porcentaje ASARCO debe ser un número válido entre 0 y 100";
   const total = fields.reduce((s, f) => s + f, 0);
-  if (Math.abs(total - 100) > 0.1) return `Los 5 segmentos ASARCO deben sumar ~100% (suman ${total.toFixed(1)}%)`;
+  if (Math.abs(total - 100) > 0.5) return `Los 5 segmentos ASARCO deben sumar ~100% (suman ${total.toFixed(1)}%)`;
   return null;
 }
 

@@ -1,4 +1,4 @@
-export const revalidate = 300;
+export const revalidate = 0;
 
 import { getPeriodos } from "@/lib/db/queries/periodos";
 import { CalcularKpisClient } from "./CalcularKpisClient";

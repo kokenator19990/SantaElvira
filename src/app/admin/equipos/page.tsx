@@ -1,4 +1,4 @@
-export const revalidate = 300;
+export const revalidate = 0;
 
 import { getFlota, getEquiposInactivos } from "@/lib/db/queries/flota";
 import { EquiposAdminClient } from "./EquiposAdminClient";
