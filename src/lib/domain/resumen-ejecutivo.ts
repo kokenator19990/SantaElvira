@@ -81,17 +81,25 @@ export function generarResumenEjecutivo(
     bullets.push(`Las flotas ${nombres} necesitan atención prioritaria de mantenimiento.`);
   }
 
-  // ── 5. Reparaciones lentas ──
+  // ── 5. Reparaciones lentas — mencionar equipo más afectado ──
   if (tmprProm > 5) {
+    const peorTmpr = [...activos].sort((a, b) => b.kpis.tmpr - a.kpis.tmpr)[0];
+    const detalle = peorTmpr && peorTmpr.kpis.tmpr > tmprProm
+      ? ` (el más afectado: ${peorTmpr.id} con ${peorTmpr.kpis.tmpr}h)`
+      : "";
     bullets.push(
-      `Las reparaciones tardan ${tmprProm}h en promedio (deberían tomar máximo 5h). Verificar disponibilidad de repuestos y capacidad del taller.`
+      `Las reparaciones tardan ${tmprProm}h en promedio (meta: máx. 5h)${detalle}. Verificar disponibilidad de repuestos y capacidad del taller.`
     );
   }
 
-  // ── 6. Fallas frecuentes ──
+  // ── 6. Fallas frecuentes — mencionar equipo más afectado ──
   if (tmefProm < 50) {
+    const peorTmef = [...activos].sort((a, b) => a.kpis.tmef - b.kpis.tmef)[0];
+    const detalle = peorTmef && peorTmef.kpis.tmef < tmefProm
+      ? ` (el más frecuente: ${peorTmef.id} falla cada ${peorTmef.kpis.tmef.toFixed(0)}h)`
+      : "";
     bullets.push(
-      `Los equipos fallan cada ${tmefProm.toFixed(0)} horas en promedio. Se necesita reforzar el mantenimiento preventivo.`
+      `Los equipos fallan cada ${tmefProm.toFixed(0)} horas en promedio${detalle}. Reforzar mantenimiento preventivo.`
     );
   }
 

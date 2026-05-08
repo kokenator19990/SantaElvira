@@ -30,6 +30,8 @@ export async function actualizarUmbral(input: ActualizarUmbralInput): Promise<Ac
     return { ok: false, error: "KPI inválido" };
   }
   if (nivelVerde < 0 || nivelAmbar < 0) return { ok: false, error: "Los umbrales no pueden ser negativos" };
+  if (!invertido && nivelVerde < nivelAmbar) return { ok: false, error: "Para KPIs directos, el umbral verde debe ser mayor o igual al ámbar" };
+  if (invertido && nivelVerde > nivelAmbar) return { ok: false, error: "Para KPIs invertidos, el umbral verde debe ser menor o igual al ámbar" };
 
   try {
     const hoy = new Date().toISOString().slice(0, 10); // YYYY-MM-DD

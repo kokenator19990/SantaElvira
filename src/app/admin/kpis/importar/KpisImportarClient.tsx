@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Upload, CheckCircle2, AlertTriangle, FileText, Save } from "lucide-react";
 import { clsx } from "clsx";
 import type { Periodo } from "@/lib/db/schema";
-import { upsertKpiEquipo, upsertAsarcoEquipo, regenerarAlertasPeriodo } from "@/lib/db/actions/kpis";
+import { upsertKpiYAsarcoEquipo, regenerarAlertasPeriodo } from "@/lib/db/actions/kpis";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
@@ -161,24 +161,25 @@ export function KpisImportarClient({
 
     for (let i = 0; i < filas.length; i++) {
       const r = filas[i];
-      const [resKpi, resAsarco] = await Promise.all([
-        upsertKpiEquipo({
+      // upsertKpiYAsarcoEquipo garantiza atomicidad: KPI + ASARCO en una sola transacción
+      const res = await upsertKpiYAsarcoEquipo(
+        {
           equipoId: r.equipoId, periodoId,
           dfm: r.dfm, tmef: r.tmef, tmpr: r.tmpr,
           tiempoOperativo: r.tiempoOperativo, reserva: r.reserva,
           horasAcumuladas: r.horasAcumuladas,
           paroTotal: r.paroTotal, motivoParo: r.motivoParo || null,
-        }),
-        upsertAsarcoEquipo({
+        },
+        {
           equipoId: r.equipoId, periodoId,
           pctOperativo: r.pctOperativo, pctReserva: r.pctReserva,
           pctDetProgramada: r.pctDetProgramada, pctDetNoProg: r.pctDetNoProg,
           pctPerdidaOp: r.pctPerdidaOp,
-        }),
-      ]);
+        },
+      );
 
-      const ok  = resKpi.ok && resAsarco.ok;
-      const err = (!resKpi.ok ? resKpi.error : undefined) ?? (!resAsarco.ok ? resAsarco.error : undefined);
+      const ok  = res.ok;
+      const err = res.ok ? undefined : res.error;
       setFilas((prev) => prev.map((f, j) => j === i ? { ...f, status: ok ? "ok" : "error", errorMsg: err } : f));
       if (!ok) erroresGuardado.push(`${r.equipoId}: ${err ?? "Error desconocido"}`);
     }

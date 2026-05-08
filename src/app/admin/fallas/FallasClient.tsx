@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, CheckCircle2, AlertTriangle, Info, Wrench, Download, FileDown, Upload } from "lucide-react";
 import { clsx } from "clsx";
@@ -41,6 +42,7 @@ const COMPONENTES = [
 ];
 
 export function FallasClient({ equipos, fallasIniciales }: { equipos: Equipo[]; fallasIniciales: Falla[] }) {
+  const router = useRouter();
   const [fallas, setFallas] = useState(fallasIniciales);
   const [msg, setMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [confirmEliminar, setConfirmEliminar] = useState<Falla | null>(null);
@@ -103,8 +105,8 @@ export function FallasClient({ equipos, fallasIniciales }: { equipos: Equipo[]; 
       const msgText = `${data.insertadas} falla${data.insertadas !== 1 ? "s" : ""} importada${data.insertadas !== 1 ? "s" : ""}` +
         (data.errores.length > 0 ? `. ${data.errores.length} fila${data.errores.length !== 1 ? "s" : ""} con error: ${data.errores.slice(0, 3).join("; ")}` : "");
       setMsg({ type: "ok", text: msgText });
-      // Recargar la página para traer las fallas nuevas desde el server
-      window.location.reload();
+      // Revalidar el Server Component sin perder estado del cliente
+      router.refresh();
     } else {
       setMsg({ type: "error", text: result.error });
     }

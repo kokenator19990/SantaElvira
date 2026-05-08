@@ -98,11 +98,13 @@ export function calcularKpiEquipo(
   // Detectar paro total:
   //   - Equipo sin operación con detención no programada dominante (>80% del tiempo), O
   //   - Equipo sin operación cuyo tiempo disponible (reserva) es también 0
-  //     (descarta equipos legítimamente en reserva/mantenimiento programado)
-  const esParo = hrsOp < 0.01 && (
-    hrsDetNoProg / totalHrs > UMBRAL_PARO_DET_NO_PROG ||
-    (hrsRes < 0.01 && hrsDetProg < 0.01 && hrsDetNoProg > 0)
-  );
+  //     (descarta equipos legítimamente en reserva/mantenimiento programado), O
+  //   - Equipo sin operación, sin reserva, sin detenciones — 100% pérdida operacional
+  const UMBRAL_MIN_DET_NO_PROG_H = 0.5; // mín. 30 min de det.no.prog para considerar paro por condición 2
+  const esParoPorUmbral    = hrsOp < 0.01 && hrsDetNoProg / totalHrs > UMBRAL_PARO_DET_NO_PROG;
+  const esParoPorDetMinima = hrsOp < 0.01 && hrsRes < 0.01 && hrsDetProg < 0.01 && hrsDetNoProg >= UMBRAL_MIN_DET_NO_PROG_H;
+  const esParoPorPerdida   = hrsOp < 0.01 && hrsRes < 0.01 && hrsDetNoProg < 0.01 && hrsDetProg < 0.01 && hrsPerd > 0;
+  const esParo = esParoPorUmbral || esParoPorDetMinima || esParoPorPerdida;
 
   const dfm            = round2((hrsDisponible / totalHrs) * 100);
   // TMEF: cuando numFallas=0 se usa hrsOp como estimador MLE (cota inferior).
@@ -143,7 +145,13 @@ export function calcularKpiEquipo(
     // Math.round: el campo horas_acumuladas es integer en BD (schema.ts)
     horasAcumuladas: horasAcumuladasPrevias + Math.round(hrsOp),
     paroTotal: esParo,
-    motivoParo: esParo ? "Equipo sin operación en el período — 80%+ en detención no programada" : null,
+    motivoParo: esParo
+      ? esParoPorUmbral
+        ? `Sin operación — ${Math.round(hrsDetNoProg / totalHrs * 100)}% en detención no programada`
+        : esParoPorDetMinima
+          ? "Sin operación ni reserva — equipo completamente detenido"
+          : "Sin operación ni reserva — período completo en pérdida operacional"
+      : null,
     pctOperativo,
     pctReserva,
     pctDetProgramada,

@@ -80,7 +80,7 @@ function HistorialResueltas({ resueltas }: { resueltas: Alerta[] }) {
       <div className="rounded-[10px] border border-[#E4E4E7] bg-white overflow-hidden">
         {resueltas.map((a) => (
           <div key={a.id} className="flex items-start gap-3 px-4 py-3 border-t border-[#F4F4F5] first:border-t-0">
-            <CheckCircle2 size={14} className="text-[#BBF7D0] mt-0.5 shrink-0" />
+            <CheckCircle2 size={14} className="text-[#15803D] mt-0.5 shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <Link

@@ -21,7 +21,7 @@ export function KpiCard({ label, valor, unidad, objetivo, delta, estado, classNa
     <div
       className={clsx(
         "flex flex-col gap-2 p-4 rounded-xl bg-white border border-[#E4E4E7]",
-        "transition-transform duration-150 hover:scale-[1.01]",
+        "motion-safe:transition-transform motion-safe:duration-150 motion-safe:hover:scale-[1.01]",
         className
       )}
     >

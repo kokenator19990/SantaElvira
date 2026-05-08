@@ -100,7 +100,7 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
         </div>
         <div className="text-right shrink-0" suppressHydrationWarning>
           <p className="text-[13px] text-[#71717A]" suppressHydrationWarning>Generado: {fechaGeneracion}</p>
-          <p className="text-[11px] text-[#A1A1AA] font-mono mt-0.5">Dashboard KPI MSG v1.0</p>
+          <p className="text-[11px] text-[#A1A1AA] font-mono mt-0.5">Dashboard KPI MSG v1.4</p>
         </div>
       </div>
 

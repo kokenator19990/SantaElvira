@@ -1,4 +1,4 @@
-import { eq, sql, asc, desc, and } from "drizzle-orm";
+import { eq, sql, asc, desc, and, inArray } from "drizzle-orm";
 import { cache } from "react";
 import { db } from "../index";
 import * as t from "../schema";
@@ -10,7 +10,15 @@ import { safeFloat } from "../../utils/safe-parse";
  * Devuelve los 6 últimos periodos.
  */
 export const getTendencias = cache(async (): Promise<SerieTemporalFlota[]> => {
-  const filas = await db
+  // Limitar a los últimos 12 períodos para evitar crecimiento ilimitado del dataset
+  const periodosRecientes = await db
+    .select({ id: t.periodo.id })
+    .from(t.periodo)
+    .orderBy(desc(t.periodo.anio), desc(t.periodo.mes))
+    .limit(12);
+  const idsRecientes = periodosRecientes.map((p) => p.id);
+
+  const filas = idsRecientes.length === 0 ? [] : await db
     .select({
       tipoFlota:       t.equipo.tipoFlotaId,
       anio:            t.periodo.anio,
@@ -25,7 +33,7 @@ export const getTendencias = cache(async (): Promise<SerieTemporalFlota[]> => {
     .from(t.kpiEquipo)
     .innerJoin(t.equipo,  eq(t.equipo.id,  t.kpiEquipo.equipoId))
     .innerJoin(t.periodo, eq(t.periodo.id, t.kpiEquipo.periodoId))
-    .where(eq(t.kpiEquipo.paroTotal, false))
+    .where(and(eq(t.kpiEquipo.paroTotal, false), inArray(t.kpiEquipo.periodoId, idsRecientes)))
     .groupBy(t.equipo.tipoFlotaId, t.periodo.anio, t.periodo.mes, t.periodo.label, t.periodo.id)
     .orderBy(t.equipo.tipoFlotaId, asc(t.periodo.anio), asc(t.periodo.mes));
 

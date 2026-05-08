@@ -1,7 +1,7 @@
 export const revalidate = 300;
 
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle, BellRing, Info } from "lucide-react";
+import { AlertTriangle, BellRing, Info } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getEquipoPorId } from "@/lib/db/queries/flota";
 import { getHistoricoEquipo } from "@/lib/db/queries/historico";
@@ -29,16 +29,17 @@ interface Props {
 }
 
 export default async function EquipoPage({ params }: Props) {
-  const [equipoResult, umbralesActivos, todasAlertas] = await Promise.all([
+  const [equipoResult, umbralesActivos, todasAlertas, historicoResult] = await Promise.all([
     getEquipoPorId(params.equipoId.toUpperCase()),
     getUmbralesActivos(),
     getAlertas(),
+    getHistoricoEquipo(params.equipoId.toUpperCase()),
   ]);
   const equipo = equipoResult;
   if (!equipo) notFound();
 
   const alertasEquipo = todasAlertas.filter((a) => a.equipoId === equipo.id);
-  const historico = await getHistoricoEquipo(equipo.id);
+  const historico = historicoResult;
 
   // Detectar si el equipo está marcado como "paro" solo por falta de datos (no por falla real)
   const SIN_DATOS_KPI = equipo.paroTotal && equipo.motivoParo === "Sin datos KPI para este período";
@@ -58,9 +59,6 @@ export default async function EquipoPage({ params }: Props) {
 
   return (
     <div className="flex flex-col gap-6 max-w-[1200px] mx-auto">
-      <Link href="/flota" className="text-[13px] text-[#71717A] hover:text-[#09090B] inline-flex items-center gap-1 w-fit">
-        <ArrowLeft size={13} /> Volver a Flota
-      </Link>
       <EquipoHeader equipo={equipo} />
 
       {/* Banner: sin datos KPI — no es paro real */}

@@ -17,6 +17,9 @@ interface Props {
 
 export function CalcularKpisClient({ periodos }: Props) {
   const [periodoId, setPeriodoId] = useState(periodos[0]?.id ?? 0);
+  // periodoIdPreview rastrea qué período fue usado al generar el preview
+  // para evitar que un cambio del selector afecte el guardado
+  const [periodoIdPreview, setPeriodoIdPreview] = useState<number | null>(null);
   const [preview, setPreview] = useState<KpiCalculado[] | null>(null);
   const [advertencias, setAdvertencias] = useState<string[]>([]);
   const [diasEnMes, setDiasEnMes] = useState(0);
@@ -28,8 +31,10 @@ export function CalcularKpisClient({ periodos }: Props) {
     setLoading(true);
     setMsg(null);
     setPreview(null);
+    setPeriodoIdPreview(null);
 
-    const result = await previewKpisDesdeRegistros(periodoId);
+    const idUsado = periodoId;
+    const result = await previewKpisDesdeRegistros(idUsado);
     if (!result.ok) {
       setMsg({ type: "error", text: result.error });
       setAdvertencias([]);
@@ -38,15 +43,17 @@ export function CalcularKpisClient({ periodos }: Props) {
       setPreview(result.data!.kpis);
       setAdvertencias(result.data!.advertencias);
       setDiasEnMes(result.data!.diasEnMes);
+      setPeriodoIdPreview(idUsado);
     }
     setLoading(false);
   }
 
   async function handleGuardar() {
+    if (periodoIdPreview === null) return;
     setSaving(true);
     setMsg(null);
 
-    const result = await guardarKpisDesdeRegistros(periodoId);
+    const result = await guardarKpisDesdeRegistros(periodoIdPreview);
     if (!result.ok) {
       setMsg({ type: "error", text: result.error });
     } else {
@@ -92,7 +99,7 @@ export function CalcularKpisClient({ periodos }: Props) {
         >
           {periodos.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.label}{!p.cerrado ? " (actual)" : ""}
+              {p.label}{p.cerrado ? " (cerrado — solo lectura)" : " (abierto)"}
             </option>
           ))}
         </select>

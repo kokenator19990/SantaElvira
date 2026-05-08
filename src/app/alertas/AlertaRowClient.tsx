@@ -126,9 +126,9 @@ export function AlertaRowClient({ alerta }: { alerta: Alerta }) {
               {KPI_LABEL[alerta.kpi] ?? alerta.kpi}
             </p>
             <p className="font-mono font-bold text-[20px] text-[#09090B] leading-none mt-0.5">
-              {alerta.valorActual === 0 ? "—" : `${alerta.valorActual}${KPI_UNIDAD[alerta.kpi] ?? ""}`}
+              {esApd && alerta.valorActual === 0 ? "—" : `${alerta.valorActual}${KPI_UNIDAD[alerta.kpi] ?? ""}`}
             </p>
-            {alerta.valorActual > 0 && !esApd && (
+            {alerta.valorActual >= 0 && !esApd && (
               <p className="text-[11px] text-[#A1A1AA] mt-0.5">
                 Umbral: <span className="text-[#71717A]">{alerta.umbralCritico}{KPI_UNIDAD[alerta.kpi] ?? ""}</span>
               </p>

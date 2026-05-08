@@ -21,7 +21,13 @@ if (!connectionString) {
 }
 
 // `prepare: false` es obligatorio cuando se usa el pooler en Transaction mode.
-const client = postgres(connectionString, { prepare: false });
+// Singleton: en desarrollo con HMR, Next.js recarga módulos en cada cambio.
+// Sin el singleton, cada recarga crea un cliente nuevo agotando el pool de Supabase.
+const globalForDb = globalThis as unknown as { _pgClient?: ReturnType<typeof postgres> };
+if (!globalForDb._pgClient) {
+  globalForDb._pgClient = postgres(connectionString, { prepare: false });
+}
+const client = globalForDb._pgClient;
 
 export const db = drizzle(client, { schema, casing: "snake_case" });
 

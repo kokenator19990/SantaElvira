@@ -36,8 +36,10 @@ export function umbralesDesdeDB(filas: UmbralKpi[]): UmbralesConfig {
     reserva:         { ...UMBRALES_DEFAULT.reserva },
   };
   for (const f of filas) {
-    if (f.kpi in config) {
-      config[f.kpi as keyof UmbralesConfig] = {
+    // Normalizar snake_case legacy ("tiempo_operativo") a camelCase del tipo UmbralesConfig
+    const kpiKey = f.kpi === "tiempo_operativo" ? "tiempoOperativo" : f.kpi;
+    if (kpiKey in config) {
+      config[kpiKey as keyof UmbralesConfig] = {
         verde: safeFloat(f.nivelVerde),
         ambar: safeFloat(f.nivelAmbar),
       };
@@ -46,34 +48,39 @@ export function umbralesDesdeDB(filas: UmbralKpi[]): UmbralesConfig {
   return config;
 }
 
-export function clasificarDfm(valor: number): EstadoSemaforo {
+export function clasificarDfm(valor: number, umbrales?: UmbralesConfig): EstadoSemaforo {
+  const u = umbrales ?? UMBRALES_DEFAULT;
   if (valor === 0) return "paro";
-  if (valor >= UMBRALES.dfm.verde) return "verde";
-  if (valor >= UMBRALES.dfm.ambar) return "ambar";
+  if (valor >= u.dfm.verde) return "verde";
+  if (valor >= u.dfm.ambar) return "ambar";
   return "rojo";
 }
 
-export function clasificarTmef(valor: number): EstadoSemaforo {
-  if (valor >= UMBRALES.tmef.verde) return "verde";
-  if (valor >= UMBRALES.tmef.ambar) return "ambar";
+export function clasificarTmef(valor: number, umbrales?: UmbralesConfig): EstadoSemaforo {
+  const u = umbrales ?? UMBRALES_DEFAULT;
+  if (valor >= u.tmef.verde) return "verde";
+  if (valor >= u.tmef.ambar) return "ambar";
   return "rojo";
 }
 
-export function clasificarTmpr(valor: number): EstadoSemaforo {
-  if (valor <= UMBRALES.tmpr.verde) return "verde";
-  if (valor <= UMBRALES.tmpr.ambar) return "ambar";
+export function clasificarTmpr(valor: number, umbrales?: UmbralesConfig): EstadoSemaforo {
+  const u = umbrales ?? UMBRALES_DEFAULT;
+  if (valor <= u.tmpr.verde) return "verde";
+  if (valor <= u.tmpr.ambar) return "ambar";
   return "rojo";
 }
 
-export function clasificarTiempoOperativo(valor: number): EstadoSemaforo {
-  if (valor >= UMBRALES.tiempoOperativo.verde) return "verde";
-  if (valor >= UMBRALES.tiempoOperativo.ambar) return "ambar";
+export function clasificarTiempoOperativo(valor: number, umbrales?: UmbralesConfig): EstadoSemaforo {
+  const u = umbrales ?? UMBRALES_DEFAULT;
+  if (valor >= u.tiempoOperativo.verde) return "verde";
+  if (valor >= u.tiempoOperativo.ambar) return "ambar";
   return "rojo";
 }
 
-export function clasificarReserva(valor: number): EstadoSemaforo {
-  if (valor <= UMBRALES.reserva.verde) return "verde";
-  if (valor <= UMBRALES.reserva.ambar) return "ambar";
+export function clasificarReserva(valor: number, umbrales?: UmbralesConfig): EstadoSemaforo {
+  const u = umbrales ?? UMBRALES_DEFAULT;
+  if (valor <= u.reserva.verde) return "verde";
+  if (valor <= u.reserva.ambar) return "ambar";
   return "rojo";
 }
 

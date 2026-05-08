@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import { getFlota } from "@/lib/db/queries/flota";
 import { getAlertas } from "@/lib/db/queries/alertas";
+import { getPeriodoActual } from "@/lib/db/queries/periodos";
 import { clasificarDfm } from "@/lib/domain/semaforo";
+import { calcularPerdidaEstimada, formatUsd } from "@/lib/domain/resumen-ejecutivo";
 import type { EstadoSemaforo } from "@/lib/domain/tipos";
 import { GlosarioRapido } from "@/components/portada/GlosarioRapido";
 import { Tooltip } from "@/components/ui/Tooltip";
@@ -32,7 +34,7 @@ const ESTADO_COLOR: Record<EstadoSemaforo, string> = {
 };
 
 export default async function PortadaPage() {
-  const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
+  const [flota, alertas, periodoActual] = await Promise.all([getFlota(), getAlertas(), getPeriodoActual()]);
   const paros        = flota.filter((e) => e.paroTotal).length;
   const criticos     = flota.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
   const advertencias = alertas.filter((a) => a.estado === "ambar").length;
@@ -42,7 +44,8 @@ export default async function PortadaPage() {
   const dfmPromedio = activos.length > 0
     ? round1(activos.reduce((a, e) => a + e.kpis.dfm, 0) / activos.length)
     : 0;
-  const estadoDfm   = clasificarDfm(dfmPromedio);
+  const estadoDfm    = clasificarDfm(dfmPromedio);
+  const perdidaUsd   = calcularPerdidaEstimada(flota, periodoActual ? new Date(periodoActual.anio, periodoActual.mes, 0).getDate() * 24 : undefined);
 
   const proximoPaso = paros > 0
     ? {
@@ -91,6 +94,7 @@ export default async function PortadaPage() {
             </h1>
             <p className="text-[13px] text-[#71717A]">
               Faena El Salvador — {flota.length} equipos
+              {periodoActual && <span className="ml-1 text-[#A1A1AA]">· {periodoActual.label}</span>}
             </p>
           </div>
         </div>
@@ -183,28 +187,38 @@ export default async function PortadaPage() {
             </h2>
           </Tooltip>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Reemplaza "Equipos registrados" (redundante con el header) por la pérdida estimada */}
             <MetricCard
-              label="Equipos registrados"
-              valor={String(flota.length)}
-              color="#09090B"
-              help={HELP.totalEquipos}
-              shortTip="Total de equipos en la faena"
+              label="Pérdida est. mes"
+              valor={formatUsd(perdidaUsd)}
+              subtext="Det. no prog. + pérd. op."
+              color={perdidaUsd > 0 ? "#B91C1C" : "#15803D"}
+              help={HELP.perdidaEstimada}
+              shortTip="USD perdidos por detención no programada y pérdida operacional"
             />
             <MetricCard
-              label="Operando"
+              label="Sin paro"
               valor={String(activos.length)}
-              subtext={paros > 0 ? `${paros} en paro` : undefined}
-              color={paros > 0 ? "#B91C1C" : "#15803D"}
+              subtext={
+                paros > 0 && criticos > 0
+                  ? `${paros} en paro · ${criticos} crítico${criticos > 1 ? "s" : ""}`
+                  : paros > 0
+                  ? `${paros} en paro`
+                  : criticos > 0
+                  ? `${criticos} crítico${criticos > 1 ? "s" : ""}`
+                  : undefined
+              }
+              color={paros > 0 || criticos > 0 ? "#B91C1C" : "#15803D"}
               help={HELP.paroTotal}
-              shortTip="Equipos que no están en paro total"
+              shortTip="Equipos sin paro total (críticos incluidos)"
             />
             <MetricCard
               label="Disponibilidad"
               valor={`${dfmPromedio}%`}
-              subtext="Meta: 85%"
+              subtext={paros > 0 ? `excluye ${paros} en paro` : "Meta: 85%"}
               color={ESTADO_COLOR[estadoDfm]}
               help={HELP.dfm}
-              shortTip="% del tiempo que la flota está lista para operar"
+              shortTip="DFM promedio de equipos activos (no incluye paros totales)"
             />
             <MetricCard
               label="Alertas activas"

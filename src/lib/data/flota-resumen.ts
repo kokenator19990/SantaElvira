@@ -7,7 +7,8 @@ export function calcularResumenFlota(
   flota: Equipo[]
 ): FlotaResumen {
   const equipos = flota.filter((e) => e.tipoFlota === tipo);
-  const activos = equipos.filter((e) => !e.paroTotal);
+  // Excluir: equipos en paro declarado Y equipos sin datos KPI cargados (ultimaActualizacion === "")
+  const activos = equipos.filter((e) => !e.paroTotal && e.ultimaActualizacion !== "");
   const avg = (arr: number[]) => {
     if (arr.length === 0) return 0;
     const result = Math.round(arr.reduce((a, b) => a + b, 0) / arr.length * 10) / 10;

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Admin" };
-export const revalidate = 300;
+export const revalidate = 0;
 
 import Link from "next/link";
 import { Activity, Truck, Calendar, ShieldAlert, ArrowRight, Sliders, Upload, LogOut, ClipboardList, Wrench, Calculator } from "lucide-react";

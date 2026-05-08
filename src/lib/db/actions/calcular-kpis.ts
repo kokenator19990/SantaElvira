@@ -32,7 +32,7 @@ export async function previewKpisDesdeRegistros(
     // Obtener período y validar que no esté cerrado
     const [per] = await db.select().from(t.periodo).where(eq(t.periodo.id, periodoId));
     if (!per) return { ok: false, error: "Período no encontrado" };
-    if (per.cerrado) return { ok: false, error: "No se puede previsualizar un período cerrado" };
+    // A7: el preview es solo lectura — períodos cerrados también son previsualizables
 
     const { desde, hasta } = rangoFechasPeriodo(per.anio, per.mes);
     const diasEnMes = new Date(per.anio, per.mes, 0).getDate();

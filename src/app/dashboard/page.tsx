@@ -9,7 +9,7 @@ import { getAlertas } from "@/lib/db/queries/alertas";
 import { getAsarcoPorFlota } from "@/lib/db/queries/asarco";
 import { getTendencias, getKpisDeltaFlota } from "@/lib/db/queries/tendencias";
 import { getPeriodos, getPeriodoActual } from "@/lib/db/queries/periodos";
-import { clasificarDfm, clasificarTmef, clasificarTmpr, clasificarTiempoOperativo, clasificarReserva } from "@/lib/domain/semaforo";
+import { clasificarDfm, clasificarTmef, clasificarTmpr, clasificarTiempoOperativo, clasificarReserva, prioridadAlerta } from "@/lib/domain/semaforo";
 import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import { generarResumenEjecutivo, formatUsd } from "@/lib/domain/resumen-ejecutivo";
 import type { FlotaResumen } from "@/lib/domain/tipos";
@@ -94,6 +94,14 @@ export default async function DashboardPage({ searchParams }: Props) {
 
   const EN_PARO  = flota.filter((e) => e.paroTotal).length;
   const CRITICOS = flota.filter((e) => !e.paroTotal && e.semaforo.general === "rojo").length;
+
+  // Flota más crítica para preseleccionar en el gráfico de tendencia
+  const flotaInicial = (
+    FLOTAS
+      .filter((f) => f.cantidad > 0)
+      .sort((a, b) => prioridadAlerta(a.semaforoGeneral) - prioridadAlerta(b.semaforoGeneral))[0]?.tipo
+    ?? "777F"
+  ) as import("@/lib/domain/tipos").TipoFlota;
 
   const sinDatos = flota.length === 0;
 
@@ -209,10 +217,16 @@ export default async function DashboardPage({ searchParams }: Props) {
                 <Tooltip short="Indicadores Clave de Rendimiento promedio de toda la flota activa" help={HELP.kpiStripFlota}>
                   KPIs Flota — {periodoLabel}
                   {!delta && <span className="ml-2 text-[11px] font-normal text-[#A1A1AA]">(primer período — sin comparativa)</span>}
+                  {EN_PARO > 0 && (
+                    <span className="ml-2 text-[11px] font-normal text-[#B45309]">
+                      · excluye {EN_PARO} en paro
+                    </span>
+                  )}
                 </Tooltip>
               </SectionTitle>
-              <span className="text-[11px] text-[#52525B] font-mono px-2 py-1 rounded-md bg-[#F4F4F5]" suppressHydrationWarning>
-                Actualizado {new Date().toLocaleDateString("es-CL", { day: "2-digit", month: "short" })} {new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}
+              {/* Muestra el período de los datos, no la hora de renderizado */}
+              <span className="text-[11px] text-[#52525B] font-mono px-2 py-1 rounded-md bg-[#F4F4F5]">
+                Datos: {periodoLabel}
               </span>
             </div>
             <KpiSummaryStrip items={KPI_ITEMS} />
@@ -295,7 +309,7 @@ export default async function DashboardPage({ searchParams }: Props) {
                   Tendencia Histórica por Flota
                 </Tooltip>
               </SectionTitle>
-              <TendenciaFlotaSelector tendencias={tendencias} flotaInicial="777F" />
+              <TendenciaFlotaSelector tendencias={tendencias} flotaInicial={flotaInicial} />
             </section>
             <section aria-label="Distribución ASARCO">
               <SectionTitle className="mb-3">

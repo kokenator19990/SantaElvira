@@ -42,12 +42,16 @@ export function EquiposAdminClient({ flota, inactivos = [] }: { flota: Equipo[];
     setDraft({ modelo: e.modelo, anio: e.anio, tipoFlotaId: e.tipoFlota });
   }
 
-  function handleAction(p: Promise<{ ok: boolean; error?: string }>, okText: string) {
+  function handleAction(p: Promise<{ ok: boolean; error?: string }>, okText: string, onSuccess?: () => void) {
     setMsg(null);
     startTransition(async () => {
       const r = await p;
-      if (r.ok) setMsg({ type: "ok", text: okText });
-      else setMsg({ type: "error", text: r.error ?? "Error desconocido" });
+      if (r.ok) {
+        setMsg({ type: "ok", text: okText });
+        onSuccess?.();
+      } else {
+        setMsg({ type: "error", text: r.error ?? "Error desconocido" });
+      }
     });
   }
 
@@ -203,9 +207,9 @@ export function EquiposAdminClient({ flota, inactivos = [] }: { flota: Equipo[];
                             onClick={() => {
                               handleAction(
                                 actualizarEquipo(e.id, { modelo: draft.modelo, anioFabricacion: draft.anio, tipoFlotaId: draft.tipoFlotaId }),
-                                `${e.id} actualizado.`
+                                `${e.id} actualizado.`,
+                                () => setEditing(null),
                               );
-                              setEditing(null);
                             }}
                             className="inline-flex items-center justify-center w-7 h-7 rounded-[4px] bg-[#15803D] text-white"
                             title="Guardar"

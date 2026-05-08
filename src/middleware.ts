@@ -4,7 +4,10 @@ import { verifyToken } from "@/lib/auth/token";
 
 const SESSION_COOKIE = "admin_session";
 
-const RUTAS_PROTEGIDAS = ["/admin", "/reporte", "/explorador"];
+const RUTAS_PROTEGIDAS = [
+  "/admin", "/reporte", "/explorador",
+  "/dashboard", "/alertas", "/flota", "/apd", "/portada",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -25,5 +28,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/reporte", "/reporte/:path*", "/explorador", "/explorador/:path*"],
+  matcher: [
+    "/admin", "/admin/:path*",
+    "/reporte", "/reporte/:path*",
+    "/explorador", "/explorador/:path*",
+    "/dashboard", "/dashboard/:path*",
+    "/alertas", "/alertas/:path*",
+    "/flota", "/flota/:path*",
+    "/apd", "/apd/:path*",
+    "/portada", "/portada/:path*",
+  ],
 };

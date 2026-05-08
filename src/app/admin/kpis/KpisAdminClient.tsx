@@ -62,7 +62,8 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
   const [rows, setRows] = useState<KpiRow[]>(() => flota.map(rowFromEquipo));
   const [globalMsg, setGlobalMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [guardando, setGuardando] = useState(false);
-  const [, startTransition] = useTransition();
+  const [regenerando, setRegenerando] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   function patch(idx: number, p: Partial<KpiRow>) {
     setRows((prev) => prev.map((r, i) => (i === idx ? { ...r, ...p } : r)));
@@ -148,10 +149,12 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
   function regenerarAlertas() {
     setGlobalMsg(null);
+    setRegenerando(true);
     startTransition(async () => {
       const r = await regenerarAlertasPeriodo(periodoId);
       if (r.ok) setGlobalMsg({ type: "ok", text: `Alertas regeneradas: ${r.data?.creadas ?? 0}.` });
       else      setGlobalMsg({ type: "error", text: r.error ?? "Error al regenerar alertas" });
+      setRegenerando(false);
     });
   }
 
@@ -201,9 +204,11 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
         </button>
         <button
           onClick={regenerarAlertas}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-white hover:bg-[#FAFAFA] border border-[#E4E4E7] text-[13px] font-semibold text-[#52525B]"
+          disabled={regenerando || isPending || guardando}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[7px] bg-white hover:bg-[#FAFAFA] border border-[#E4E4E7] text-[13px] font-semibold text-[#52525B] disabled:opacity-50"
         >
-          <RefreshCw size={13} /> Regenerar alertas
+          <RefreshCw size={13} className={regenerando ? "animate-spin" : ""} />
+          {regenerando ? "Regenerando…" : "Regenerar alertas"}
         </button>
       </div>
 

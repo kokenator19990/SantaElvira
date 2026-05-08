@@ -168,12 +168,13 @@ export async function upsertKpiYAsarcoEquipo(
   const asarcoError = validarAsarco(asarco);
   if (asarcoError) return { ok: false, error: asarcoError };
 
-  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, kpi.periodoId)).limit(1);
-  if (!per) return { ok: false, error: "El período no existe" };
-  if (per.cerrado) return { ok: false, error: "No se pueden modificar datos de un período cerrado" };
-
   try {
     await db.transaction(async (tx) => {
+      // Verificación dentro de la transacción para evitar TOCTOU con cierre concurrente de período
+      const [per] = await tx.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, kpi.periodoId)).limit(1);
+      if (!per) throw Object.assign(new Error("no existe"), { userMsg: "El período no existe" });
+      if (per.cerrado) throw Object.assign(new Error("cerrado"), { userMsg: "No se pueden modificar datos de un período cerrado" });
+
       await tx.insert(t.kpiEquipo).values({
         equipoId:        kpi.equipoId,
         periodoId:       kpi.periodoId,
@@ -319,7 +320,7 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
     await registrarAuditoria(
       "alerta",
       String(periodoId),
-      "DELETE",
+      "UPDATE",
       creadoPor,
       `Alertas regeneradas para período ${periodoId}: ${nuevas.length} creadas`,
     );

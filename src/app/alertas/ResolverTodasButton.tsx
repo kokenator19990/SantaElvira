@@ -73,9 +73,10 @@ export function ResolverTodasButton({ estado, cantidad, tituloSeccion }: Props) 
         }}
         disabled={pending}
         className="flex items-center gap-1 px-2 py-1 rounded-[4px] bg-white/10 hover:bg-white/20 text-[11px] text-white/80 transition-colors disabled:opacity-50"
+        aria-label={pending ? "Resolviendo…" : `Resolver todas las alertas de ${tituloSeccion}`}
         title={`Resolver todas las alertas de ${tituloSeccion}`}
       >
-        <CheckCheck size={11} />
+        <CheckCheck size={11} aria-hidden="true" />
         <span className="hidden sm:inline">
           {pending ? "Resolviendo…" : "Resolver todas"}
         </span>
@@ -86,7 +87,7 @@ export function ResolverTodasButton({ estado, cantidad, tituloSeccion }: Props) 
         className="fixed inset-0 z-50 m-auto w-[90vw] max-w-[420px] rounded-xl border border-[#E4E4E7] bg-white p-0 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
         onCancel={(e) => { e.preventDefault(); handleCancel(); }}
         aria-modal="true"
-        aria-labelledby="resolver-todas-title"
+        aria-labelledby={`resolver-todas-title-${estado}`}
       >
         <div className="flex flex-col gap-4 p-5">
           <div className="flex items-start gap-3">
@@ -94,7 +95,7 @@ export function ResolverTodasButton({ estado, cantidad, tituloSeccion }: Props) 
               <AlertTriangle size={18} className={estado === "ambar" ? "text-[#B45309]" : "text-[#B91C1C]"} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 id="resolver-todas-title" className="text-[15px] font-bold text-[#09090B] leading-tight">
+              <h3 id={`resolver-todas-title-${estado}`} className="text-[15px] font-bold text-[#09090B] leading-tight">
                 Resolver {cantidad} alerta{cantidad !== 1 ? "s" : ""}
               </h3>
               <p className="text-[13px] text-[#52525B] mt-1 leading-relaxed">

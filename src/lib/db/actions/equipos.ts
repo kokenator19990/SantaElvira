@@ -6,6 +6,7 @@ import { db } from "../index";
 import * as t from "../schema";
 import { verificarSesion } from "./session";
 import { errorSeguro } from "@/lib/utils/safe-parse";
+import { registrarAuditoria } from "./audit";
 
 export type ActionResult<T = void> =
   | { ok: true; data?: T }
@@ -46,6 +47,7 @@ export async function crearEquipo(input: EquipoInput): Promise<ActionResult> {
       enServicio: input.enServicio ?? true,
     });
 
+    await registrarAuditoria("equipo", id, "INSERT", "admin", `Equipo creado: ${input.modelo.trim()} (${input.tipoFlotaId})`);
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
@@ -83,6 +85,7 @@ export async function actualizarEquipo(id: string, input: Partial<Omit<EquipoInp
     const r = await db.update(t.equipo).set(updates).where(eq(t.equipo.id, cleanId)).returning({ id: t.equipo.id });
     if (r.length === 0) return { ok: false, error: `Equipo ${cleanId} no existe` };
 
+    await registrarAuditoria("equipo", cleanId, "UPDATE", "admin", `Campos actualizados: ${Object.keys(updates).join(", ")}`);
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {

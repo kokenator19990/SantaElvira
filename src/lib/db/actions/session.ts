@@ -17,7 +17,7 @@ export async function verificarSesion(): Promise<void> {
   const secret = process.env.ADMIN_JWT_SECRET ?? "";
   const valida = await verifyToken(session?.value, secret);
   if (!valida) {
-    throw new Error("No autorizado");
+    redirect("/login");
   }
 }
 
