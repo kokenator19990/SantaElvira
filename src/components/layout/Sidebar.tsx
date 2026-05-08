@@ -184,7 +184,13 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
           <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.4 · MSG 2026</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/opencore-logo.png"
+            alt="OpenCore Business Flow"
+            className="h-[20px] w-auto"
+            style={{ filter: "invert(1)", opacity: 0.55 }}
+          />
           <form action={cerrarSesion}>
             <button
               type="submit"
@@ -194,16 +200,6 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
               <LogOut size={13} strokeWidth={1.8} />
             </button>
           </form>
-        </div>
-        {/* Branding OpenCore — sutil, "built by" */}
-        <div className="flex items-center justify-center mt-3 pt-2.5 border-t border-[#F4F4F5]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/opencore-logo.png"
-            alt="OpenCore Business Flow"
-            className="h-[16px] w-auto"
-            style={{ filter: "invert(1)", opacity: 0.28 }}
-          />
         </div>
       </div>
     </aside>

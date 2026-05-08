@@ -182,9 +182,15 @@ export default function LoginPage({ searchParams }: Props) {
           </form>
         </div>
 
-        <p className="mt-4 text-center text-[11px] text-[#A1A1AA]">
-          Dashboard KPI v1.4 · Mining Services Group
-        </p>
+        <div className="mt-4 flex items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/opencore-logo.png"
+            alt="OpenCore Business Flow"
+            className="h-[18px] w-auto"
+            style={{ filter: "invert(1)", opacity: 0.5 }}
+          />
+        </div>
       </div>
     </div>
   );
