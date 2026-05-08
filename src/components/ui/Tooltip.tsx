@@ -14,7 +14,7 @@ interface TooltipProps {
 
 export function Tooltip({ short, help, children, className }: TooltipProps) {
   const { isActive: helpMode } = useHelpMode();
-  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const [pos, setPos] = useState<{ x: number; y: number; flipUp: boolean } | null>(null);
   const [mounted, setMounted] = useState(false);
   const [tapped, setTapped] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
@@ -26,10 +26,16 @@ export function Tooltip({ short, help, children, className }: TooltipProps) {
     if (!ref.current) return;
     const r = ref.current.getBoundingClientRect();
     let x = r.left + r.width / 2;
-    const y = r.bottom + 6;
     const width = helpMode ? 304 : 220;
     x = Math.max(width / 2 + 8, Math.min(window.innerWidth - width / 2 - 8, x));
-    setPos({ x, y });
+
+    // Flip tooltip above the element if there's not enough space below
+    const estimatedHeight = helpMode ? 320 : 60;
+    const spaceBelow = window.innerHeight - r.bottom - 10;
+    const flipUp = spaceBelow < estimatedHeight;
+    const y = flipUp ? r.top - 6 : r.bottom + 6;
+
+    setPos({ x, y, flipUp });
   }, [helpMode]);
 
   const show = useCallback(() => {
@@ -95,12 +101,23 @@ export function Tooltip({ short, help, children, className }: TooltipProps) {
       {mounted && pos && createPortal(
         <div
           className="pointer-events-auto z-[9999]"
-          style={{ position: "fixed", top: pos.y, left: pos.x, transform: "translateX(-50%)" }}
+          style={{
+            position: "fixed",
+            top: pos.y,
+            left: pos.x,
+            transform: pos.flipUp
+              ? "translateX(-50%) translateY(-100%)"
+              : "translateX(-50%)",
+          }}
         >
           {helpMode && help ? (
             <div className="bg-white border border-zinc-200 rounded-xl shadow-2xl p-4 w-[304px] text-left animate-fade-in-up">
-              {/* Arrow */}
-              <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] bg-white border-l border-t border-zinc-200 rotate-45" />
+              {/* Arrow — points toward the triggering element */}
+              {pos.flipUp ? (
+                <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] bg-white border-r border-b border-zinc-200 rotate-45" />
+              ) : (
+                <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] bg-white border-l border-t border-zinc-200 rotate-45" />
+              )}
               <p className="font-bold text-[15px] text-zinc-900 mb-2 leading-tight">{help.titulo}</p>
               <p className="text-[13px] text-zinc-600 leading-relaxed mb-2.5">{help.que_es}</p>
               {help.como_funciona && (
@@ -123,8 +140,12 @@ export function Tooltip({ short, help, children, className }: TooltipProps) {
             </div>
           ) : (
             <div className="bg-zinc-900 text-white text-[12px] px-3 py-2 rounded-lg shadow-lg max-w-[220px] leading-relaxed">
-              {/* Arrow */}
-              <div className="absolute -top-[4px] left-1/2 -translate-x-1/2 w-[8px] h-[8px] bg-zinc-900 rotate-45" />
+              {/* Arrow — points toward the triggering element */}
+              {pos.flipUp ? (
+                <div className="absolute -bottom-[4px] left-1/2 -translate-x-1/2 w-[8px] h-[8px] bg-zinc-900 border-r border-b border-zinc-700 rotate-45" />
+              ) : (
+                <div className="absolute -top-[4px] left-1/2 -translate-x-1/2 w-[8px] h-[8px] bg-zinc-900 rotate-45" />
+              )}
               {short}
             </div>
           )}

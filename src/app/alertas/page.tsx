@@ -68,7 +68,11 @@ function HistorialResueltas({ resueltas }: { resueltas: Alerta[] }) {
     <section>
       <div className="flex items-center gap-2 mb-2">
         <History size={15} className="text-[#71717A]" />
-        <SectionTitle>Historial de Resolución</SectionTitle>
+        <SectionTitle>
+          <Tooltip short="Registro de alertas resueltas — incluye la acción tomada y quién la resolvió">
+            Historial de Resolución
+          </Tooltip>
+        </SectionTitle>
         <span className="text-[11px] text-[#A1A1AA] ml-auto">Últimas {resueltas.length}</span>
       </div>
       <p className="text-[11px] text-[#71717A] mb-3 leading-relaxed">
@@ -140,7 +144,11 @@ export default async function AlertasPage() {
     <div className="flex flex-col gap-5 max-w-[960px] mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <SectionTitle>Panel de Alertas</SectionTitle>
+        <SectionTitle>
+          <Tooltip short="Panel que consolida todas las alertas activas de equipos en la flota" help={HELP.alertasActivas}>
+            Panel de Alertas
+          </Tooltip>
+        </SectionTitle>
         <span className="text-[12px] font-mono text-[#A1A1AA]">
           {alertas.length} alerta{alertas.length !== 1 ? "s" : ""} · Período actual
         </span>

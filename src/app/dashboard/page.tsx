@@ -251,9 +251,11 @@ export default async function DashboardPage({ searchParams }: Props) {
                 <section className={`p-4 rounded-[10px] border ${estadoBg}`} aria-label="Resumen ejecutivo">
                   <div className="flex items-center gap-2 mb-2">
                     <FileText size={14} style={{ color: estadoColor }} />
-                    <span className="text-[13px] font-bold" style={{ color: estadoColor }}>
-                      Resumen Ejecutivo — {estadoLabel}
-                    </span>
+                    <Tooltip short="Síntesis automática del estado de la flota y acciones prioritarias recomendadas">
+                      <span className="text-[13px] font-bold" style={{ color: estadoColor }}>
+                        Resumen Ejecutivo — {estadoLabel}
+                      </span>
+                    </Tooltip>
                   </div>
                   <ul className="space-y-1.5">
                     {resumen.bullets.map((b, i) => (
@@ -268,7 +270,9 @@ export default async function DashboardPage({ searchParams }: Props) {
                 <section className="flex flex-col gap-2 p-4 rounded-[10px] bg-white border border-[#E4E4E7]" aria-label="Pérdida estimada">
                   <div className="flex items-center gap-1.5">
                     <DollarSign size={13} className="text-[#B91C1C]" />
-                    <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Pérdida Est.</span>
+                    <Tooltip short="Estimación del costo mensual por detenciones no programadas" help={HELP.perdidaEstimada}>
+                      <span className="text-[11px] font-bold text-[#71717A] uppercase tracking-[0.1em]">Pérdida Est.</span>
+                    </Tooltip>
                   </div>
                   <span className="text-[32px] font-mono font-bold text-[#B91C1C] leading-none">
                     {formatUsd(resumen.perdidaEstimadaUsd)}
