@@ -179,18 +179,11 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
             </span>
           )}
         </button>
-        <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" aria-hidden="true" />
-          <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
-        </div>
-        <div className="flex items-center justify-between">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/opencore-logo.png"
-            alt="OpenCore Business Flow"
-            className="h-[28px] w-auto"
-            style={{ filter: "invert(1)", opacity: 0.7 }}
-          />
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" aria-hidden="true" />
+            <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
+          </div>
           <form action={cerrarSesion}>
             <button
               type="submit"
@@ -200,6 +193,16 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
               <LogOut size={13} strokeWidth={1.8} />
             </button>
           </form>
+        </div>
+        {/* OpenCore Business Flow — fila completa */}
+        <div className="pt-2 border-t border-[#F4F4F5]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/opencore-logo.png"
+            alt="OpenCore Business Flow"
+            className="w-full h-auto"
+            style={{ filter: "invert(1)", opacity: 0.75 }}
+          />
         </div>
       </div>
     </aside>
