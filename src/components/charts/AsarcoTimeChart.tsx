@@ -99,6 +99,9 @@ export function AsarcoTimeChart({ datos }: AsarcoTimeChartProps) {
               stackId="asarco"
               fill={COLORES_ASARCO[seg]}
               radius={i === segmentos.length - 1 ? [3, 3, 0, 0] : [0, 0, 0, 0]}
+              isAnimationActive={true}
+              animationDuration={600}
+              animationEasing="ease-out"
             />
           ))}
           <ReferenceLine

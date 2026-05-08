@@ -98,7 +98,7 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
       {/* Chart */}
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={datosChart} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
+          <ComposedChart key={kpiActivo} data={datosChart} margin={{ top: 10, right: 10, left: -28, bottom: 0 }}>
             <defs>
               <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%"  stopColor={C_LINE} stopOpacity={0.12} />
@@ -142,6 +142,9 @@ export function TendenciaSeisMeses({ datos, titulo }: { datos: SerieTemporal[]; 
               strokeWidth={2}
               dot={{ r: 3.5, fill: C_DOT, stroke: C_FILL, strokeWidth: 2 }}
               activeDot={{ r: 5, fill: C_DOT, stroke: C_FILL, strokeWidth: 2 }}
+              isAnimationActive={true}
+              animationDuration={700}
+              animationEasing="ease-out"
             />
           </ComposedChart>
         </ResponsiveContainer>

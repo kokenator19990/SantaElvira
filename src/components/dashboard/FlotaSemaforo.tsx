@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { clsx } from "clsx";
+import { motion } from "framer-motion";
 import { SemaforoDot } from "@/components/ui/SemaforoDot";
 import { AlertTriangle } from "lucide-react";
 import type { FlotaResumen, EstadoSemaforo } from "@/lib/domain/tipos";
@@ -22,13 +23,25 @@ const SEMAFORO_LABEL: Record<EstadoSemaforo, string> = {
   paro:  "Paro total",
 };
 
+const cardVariants = {
+  hidden:  { opacity: 0, y: 8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.24, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] as const },
+  }),
+};
+
 function MiniBar({ valor, max = 100, color }: { valor: number; max?: number; color: string }) {
   const pct = Number.isFinite(valor / max) ? Math.max(0, Math.min((valor / max) * 100, 100)) : 0;
   return (
     <div className="h-[3px] rounded-full bg-[#F4F4F5] overflow-hidden mt-1">
-      <div
-        className="h-full rounded-full transition-all duration-700"
-        style={{ width: `${pct}%`, backgroundColor: color }}
+      <motion.div
+        className="h-full rounded-full"
+        style={{ backgroundColor: color }}
+        initial={{ width: "0%" }}
+        animate={{ width: `${pct}%` }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
       />
     </div>
   );
@@ -56,16 +69,21 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
         const color = colorMap[flota.semaforoGeneral];
 
         return (
-          <Link
+          <motion.div
             key={flota.tipo}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+          <Link
             href={`/flota?tipo=${flota.tipo}`}
             className={clsx(
-              "animate-fade-in-up flex flex-col gap-3.5 p-4 rounded-[10px]",
+              "flex flex-col gap-3.5 p-4 rounded-[10px]",
               "bg-white border border-[#E4E4E7] border-l-[3px]",
               "hover:bg-[#F4F4F5] transition-all duration-150 group",
               BORDE[flota.semaforoGeneral]
             )}
-            style={{ animationDelay: `${Math.min(i * 30, 120)}ms` }}
           >
             {/* Header */}
             <div className="flex items-start justify-between gap-2">
@@ -110,6 +128,7 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
               </div>
             )}
           </Link>
+          </motion.div>
         );
       })}
     </div>

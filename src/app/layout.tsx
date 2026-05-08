@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ShellClient } from "@/components/layout/ShellClient";
@@ -33,25 +34,43 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
-  // Datos compartidos del shell — single round-trip al iniciar la sesión.
-  // React.cache deduplica si las páginas hijas también llaman estas queries.
+/**
+ * Carga los contadores del shell (alertas críticas y total equipos).
+ * Se ejecuta en paralelo con el render de la página — no bloquea el shell.
+ * React.cache deduplica si la página hija llama las mismas queries.
+ */
+async function ShellDataProvider({ children }: { children: React.ReactNode }) {
   const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
   const alertasCriticas = alertas.filter((a) => a.estado === "paro" || a.estado === "rojo").length;
+  return (
+    <ShellClient alertasCriticas={alertasCriticas} totalEquipos={flota.length}>
+      {children}
+    </ShellClient>
+  );
+}
 
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <HelpModeProvider>
           <HelpModeBanner />
-          <ShellClient
-            alertasCriticas={alertasCriticas}
-            totalEquipos={flota.length}
+          {/*
+           * Suspense permite que el shell se pinte de inmediato con valores neutros
+           * (0 alertas, 0 equipos) mientras ShellDataProvider resuelve los contadores
+           * del sidebar. La página hija streama de forma independiente.
+           */}
+          <Suspense
+            fallback={
+              <ShellClient alertasCriticas={0} totalEquipos={0}>
+                {children}
+              </ShellClient>
+            }
           >
-            {children}
-          </ShellClient>
+            <ShellDataProvider>{children}</ShellDataProvider>
+          </Suspense>
         </HelpModeProvider>
       </body>
     </html>

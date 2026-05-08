@@ -17,6 +17,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { clsx } from "clsx";
+import { motion } from "framer-motion";
 import { useHelpMode } from "@/contexts/HelpModeContext";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
@@ -89,26 +90,34 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
               onClick={onClose}
               aria-current={activo ? "page" : undefined}
               className={clsx(
-                "group flex items-center gap-3 px-3 py-2.5 rounded-[8px]",
+                "group relative flex items-center gap-3 px-3 py-2.5 rounded-[8px]",
                 "text-sm font-medium min-h-[44px]",
-                "transition-all duration-150 ease-out",
+                "transition-colors duration-150 ease-out",
                 activo
-                  ? "bg-[#FFFBEB] text-[#92400E] border-l-2 border-[#B45309] border-t-0 border-r-0 border-b-0"
+                  ? "text-[#92400E] border-l-2 border-[#B45309] border-t-0 border-r-0 border-b-0"
                   : "text-[#52525B] hover:text-[#09090B] hover:bg-[#F4F4F5] border border-transparent"
               )}
             >
+              {activo && (
+                <motion.span
+                  layoutId="nav-active-bg"
+                  className="absolute inset-0 bg-[#FFFBEB] rounded-[8px]"
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] as const }}
+                  aria-hidden
+                />
+              )}
               <Icon
                 size={16}
                 strokeWidth={activo ? 2.2 : 1.7}
                 className={clsx(
-                  "shrink-0 transition-colors",
+                  "relative shrink-0 transition-colors",
                   activo ? "text-[#B45309]" : "text-[#A1A1AA] group-hover:text-[#52525B]"
                 )}
               />
               <Tooltip
                 short={description}
                 help={HELP[helpKey]}
-                className="flex-1"
+                className="relative flex-1"
               >
                 <div className="flex flex-col leading-tight">
                   <span>{label}</span>
@@ -121,12 +130,16 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
                 </div>
               </Tooltip>
               {href === "/alertas" && alertasCriticas > 0 && !activo && (
-                <span className="ml-auto flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#DC2626] text-white text-[10px] font-bold leading-none">
+                <span className="relative ml-auto flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-[#DC2626] text-white text-[10px] font-bold leading-none">
                   {alertasCriticas > 99 ? "99+" : alertasCriticas}
                 </span>
               )}
               {activo && (
-                <div className="ml-auto w-1 h-4 rounded-full bg-[#B45309] opacity-80" />
+                <motion.div
+                  layoutId="nav-active-dot"
+                  className="relative ml-auto w-1 h-4 rounded-full bg-[#B45309] opacity-80"
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] as const }}
+                />
               )}
             </Link>
           );

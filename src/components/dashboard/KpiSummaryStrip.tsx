@@ -2,6 +2,7 @@
 
 import { clsx } from "clsx";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 import type { EstadoSemaforo } from "@/lib/domain/tipos";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
@@ -14,7 +15,6 @@ const KPI_HELP_KEY: Record<string, string> = {
   "Reserva":     "reserva",
 };
 
-// Descripción breve para el tooltip básico (sin modo ayuda)
 const KPI_SHORT: Record<string, string> = {
   "Dfm Flota":   "Disponibilidad Física Mecánica — % del turno que el equipo está listo para operar",
   "TMEF Prom.":  "Tiempo Medio Entre Fallas — promedio de horas que opera sin averías",
@@ -23,7 +23,6 @@ const KPI_SHORT: Record<string, string> = {
   "Reserva":     "% del turno en que el equipo estaba disponible pero sin tarea asignada",
 };
 
-/** Genera una línea de contexto interpretativo para el gerente */
 function interpretarKpi(label: string, valor: number, estado: EstadoSemaforo, objetivo: number, delta: number | null): string | null {
   if (label === "Dfm Flota") {
     if (estado === "rojo") return `Indisponibilidad alta: ~${((100 - valor) / 4).toFixed(0)}h/turno fuera de servicio`;
@@ -64,13 +63,27 @@ const ESTADO_BG: Record<EstadoSemaforo, string> = {
   paro:  "rgba(254,242,242,0.8)",
 };
 
+// Variantes para entrada escalonada — Emil Kowalski: 240ms, ease sharp
+const cardVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.24,
+      delay: i * 0.04,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+    },
+  }),
+};
+
 interface KpiItem {
   label: string;
   labelGerente?: string;
   valor: number;
   unidad: string;
   objetivo: number;
-  delta: number | null; // null = sin período anterior para comparar
+  delta: number | null;
   estado: EstadoSemaforo;
   invertido?: boolean;
 }
@@ -83,28 +96,30 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {items.map((item, i) => {
-        const color = ESTADO_COLOR[item.estado];
-        const bg    = ESTADO_BG[item.estado];
-        const up    = item.delta !== null && item.delta > 0;
-        const down  = item.delta !== null && item.delta < 0;
+        const color  = ESTADO_COLOR[item.estado];
+        const bg     = ESTADO_BG[item.estado];
+        const up     = item.delta !== null && item.delta > 0;
+        const down   = item.delta !== null && item.delta < 0;
         const pctObj = item.invertido
           ? Math.min((item.objetivo / Math.max(item.valor, 0.01)) * 100, 100)
           : Math.min((item.valor / item.objetivo) * 100, 100);
 
         return (
-          <div
+          <motion.div
             key={item.label}
-            className="animate-fade-in-up flex flex-col gap-3 p-4 rounded-[10px] bg-white border border-[#E4E4E7] relative overflow-hidden"
-            style={{ animationDelay: `${Math.min(i * 30, 120)}ms` }}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-3 p-4 rounded-[10px] bg-white border border-[#E4E4E7] relative overflow-hidden"
           >
-            {/* Subtle tinted bg from semaphore */}
+            {/* Tinte de fondo según semáforo */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{ background: bg, opacity: 0.5 }}
             />
 
             <div className="relative flex flex-col gap-2">
-              {/* Label — nombre amigable + técnico */}
               <Tooltip
                 short={KPI_SHORT[item.label] ?? item.label}
                 help={HELP[KPI_HELP_KEY[item.label] ?? "dfm"]}
@@ -120,7 +135,7 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
                 )}
               </Tooltip>
 
-              {/* Value */}
+              {/* Valor */}
               <div className="flex items-end gap-1.5">
                 <span
                   className="text-[36px] font-mono font-bold leading-none tabular-nums"
@@ -131,15 +146,18 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
                 <span className="text-[15px] text-[#71717A] mb-0.5 font-medium">{item.unidad}</span>
               </div>
 
-              {/* Progress bar toward objective */}
+              {/* Barra de progreso con spring */}
               <div className="h-[3px] rounded-full bg-black/[0.06] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                  style={{ width: `${pctObj}%`, backgroundColor: color, opacity: 0.7 }}
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: color, opacity: 0.7 }}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${pctObj}%` }}
+                  transition={{ duration: 0.7, delay: i * 0.04 + 0.1, ease: [0.16, 1, 0.3, 1] as const }}
                 />
               </div>
 
-              {/* Objective + delta */}
+              {/* Meta + delta */}
               <div className="flex items-center justify-between">
                 <span className="text-[11px] text-[#A1A1AA]">
                   Meta <span className="text-[#52525B] font-mono">{item.objetivo}{item.unidad}</span>
@@ -159,7 +177,6 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
                 )}
               </div>
 
-              {/* Insight contextual para gerente */}
               {(() => {
                 const insight = interpretarKpi(item.label, item.valor, item.estado, item.objetivo, item.delta);
                 return insight ? (
@@ -169,7 +186,7 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
                 ) : null;
               })()}
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { clsx } from "clsx";
 import type { EstadoSemaforo } from "@/lib/domain/tipos";
 
@@ -52,12 +55,11 @@ export function SemaforoDot({ estado, size = "md", className }: SemaforoDotProps
           style={{ backgroundColor: color }}
         />
       )}
-      <span
+      <motion.span
         className="relative inline-flex rounded-full w-full h-full"
-        style={{
-          backgroundColor: color,
-          boxShadow: `0 0 0 2.5px ${bg}, 0 0 6px ${color}40`,
-        }}
+        animate={{ backgroundColor: color }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] as const }}
+        style={{ boxShadow: `0 0 0 2.5px ${bg}, 0 0 6px ${color}40` }}
       />
     </span>
   );
