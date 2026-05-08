@@ -147,13 +147,21 @@ export function KpiSummaryStrip({ items }: KpiSummaryStripProps) {
               </div>
 
               {/* Barra de progreso con spring */}
-              <div className="h-[3px] rounded-full bg-black/[0.06] overflow-hidden">
+              <div
+                className="h-[3px] rounded-full bg-black/[0.06] overflow-hidden"
+                role="progressbar"
+                aria-label={`${item.labelGerente ?? item.label}: ${Math.round(pctObj)}% de la meta`}
+                aria-valuenow={Math.round(pctObj)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <motion.div
                   className="h-full rounded-full"
                   style={{ backgroundColor: color, opacity: 0.7 }}
                   initial={{ width: "0%" }}
                   animate={{ width: `${pctObj}%` }}
                   transition={{ duration: 0.7, delay: i * 0.04 + 0.1, ease: [0.16, 1, 0.3, 1] as const }}
+                  aria-hidden="true"
                 />
               </div>
 

@@ -301,7 +301,7 @@ export function FallasClient({ equipos, fallasIniciales }: { equipos: Equipo[]; 
                 ], `MSG_Fallas_${new Date().toISOString().slice(0, 10)}.csv`)}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] border border-[#E4E4E7] bg-white hover:bg-[#F4F4F5] text-[11px] font-semibold text-[#52525B] transition-colors"
               >
-                <Download size={11} /> Exportar Excel
+                <Download size={11} /> Exportar CSV
               </button>
             )}
           </div>

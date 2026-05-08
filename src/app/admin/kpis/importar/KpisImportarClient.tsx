@@ -185,8 +185,12 @@ export function KpisImportarClient({
     }
 
     if (erroresGuardado.length === 0) {
-      await regenerarAlertasPeriodo(periodoId);
-      setGlobalMsg({ type: "ok", text: `${filas.length} equipos importados y alertas regeneradas.` });
+      const rAlertas = await regenerarAlertasPeriodo(periodoId);
+      if (rAlertas.ok) {
+        setGlobalMsg({ type: "ok", text: `${filas.length} equipos importados y alertas regeneradas.` });
+      } else {
+        setGlobalMsg({ type: "ok", text: `${filas.length} equipos importados. Alertas: regeneración fallida — ve a KPIs para regenerar manualmente.` });
+      }
     } else {
       setGlobalMsg({ type: "error", text: `${erroresGuardado.length} error(es). Primero: ${erroresGuardado[0]}` });
     }

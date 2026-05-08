@@ -75,7 +75,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
     // Validar suma ASARCO ANTES de llamar al servidor
     const suma = sumaAsarco(r);
-    if (Math.abs(suma - 100) > 0.1) {
+    if (Math.abs(suma - 100) > 0.5) {
       const msg = `ASARCO suma ${suma.toFixed(1)}% — debe ser 100%`;
       patch(idx, { status: "error", errorMsg: msg });
       return { ok: false, error: msg };
@@ -250,7 +250,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
           <tbody>
             {rows.map((r, idx) => {
               const suma = sumaAsarco(r);
-              const sumOk = Math.abs(suma - 100) <= 0.1;
+              const sumOk = Math.abs(suma - 100) <= 0.5;
               return (
                 <React.Fragment key={r.equipoId}>
                   <tr className="border-t border-[#F4F4F5] hover:bg-[#FAFAFA]">
@@ -334,7 +334,7 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
       </div>
 
       <p className="text-[11px] text-[#A1A1AA]">
-        Σ = suma de los 5 segmentos ASARCO (debe ser 100% ± 0.1). Op = Operativo, Rsv = Reserva, DP = Det. Programada,
+        Σ = suma de los 5 segmentos ASARCO (debe ser 100% ± 0.5). Op = Operativo, Rsv = Reserva, DP = Det. Programada,
         DNP = Det. No Programada, PO = Pérdida Operacional. El motivo de paro es obligatorio cuando se marca Paro.
       </p>
     </div>

@@ -132,7 +132,7 @@ export function PeriodosAdminClient({ periodos }: { periodos: Periodo[] }) {
         mensaje={
           confirmAction?.accion === "cerrar"
             ? `Al cerrar "${confirmAction.periodo.label}" no se podrán editar KPIs ni registros de ese mes. Puedes reabrirlo después si es necesario.`
-            : `Al reabrir "${confirmAction?.periodo.label}" se permitirá editar los datos de ese período nuevamente.`
+            : `Al reabrir "${confirmAction?.periodo.label}" se permitirá editar los datos de ese período nuevamente. Las alertas ya generadas permanecerán sin cambios — recuerda regenerarlas desde la página de KPIs después de modificar datos.`
         }
         textoConfirmar={confirmAction?.accion === "cerrar" ? "Cerrar período" : "Reabrir período"}
         variante={confirmAction?.accion === "cerrar" ? "advertencia" : "advertencia"}

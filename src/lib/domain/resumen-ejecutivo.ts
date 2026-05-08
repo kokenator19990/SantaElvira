@@ -111,7 +111,7 @@ export function generarResumenEjecutivo(
 
   // ── Estado general ──
   const estado: ResumenEjecutivo["estado"] =
-    enParo.length > 0 || criticos.length > 2 ? "critico" :
+    enParo.length > 0 || criticos.length >= 2 ? "critico" :
     criticos.length > 0 || dfmProm < 85 ? "advertencia" : "estable";
 
   return { estado, bullets: bullets.slice(0, 5), perdidaEstimadaUsd };

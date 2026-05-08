@@ -139,9 +139,12 @@ export function CalcularKpisClient({ periodos }: Props) {
       {advertencias.length > 0 && (
         <div className="flex flex-col gap-1 px-3.5 py-2.5 rounded-[8px] bg-[#FFFBEB] border border-[#FDE68A]">
           <span className="text-[12px] font-semibold text-[#92400E]">Advertencias ({advertencias.length})</span>
-          {advertencias.map((a, i) => (
+          {advertencias.slice(0, 10).map((a, i) => (
             <p key={i} className="text-[12px] text-[#92400E]">• {a}</p>
           ))}
+          {advertencias.length > 10 && (
+            <p className="text-[12px] text-[#92400E]">…y {advertencias.length - 10} advertencia(s) más.</p>
+          )}
         </div>
       )}
 

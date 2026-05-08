@@ -29,6 +29,7 @@ export async function actualizarUmbral(input: ActualizarUmbralInput): Promise<Ac
   if (!kpi || !(KPI_VALIDOS as readonly string[]).includes(kpi)) {
     return { ok: false, error: "KPI inválido" };
   }
+  if (!Number.isFinite(nivelVerde) || !Number.isFinite(nivelAmbar)) return { ok: false, error: "Los umbrales deben ser valores numéricos finitos" };
   if (nivelVerde < 0 || nivelAmbar < 0) return { ok: false, error: "Los umbrales no pueden ser negativos" };
   if (!invertido && nivelVerde < nivelAmbar) return { ok: false, error: "Para KPIs directos, el umbral verde debe ser mayor o igual al ámbar" };
   if (invertido && nivelVerde > nivelAmbar) return { ok: false, error: "Para KPIs invertidos, el umbral verde debe ser menor o igual al ámbar" };

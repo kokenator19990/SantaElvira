@@ -169,7 +169,7 @@ export default async function AlertasPage() {
 
       {alertas.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-2 h-48 rounded-[10px] bg-white border border-[#E4E4E7]">
-          <CheckCircle2 size={32} className="text-[#BBF7D0]" />
+          <CheckCircle2 size={32} className="text-[#15803D]" />
           <p className="text-[15px] text-[#A1A1AA]">No hay alertas activas</p>
           <p className="text-[12px] text-[#71717A]">Todos los equipos están dentro de parámetros</p>
         </div>
