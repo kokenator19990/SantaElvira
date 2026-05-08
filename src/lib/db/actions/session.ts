@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth/token";
 
@@ -18,4 +19,14 @@ export async function verificarSesion(): Promise<void> {
   if (!valida) {
     throw new Error("No autorizado");
   }
+}
+
+/**
+ * Cierra la sesión del administrador eliminando la cookie de sesión.
+ * Redirige a /login tras el cierre.
+ */
+export async function cerrarSesion(): Promise<never> {
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE);
+  redirect("/login");
 }

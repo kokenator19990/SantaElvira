@@ -57,9 +57,11 @@ export function SemaforoDot({ estado, size = "md", className }: SemaforoDotProps
       )}
       <motion.span
         className="relative inline-flex rounded-full w-full h-full"
-        animate={{ backgroundColor: color }}
+        animate={{
+          backgroundColor: color,
+          boxShadow: `0 0 0 2.5px ${bg}, 0 0 6px ${color}40`,
+        }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] as const }}
-        style={{ boxShadow: `0 0 0 2.5px ${bg}, 0 0 6px ${color}40` }}
       />
     </span>
   );

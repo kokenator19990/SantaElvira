@@ -6,7 +6,8 @@ import { getKpisDeltaFlota } from "@/lib/db/queries/tendencias";
 import { getPeriodoActual } from "@/lib/db/queries/periodos";
 import { calcularResumenFlota } from "@/lib/data/flota-resumen";
 import { generarResumenEjecutivo, formatUsd } from "@/lib/domain/resumen-ejecutivo";
-import { UMBRALES } from "@/lib/constants/umbrales";
+import { umbralesDesdeDB } from "@/lib/domain/semaforo";
+import { getUmbralesActivos } from "@/lib/db/queries/umbrales";
 import type { FlotaResumen } from "@/lib/domain/tipos";
 
 /**
@@ -39,12 +40,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [flota, alertas, periodoActual, delta] = await Promise.all([
+    const [flota, alertas, periodoActual, delta, umbralesDB] = await Promise.all([
       getFlota(),
       getAlertas(),
       getPeriodoActual(),
       getKpisDeltaFlota(),
+      getUmbralesActivos(),
     ]);
+    const umbrales = umbralesDesdeDB(umbralesDB);
 
     const flotas: FlotaResumen[] = [
       calcularResumenFlota("785D", "CAT 785D", flota),
@@ -97,7 +100,7 @@ export async function GET(request: Request) {
       <tr>
         <td style="text-align:center;padding:8px">
           <div style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.1em">DFM Flota</div>
-          <div style="font-size:28px;font-weight:700;color:${dfmProm >= UMBRALES.dfm.verde ? '#16A34A' : dfmProm >= UMBRALES.dfm.ambar ? '#D97706' : '#DC2626'}">${dfmProm}%</div>
+          <div style="font-size:28px;font-weight:700;color:${dfmProm >= umbrales.dfm.verde ? '#16A34A' : dfmProm >= umbrales.dfm.ambar ? '#D97706' : '#DC2626'}">${dfmProm}%</div>
         </td>
         <td style="text-align:center;padding:8px">
           <div style="font-size:11px;color:#71717A;text-transform:uppercase;letter-spacing:0.1em">En paro</div>

@@ -19,6 +19,8 @@ import {
 import { clsx } from "clsx";
 import { motion } from "framer-motion";
 import { useHelpMode } from "@/contexts/HelpModeContext";
+import { cerrarSesion } from "@/lib/db/actions/session";
+import { LogOut } from "lucide-react";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
 
@@ -94,14 +96,14 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
                 "text-sm font-medium min-h-[44px]",
                 "transition-colors duration-150 ease-out",
                 activo
-                  ? "text-[#92400E] border-l-2 border-[#B45309] border-t-0 border-r-0 border-b-0"
+                  ? "text-[#92400E]"
                   : "text-[#52525B] hover:text-[#09090B] hover:bg-[#F4F4F5] border border-transparent"
               )}
             >
               {activo && (
                 <motion.span
                   layoutId="nav-active-bg"
-                  className="absolute inset-0 bg-[#FFFBEB] rounded-[8px]"
+                  className="absolute inset-0 bg-[#FFFBEB] rounded-[8px] border-l-2 border-[#B45309]"
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] as const }}
                   aria-hidden
                 />
@@ -181,7 +183,18 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" aria-hidden="true" />
           <span className="text-[12px] text-[#A1A1AA]">Sistema activo</span>
         </div>
-        <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.4 · MSG 2026</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] text-[#A1A1AA]">Dashboard KPI v1.4 · MSG 2026</p>
+          <form action={cerrarSesion}>
+            <button
+              type="submit"
+              title="Cerrar sesión"
+              className="flex items-center justify-center w-7 h-7 rounded-[6px] text-[#A1A1AA] hover:text-[#B91C1C] hover:bg-[#FEF2F2] transition-colors duration-150"
+            >
+              <LogOut size={13} strokeWidth={1.8} />
+            </button>
+          </form>
+        </div>
       </div>
     </aside>
   );

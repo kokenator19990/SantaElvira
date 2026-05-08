@@ -76,7 +76,7 @@ export function AlertasRecientes({ alertas, max = 5 }: AlertasRecientesProps) {
       )}
 
       <div className="flex flex-col gap-1">
-        <AnimatePresence initial={true} mode="popLayout">
+        <AnimatePresence initial={false} mode="popLayout">
           {top.map((alerta, i) => (
             <motion.div
               key={alerta.id}

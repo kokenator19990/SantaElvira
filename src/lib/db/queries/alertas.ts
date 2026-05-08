@@ -15,9 +15,12 @@ const safeNum = safeFloat;
  */
 export const getAlertas = cache(async (periodoIdParam?: number): Promise<Alerta[]> => {
   const periodoId = periodoIdParam ?? await getPeriodoActualId();
+  // A4: sin período activo no hay alertas que mostrar — evita devolver todo el historial
+  if (periodoId === null) return [];
 
-  const conditions = [eq(t.alerta.resuelta, false)];
-  if (periodoId !== null) conditions.push(eq(t.alerta.periodoId, periodoId));
+  const conditions = [eq(t.alerta.resuelta, false), eq(t.alerta.periodoId, periodoId)];
+
+  const orden: Record<EstadoSemaforo, number> = { paro: 0, rojo: 1, ambar: 2, verde: 3 };
 
   const filas = await db
     .select({
@@ -35,9 +38,9 @@ export const getAlertas = cache(async (periodoIdParam?: number): Promise<Alerta[
     .from(t.alerta)
     .innerJoin(t.equipo, eq(t.equipo.id, t.alerta.equipoId))
     .where(and(...conditions))
+    // Solo ordenamos por timestamp en SQL; el orden por criticidad se hace en JS
+    // (paro→rojo→ámbar→verde, luego por timestamp descendente dentro de cada grupo).
     .orderBy(desc(t.alerta.timestamp));
-
-  const orden: Record<EstadoSemaforo, number> = { paro: 0, rojo: 1, ambar: 2, verde: 3 };
 
   return filas
     .map((f): Alerta => ({
@@ -52,14 +55,18 @@ export const getAlertas = cache(async (periodoIdParam?: number): Promise<Alerta[
       mensaje:       f.mensaje,
       timestamp:     f.timestamp.toISOString(),
     }))
-    .sort((a, b) => orden[a.estado] - orden[b.estado]);
+    .sort((a, b) => {
+      const d = orden[a.estado] - orden[b.estado];
+      // Empate de estado → más reciente primero (ya viene ordenado por timestamp del SQL)
+      return d !== 0 ? d : b.timestamp.localeCompare(a.timestamp);
+    });
 });
 
 /**
  * Trae alertas resueltas con su acción tomada (historial auditable).
- * Últimas 50 para no sobrecargar.
+ * Paginable: limit (default 50) y offset (default 0).
  */
-export const getAlertasResueltas = cache(async (): Promise<Alerta[]> => {
+export const getAlertasResueltas = cache(async (limit = 50, offset = 0): Promise<Alerta[]> => {
   const filas = await db
     .select({
       id:            t.alerta.id,
@@ -80,7 +87,8 @@ export const getAlertasResueltas = cache(async (): Promise<Alerta[]> => {
     .innerJoin(t.equipo, eq(t.equipo.id, t.alerta.equipoId))
     .where(eq(t.alerta.resuelta, true))
     .orderBy(desc(t.alerta.resueltaEn))
-    .limit(50);
+    .limit(limit)
+    .offset(offset);
 
   return filas.map((f): Alerta => ({
     id:            String(f.id),

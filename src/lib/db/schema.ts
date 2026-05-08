@@ -61,7 +61,10 @@ export const umbralKpi = pgTable("umbral_kpi", {
   vigenteDesde:  date("vigente_desde").notNull(),
   vigenteHasta:  date("vigente_hasta"),                            // null = vigente
   createdAt:     timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => ({
+  // Índice para getUmbralesActivos(): WHERE vigente_hasta IS NULL
+  vigenteIdx: index("umbral_kpi_vigente_idx").on(t.vigenteHasta),
+}));
 
 /* ─── 5. KPI_EQUIPO ─────────────────────────────────────────────────────────
  * KPIs mensuales por equipo (DFM, TMEF, TMPR, T.Op, Reserva)
@@ -82,6 +85,8 @@ export const kpiEquipo = pgTable("kpi_equipo", {
   createdAt:        timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }, (t) => ({
   uniqueEquipoPeriodo: uniqueIndex("kpi_equipo_periodo_uq").on(t.equipoId, t.periodoId),
+  // Índice para regenerarAlertasPeriodo: WHERE periodo_id = $1
+  periodoIdx: index("kpi_equipo_periodo_idx").on(t.periodoId),
 }));
 
 /* ─── 6. ASARCO_EQUIPO ──────────────────────────────────────────────────────
@@ -159,7 +164,7 @@ export const alerta = pgTable("alerta", {
   periodoResueltaIdx: index("alerta_periodo_resuelta_idx").on(t.periodoId, t.resuelta),
 }));
 
-/* ─── 8. ANALISIS_APD ───────────────────────────────────────────────────────
+/* ─── 10. ANALISIS_APD ──────────────────────────────────────────────────────
  * Sesión de carga de análisis de aceite (un CSV importado)
  */
 export const analisisApd = pgTable("analisis_apd", {
@@ -171,7 +176,7 @@ export const analisisApd = pgTable("analisis_apd", {
   createdAt:      timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-/* ─── 9. MUESTRA_APD ────────────────────────────────────────────────────────
+/* ─── 11. MUESTRA_APD ───────────────────────────────────────────────────────
  * Cada resultado individual del análisis (una fila del CSV)
  */
 export const muestraApd = pgTable("muestra_apd", {
@@ -244,7 +249,7 @@ export const eventoFallaRelations = relations(eventoFalla, ({ one }) => ({
   equipo: one(equipo, { fields: [eventoFalla.equipoId], references: [equipo.id] }),
 }));
 
-/* ─── 10. AUDIT_LOG ───────────────────────────────────────────────────────
+/* ─── 12. AUDIT_LOG ───────────────────────────────────────────────────────
  * Registro de auditoría: quién hizo qué y cuándo. Inmutable (solo INSERT).
  */
 export const auditLog = pgTable("audit_log", {
@@ -255,7 +260,10 @@ export const auditLog = pgTable("audit_log", {
   usuario:     text("usuario").notNull().default("admin"),         // quién realizó la acción
   detalles:    text("detalles"),                                   // descripción legible del cambio
   createdAt:   timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => ({
+  // Índice para queries de historial: filtrar por tabla y ordenar por fecha
+  tablaCreatedAtIdx: index("audit_log_tabla_created_at_idx").on(t.tabla, t.createdAt),
+}));
 
 /* ─── Tipos derivados (insert / select) ─────────────────────────────────────
  * Drizzle infiere los tipos desde el schema → no hay drift entre BD y TS.

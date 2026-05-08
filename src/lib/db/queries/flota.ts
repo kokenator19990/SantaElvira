@@ -70,8 +70,10 @@ export const getFlota = cache(async (periodoId?: number): Promise<Equipo[]> => {
       tipoFlota:         f.tipoFlota as TipoFlota, // FK-garantizado: "785D"|"777F"|"992"|"PC2000"
       anio:              f.anio,
       horasAcumuladas:   f.horasAcumuladas ?? 0,
-      paroTotal:         sinDatosKpi ? true : (f.paroTotal ?? false),
-      motivoParo:        sinDatosKpi ? "Sin datos KPI para este período" : (f.motivoParo ?? undefined),
+      // sinDatosKpi → no marcamos paroTotal explícito (el supervisor no declaró paro).
+      // El semáforo igual mostrará estado crítico por dfm=0, pero sin el badge "Paro Total".
+      paroTotal:         sinDatosKpi ? false : (f.paroTotal ?? false),
+      motivoParo:        sinDatosKpi ? "Sin KPIs cargados — ir a Admin → KPIs para este período" : (f.motivoParo ?? undefined),
       kpis,
       semaforo:          calcularSemaforos(kpis, umbrales),
       asarco: {
@@ -139,8 +141,8 @@ export const getEquipoPorId = cache(async (id: string, periodoId?: number): Prom
     tipoFlota:         f.tipoFlota as TipoFlota, // FK-garantizado
     anio:              f.anio,
     horasAcumuladas:   f.horasAcumuladas ?? 0,
-    paroTotal:         sinDatosKpi ? true : (f.paroTotal ?? false),
-    motivoParo:        sinDatosKpi ? "Sin datos KPI para este período" : (f.motivoParo ?? undefined),
+    paroTotal:         sinDatosKpi ? false : (f.paroTotal ?? false),
+    motivoParo:        sinDatosKpi ? "Sin KPIs cargados — ir a Admin → KPIs para este período" : (f.motivoParo ?? undefined),
     kpis,
     semaforo:          calcularSemaforos(kpis, umbrales),
     asarco: {

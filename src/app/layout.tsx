@@ -40,10 +40,17 @@ export const viewport: Viewport = {
  * React.cache deduplica si la página hija llama las mismas queries.
  */
 async function ShellDataProvider({ children }: { children: React.ReactNode }) {
-  const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
-  const alertasCriticas = alertas.filter((a) => a.estado === "paro" || a.estado === "rojo").length;
+  let alertasCriticas = 0;
+  let totalEquipos = 0;
+  try {
+    const [flota, alertas] = await Promise.all([getFlota(), getAlertas()]);
+    alertasCriticas = alertas.filter((a) => a.estado === "paro" || a.estado === "rojo").length;
+    totalEquipos = flota.length;
+  } catch {
+    // BD no disponible — shell degrada silenciosamente; la página mostrará su propio error
+  }
   return (
-    <ShellClient alertasCriticas={alertasCriticas} totalEquipos={flota.length}>
+    <ShellClient alertasCriticas={alertasCriticas} totalEquipos={totalEquipos}>
       {children}
     </ShellClient>
   );

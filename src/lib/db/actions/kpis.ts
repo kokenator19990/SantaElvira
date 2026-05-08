@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../index";
 import * as t from "../schema";
-import { calcularSemaforos } from "@/lib/domain/semaforo";
-import { UMBRALES } from "@/lib/constants/umbrales";
+import { calcularSemaforos, umbralesDesdeDB } from "@/lib/domain/semaforo";
+import { getUmbralesActivos } from "@/lib/db/queries/umbrales";
 import { safeFloat } from "@/lib/utils/safe-parse";
 import { verificarSesion } from "./session";
 import { errorSeguro } from "@/lib/utils/safe-parse";
@@ -34,6 +34,7 @@ interface AsarcoEquipoInput {
   pctDetProgramada: number;
   pctDetNoProg: number;
   pctPerdidaOp: number;
+  creadoPor?: string;
 }
 
 const KPI_LABELS: Record<string, string> = {
@@ -66,26 +67,18 @@ export async function upsertKpiEquipo(input: KpiEquipoInput): Promise<ActionResu
   const error = validarKpis(input);
   if (error) return { ok: false, error };
 
-  // Verificar que el período no esté cerrado
-  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, input.periodoId)).limit(1);
-  if (per?.cerrado) return { ok: false, error: "No se pueden modificar KPIs de un período cerrado" };
-
   try {
-    await db.insert(t.kpiEquipo).values({
-      equipoId:        input.equipoId,
-      periodoId:       input.periodoId,
-      dfm:             String(input.dfm),
-      tmef:            String(input.tmef),
-      tmpr:            String(input.tmpr),
-      tiempoOperativo: String(input.tiempoOperativo),
-      reserva:         String(input.reserva),
-      horasAcumuladas: input.horasAcumuladas,
-      paroTotal:       input.paroTotal ?? false,
-      motivoParo:      input.motivoParo ?? null,
-      creadoPor:       input.creadoPor ?? "admin",
-    }).onConflictDoUpdate({
-      target: [t.kpiEquipo.equipoId, t.kpiEquipo.periodoId],
-      set: {
+    // Check + INSERT en la misma transacción para evitar race condition
+    // con un cierre de período concurrente.
+    await db.transaction(async (tx) => {
+      const [per] = await tx.select({ cerrado: t.periodo.cerrado })
+        .from(t.periodo).where(eq(t.periodo.id, input.periodoId)).limit(1);
+      if (!per || per.cerrado) {
+        throw Object.assign(new Error("período cerrado"), { userMsg: "No se pueden modificar KPIs de un período cerrado" });
+      }
+      await tx.insert(t.kpiEquipo).values({
+        equipoId:        input.equipoId,
+        periodoId:       input.periodoId,
         dfm:             String(input.dfm),
         tmef:            String(input.tmef),
         tmpr:            String(input.tmpr),
@@ -95,13 +88,27 @@ export async function upsertKpiEquipo(input: KpiEquipoInput): Promise<ActionResu
         paroTotal:       input.paroTotal ?? false,
         motivoParo:      input.motivoParo ?? null,
         creadoPor:       input.creadoPor ?? "admin",
-      },
+      }).onConflictDoUpdate({
+        target: [t.kpiEquipo.equipoId, t.kpiEquipo.periodoId],
+        set: {
+          dfm:             String(input.dfm),
+          tmef:            String(input.tmef),
+          tmpr:            String(input.tmpr),
+          tiempoOperativo: String(input.tiempoOperativo),
+          reserva:         String(input.reserva),
+          horasAcumuladas: input.horasAcumuladas,
+          paroTotal:       input.paroTotal ?? false,
+          motivoParo:      input.motivoParo ?? null,
+          creadoPor:       input.creadoPor ?? "admin",
+        },
+      });
     });
 
     await registrarAuditoria("kpi_equipo", `${input.equipoId}:${input.periodoId}`, "UPDATE", input.creadoPor ?? "admin", `KPI DFM=${input.dfm} TMEF=${input.tmef}`);
     revalidatePath("/", "layout");
     return { ok: true };
-  } catch (e) {
+  } catch (e: unknown) {
+    if (e instanceof Error && "userMsg" in e) return { ok: false, error: (e as Error & { userMsg: string }).userMsg };
     return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
@@ -111,30 +118,109 @@ export async function upsertAsarcoEquipo(input: AsarcoEquipoInput): Promise<Acti
   const error = validarAsarco(input);
   if (error) return { ok: false, error };
 
-  // Verificar que el período no esté cerrado
-  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, input.periodoId)).limit(1);
-  if (per?.cerrado) return { ok: false, error: "No se pueden modificar datos ASARCO de un período cerrado" };
-
   try {
-    await db.insert(t.asarcoEquipo).values({
-      equipoId:         input.equipoId,
-      periodoId:        input.periodoId,
-      pctOperativo:     String(input.pctOperativo),
-      pctReserva:       String(input.pctReserva),
-      pctDetProgramada: String(input.pctDetProgramada),
-      pctDetNoProg:     String(input.pctDetNoProg),
-      pctPerdidaOp:     String(input.pctPerdidaOp),
-    }).onConflictDoUpdate({
-      target: [t.asarcoEquipo.equipoId, t.asarcoEquipo.periodoId],
-      set: {
+    await db.transaction(async (tx) => {
+      const [per] = await tx.select({ cerrado: t.periodo.cerrado })
+        .from(t.periodo).where(eq(t.periodo.id, input.periodoId)).limit(1);
+      if (!per || per.cerrado) {
+        throw Object.assign(new Error("período cerrado"), { userMsg: "No se pueden modificar datos ASARCO de un período cerrado" });
+      }
+      await tx.insert(t.asarcoEquipo).values({
+        equipoId:         input.equipoId,
+        periodoId:        input.periodoId,
         pctOperativo:     String(input.pctOperativo),
         pctReserva:       String(input.pctReserva),
         pctDetProgramada: String(input.pctDetProgramada),
         pctDetNoProg:     String(input.pctDetNoProg),
         pctPerdidaOp:     String(input.pctPerdidaOp),
-      },
+      }).onConflictDoUpdate({
+        target: [t.asarcoEquipo.equipoId, t.asarcoEquipo.periodoId],
+        set: {
+          pctOperativo:     String(input.pctOperativo),
+          pctReserva:       String(input.pctReserva),
+          pctDetProgramada: String(input.pctDetProgramada),
+          pctDetNoProg:     String(input.pctDetNoProg),
+          pctPerdidaOp:     String(input.pctPerdidaOp),
+        },
+      });
     });
 
+    await registrarAuditoria("asarco_equipo", `${input.equipoId}:${input.periodoId}`, "UPDATE", input.creadoPor ?? "admin", `ASARCO Op=${input.pctOperativo} Res=${input.pctReserva}`);
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e: unknown) {
+    if (e instanceof Error && "userMsg" in e) return { ok: false, error: (e as Error & { userMsg: string }).userMsg };
+    return { ok: false, error: errorSeguro(e, "kpis") };
+  }
+}
+
+/**
+ * C4: Upsert atómico de KPI + ASARCO en una sola transacción.
+ * Garantiza que ambas tablas queden consistentes o ninguna se modifica.
+ */
+export async function upsertKpiYAsarcoEquipo(
+  kpi: KpiEquipoInput,
+  asarco: AsarcoEquipoInput,
+): Promise<ActionResult> {
+  await verificarSesion();
+  const kpiError = validarKpis(kpi);
+  if (kpiError) return { ok: false, error: kpiError };
+  const asarcoError = validarAsarco(asarco);
+  if (asarcoError) return { ok: false, error: asarcoError };
+
+  const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, kpi.periodoId)).limit(1);
+  if (per?.cerrado) return { ok: false, error: "No se pueden modificar datos de un período cerrado" };
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx.insert(t.kpiEquipo).values({
+        equipoId:        kpi.equipoId,
+        periodoId:       kpi.periodoId,
+        dfm:             String(kpi.dfm),
+        tmef:            String(kpi.tmef),
+        tmpr:            String(kpi.tmpr),
+        tiempoOperativo: String(kpi.tiempoOperativo),
+        reserva:         String(kpi.reserva),
+        horasAcumuladas: kpi.horasAcumuladas,
+        paroTotal:       kpi.paroTotal ?? false,
+        motivoParo:      kpi.motivoParo ?? null,
+        creadoPor:       kpi.creadoPor ?? "admin",
+      }).onConflictDoUpdate({
+        target: [t.kpiEquipo.equipoId, t.kpiEquipo.periodoId],
+        set: {
+          dfm:             String(kpi.dfm),
+          tmef:            String(kpi.tmef),
+          tmpr:            String(kpi.tmpr),
+          tiempoOperativo: String(kpi.tiempoOperativo),
+          reserva:         String(kpi.reserva),
+          horasAcumuladas: kpi.horasAcumuladas,
+          paroTotal:       kpi.paroTotal ?? false,
+          motivoParo:      kpi.motivoParo ?? null,
+          creadoPor:       kpi.creadoPor ?? "admin",
+        },
+      });
+
+      await tx.insert(t.asarcoEquipo).values({
+        equipoId:         asarco.equipoId,
+        periodoId:        asarco.periodoId,
+        pctOperativo:     String(asarco.pctOperativo),
+        pctReserva:       String(asarco.pctReserva),
+        pctDetProgramada: String(asarco.pctDetProgramada),
+        pctDetNoProg:     String(asarco.pctDetNoProg),
+        pctPerdidaOp:     String(asarco.pctPerdidaOp),
+      }).onConflictDoUpdate({
+        target: [t.asarcoEquipo.equipoId, t.asarcoEquipo.periodoId],
+        set: {
+          pctOperativo:     String(asarco.pctOperativo),
+          pctReserva:       String(asarco.pctReserva),
+          pctDetProgramada: String(asarco.pctDetProgramada),
+          pctDetNoProg:     String(asarco.pctDetNoProg),
+          pctPerdidaOp:     String(asarco.pctPerdidaOp),
+        },
+      });
+    });
+
+    await registrarAuditoria("kpi_equipo", `${kpi.equipoId}:${kpi.periodoId}`, "UPDATE", kpi.creadoPor ?? "admin", `KPI+ASARCO DFM=${kpi.dfm} TMEF=${kpi.tmef}`);
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
@@ -143,7 +229,7 @@ export async function upsertAsarcoEquipo(input: AsarcoEquipoInput): Promise<Acti
 }
 
 /**
- * Recalcula las alertas para un período según los KPIs vigentes y los umbrales.
+ * Recalcula las alertas para un período según los KPIs vigentes y los umbrales de BD.
  * Borra las alertas anteriores del período y reinserta las nuevas.
  */
 export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "admin"): Promise<ActionResult<{ creadas: number }>> {
@@ -154,8 +240,14 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
   if (per.cerrado) return { ok: false, error: "No se pueden regenerar alertas de un período cerrado" };
 
   try {
-    const kpis = await db.select().from(t.kpiEquipo).where(eq(t.kpiEquipo.periodoId, periodoId));
-    const equipos = await db.select().from(t.equipo);
+    // C2: cargar umbrales desde BD para usar en clasificación y cálculo de umbralCritico
+    const [kpis, equipos, umbralesDB] = await Promise.all([
+      db.select().from(t.kpiEquipo).where(eq(t.kpiEquipo.periodoId, periodoId)),
+      db.select().from(t.equipo),
+      getUmbralesActivos(),
+    ]);
+
+    const umbrales = umbralesDesdeDB(umbralesDB);
     const modeloById = new Map(equipos.map((e) => [e.id, e.modelo]));
 
     const nuevas: typeof t.alerta.$inferInsert[] = [];
@@ -168,7 +260,7 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
         tiempoOperativo: safeFloat(k.tiempoOperativo),
         reserva:         safeFloat(k.reserva),
       };
-      const sem = calcularSemaforos(kpisN);
+      const sem = calcularSemaforos(kpisN, umbrales);
 
       if (k.paroTotal) {
         nuevas.push({
@@ -176,7 +268,7 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
           periodoId,
           kpi:           "dfm",
           valorActual:   "0",
-          umbralCritico: String(UMBRALES.dfm.ambar),
+          umbralCritico: String(umbrales.dfm.ambar),
           estado:        "paro",
           mensaje:       `PARO TOTAL — ${k.motivoParo ?? "Sin motivo registrado"}`,
           resuelta:      false,
@@ -192,13 +284,13 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
       for (const [semKey, kpiKey] of checks) {
         if (sem[semKey] === "verde") continue;
         const valor = kpisN[kpiKey];
-        const config = UMBRALES[kpiKey === "tiempoOperativo" ? "tiempoOperativo" : kpiKey];
+        const config = umbrales[kpiKey];
         const umbral = sem[semKey] === "rojo" ? config.ambar : config.verde;
 
         nuevas.push({
           equipoId:      k.equipoId,
           periodoId,
-          kpi:           kpiKey === "tiempoOperativo" ? "tiempoOperativo" : kpiKey,
+          kpi:           kpiKey,
           valorActual:   String(valor),
           umbralCritico: String(umbral),
           estado:        sem[semKey],
@@ -281,4 +373,3 @@ export async function cerrarPeriodo(periodoId: number, cerrado = true): Promise<
     return { ok: false, error: errorSeguro(e, "kpis") };
   }
 }
-
