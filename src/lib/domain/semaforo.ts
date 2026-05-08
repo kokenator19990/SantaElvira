@@ -1,5 +1,50 @@
 import type { EstadoSemaforo, KpiEquipo, SemaforoEquipo } from "./tipos";
+import type { UmbralKpi } from "../db/schema";
 import { UMBRALES } from "../constants/umbrales";
+import { safeFloat } from "../utils/safe-parse";
+
+/**
+ * Configuración de umbrales para clasificación semáforo.
+ * Puede provenir de constantes hardcodeadas o de la BD (umbral_kpi).
+ */
+export interface UmbralesConfig {
+  dfm:             { verde: number; ambar: number };
+  tmef:            { verde: number; ambar: number };
+  tmpr:            { verde: number; ambar: number };
+  tiempoOperativo: { verde: number; ambar: number };
+  reserva:         { verde: number; ambar: number };
+}
+
+const UMBRALES_DEFAULT: UmbralesConfig = {
+  dfm:             { verde: UMBRALES.dfm.verde,             ambar: UMBRALES.dfm.ambar },
+  tmef:            { verde: UMBRALES.tmef.verde,            ambar: UMBRALES.tmef.ambar },
+  tmpr:            { verde: UMBRALES.tmpr.verde,            ambar: UMBRALES.tmpr.ambar },
+  tiempoOperativo: { verde: UMBRALES.tiempoOperativo.verde, ambar: UMBRALES.tiempoOperativo.ambar },
+  reserva:         { verde: UMBRALES.reserva.verde,         ambar: UMBRALES.reserva.ambar },
+};
+
+/**
+ * Convierte filas de la tabla umbral_kpi a UmbralesConfig.
+ * Para KPIs sin fila activa en BD, usa los valores hardcodeados como respaldo.
+ */
+export function umbralesDesdeDB(filas: UmbralKpi[]): UmbralesConfig {
+  const config: UmbralesConfig = {
+    dfm:             { ...UMBRALES_DEFAULT.dfm },
+    tmef:            { ...UMBRALES_DEFAULT.tmef },
+    tmpr:            { ...UMBRALES_DEFAULT.tmpr },
+    tiempoOperativo: { ...UMBRALES_DEFAULT.tiempoOperativo },
+    reserva:         { ...UMBRALES_DEFAULT.reserva },
+  };
+  for (const f of filas) {
+    if (f.kpi in config) {
+      config[f.kpi as keyof UmbralesConfig] = {
+        verde: safeFloat(f.nivelVerde),
+        ambar: safeFloat(f.nivelAmbar),
+      };
+    }
+  }
+  return config;
+}
 
 export function clasificarDfm(valor: number): EstadoSemaforo {
   if (valor === 0) return "paro";
@@ -32,29 +77,45 @@ export function clasificarReserva(valor: number): EstadoSemaforo {
   return "rojo";
 }
 
-export function calcularSemaforoGeneral(kpis: KpiEquipo): EstadoSemaforo {
+export function calcularSemaforoGeneral(kpis: KpiEquipo, umbrales?: UmbralesConfig): EstadoSemaforo {
   if (kpis.dfm === 0) return "paro";
-  const estados = [
-    clasificarDfm(kpis.dfm),
-    clasificarTmef(kpis.tmef),
-    clasificarTmpr(kpis.tmpr),
-    clasificarTiempoOperativo(kpis.tiempoOperativo),
-    clasificarReserva(kpis.reserva),
-  ];
+  const u = umbrales ?? UMBRALES_DEFAULT;
+  const dfm  = kpis.dfm >= u.dfm.verde  ? "verde" : kpis.dfm >= u.dfm.ambar  ? "ambar" : "rojo";
+  const tmef = kpis.tmef >= u.tmef.verde ? "verde" : kpis.tmef >= u.tmef.ambar ? "ambar" : "rojo";
+  const tmpr = kpis.tmpr <= u.tmpr.verde ? "verde" : kpis.tmpr <= u.tmpr.ambar ? "ambar" : "rojo";
+  const top  = kpis.tiempoOperativo >= u.tiempoOperativo.verde ? "verde" : kpis.tiempoOperativo >= u.tiempoOperativo.ambar ? "ambar" : "rojo";
+  const res  = kpis.reserva <= u.reserva.verde ? "verde" : kpis.reserva <= u.reserva.ambar ? "ambar" : "rojo";
+  const estados: EstadoSemaforo[] = [dfm, tmef, tmpr, top, res];
   if (estados.includes("rojo")) return "rojo";
   if (estados.includes("ambar")) return "ambar";
   return "verde";
 }
 
-export function calcularSemaforos(kpis: KpiEquipo): SemaforoEquipo {
-  return {
-    dfm:             clasificarDfm(kpis.dfm),
-    tmef:            clasificarTmef(kpis.tmef),
-    tmpr:            clasificarTmpr(kpis.tmpr),
-    tiempoOperativo: clasificarTiempoOperativo(kpis.tiempoOperativo),
-    reserva:         clasificarReserva(kpis.reserva),
-    general:         calcularSemaforoGeneral(kpis),
-  };
+/**
+ * Calcula el semáforo de todos los KPIs de un equipo.
+ * Acepta umbrales opcionales desde la BD; sin ellos usa los valores hardcodeados.
+ */
+export function calcularSemaforos(kpis: KpiEquipo, umbrales?: UmbralesConfig): SemaforoEquipo {
+  const u = umbrales ?? UMBRALES_DEFAULT;
+
+  const dfm: EstadoSemaforo  = kpis.dfm === 0 ? "paro"
+    : kpis.dfm >= u.dfm.verde  ? "verde" : kpis.dfm >= u.dfm.ambar  ? "ambar" : "rojo";
+  const tmef: EstadoSemaforo = kpis.tmef >= u.tmef.verde ? "verde"
+    : kpis.tmef >= u.tmef.ambar ? "ambar" : "rojo";
+  const tmpr: EstadoSemaforo = kpis.tmpr <= u.tmpr.verde ? "verde"
+    : kpis.tmpr <= u.tmpr.ambar ? "ambar" : "rojo";
+  const tiempoOperativo: EstadoSemaforo = kpis.tiempoOperativo >= u.tiempoOperativo.verde ? "verde"
+    : kpis.tiempoOperativo >= u.tiempoOperativo.ambar ? "ambar" : "rojo";
+  const reserva: EstadoSemaforo = kpis.reserva <= u.reserva.verde ? "verde"
+    : kpis.reserva <= u.reserva.ambar ? "ambar" : "rojo";
+
+  const estados: EstadoSemaforo[] = [dfm, tmef, tmpr, tiempoOperativo, reserva];
+  const general: EstadoSemaforo = dfm === "paro" ? "paro"
+    : estados.includes("rojo") ? "rojo"
+    : estados.includes("ambar") ? "ambar"
+    : "verde";
+
+  return { dfm, tmef, tmpr, tiempoOperativo, reserva, general };
 }
 
 export function prioridadAlerta(estado: EstadoSemaforo): number {

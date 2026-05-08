@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { Pickaxe, AlertTriangle } from "lucide-react";
 import { pbkdf2Sync, timingSafeEqual } from "crypto";
+import { createToken } from "@/lib/auth/token";
 
 const SESSION_COOKIE = "admin_session";
 
@@ -30,15 +31,18 @@ function verificarRateLimit(ip: string): boolean {
 
 /* ─── Password Hashing ──────────────────────────────────────────────────────
  * Usa PBKDF2 (nativo de Node.js) para comparar passwords de forma segura.
- * El password esperado se hashea en runtime con un salt fijo derivado de
- * CRON_SECRET, evitando comparaciones en texto plano.
+ * El salt se obtiene de ADMIN_SALT (recomendado) o usa una constante interna.
+ * No depende de CRON_SECRET para que rotar el cron secret no afecte el login.
  */
 function hashPassword(password: string, salt: string): Buffer {
   return pbkdf2Sync(password, salt, 100_000, 64, "sha512");
 }
 
 function verificarPassword(inputPassword: string, expectedPassword: string): boolean {
-  const salt = process.env.CRON_SECRET ?? "msg-salt-default-2026";
+  // ADMIN_SALT es opcional — si no está definido, usa constante interna.
+  // Ambos lados (input y expected) se hashean con el mismo salt en cada comparación,
+  // por lo que cambiar el salt no invalida el login (ADMIN_PASSWORD se guarda en texto).
+  const salt = process.env.ADMIN_SALT ?? "msg-dashboard-kpi-v1";
   const hashInput = hashPassword(inputPassword, salt);
   const hashExpected = hashPassword(expectedPassword, salt);
   return timingSafeEqual(hashInput, hashExpected);
@@ -65,7 +69,11 @@ async function loginAction(formData: FormData) {
   }
 
   if (usuario === ADMIN_USER && verificarPassword(password, ADMIN_PASSWORD)) {
-    const token = crypto.randomUUID();
+    const jwtSecret = process.env.ADMIN_JWT_SECRET;
+    if (!jwtSecret) {
+      redirect(`/login?error=config&from=${encodeURIComponent(from)}`);
+    }
+    const token = await createToken(jwtSecret);
     const cookieStore = await cookies();
     cookieStore.set(SESSION_COOKIE, token, {
       httpOnly: true,

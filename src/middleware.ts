@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifyToken } from "@/lib/auth/token";
 
 const SESSION_COOKIE = "admin_session";
 
 const RUTAS_PROTEGIDAS = ["/admin", "/reporte", "/explorador"];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const requiereAuth = RUTAS_PROTEGIDAS.some((ruta) => pathname === ruta || pathname.startsWith(ruta + "/"));
   if (requiereAuth) {
     const session = request.cookies.get(SESSION_COOKIE);
-    if (!session?.value || session.value.length < 36) {
+    const secret = process.env.ADMIN_JWT_SECRET ?? "";
+    const valida = await verifyToken(session?.value, secret);
+    if (!valida) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);

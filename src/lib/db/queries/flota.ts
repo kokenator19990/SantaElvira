@@ -2,46 +2,55 @@ import { eq, and, desc } from "drizzle-orm";
 import { cache } from "react";
 import { db } from "../index";
 import * as t from "../schema";
-import { calcularSemaforos } from "../../domain/semaforo";
+import { calcularSemaforos, umbralesDesdeDB } from "../../domain/semaforo";
 import { safeFloat } from "../../utils/safe-parse";
 import type { Equipo, TipoFlota } from "../../domain/tipos";
+import { getUmbralesActivos } from "./umbrales";
 
 /**
- * Trae los equipos con sus KPIs y ASARCO para un período dado.
- * Si no se especifica periodoId, usa el período más reciente con datos.
+ * Trae los equipos ACTIVOS (enServicio = true) con sus KPIs y ASARCO para un período dado.
+ * Usa umbrales vigentes de la BD para clasificar el semáforo.
  * Devuelve [] si no hay períodos cargados.
  */
 export const getFlota = cache(async (periodoId?: number): Promise<Equipo[]> => {
   const periodoActual = periodoId ?? await getPeriodoActualId();
   if (periodoActual === null) return [];
 
-  const filas = await db
-    .select({
-      id:               t.equipo.id,
-      modelo:           t.equipo.modelo,
-      tipoFlota:        t.equipo.tipoFlotaId,
-      anio:             t.equipo.anioFabricacion,
-      // KPIs del periodo actual
-      dfm:              t.kpiEquipo.dfm,
-      tmef:             t.kpiEquipo.tmef,
-      tmpr:             t.kpiEquipo.tmpr,
-      tiempoOperativo:  t.kpiEquipo.tiempoOperativo,
-      reserva:          t.kpiEquipo.reserva,
-      horasAcumuladas:  t.kpiEquipo.horasAcumuladas,
-      paroTotal:        t.kpiEquipo.paroTotal,
-      motivoParo:       t.kpiEquipo.motivoParo,
-      kpiCreatedAt:     t.kpiEquipo.createdAt,
-      // ASARCO del periodo actual
-      pctOperativo:     t.asarcoEquipo.pctOperativo,
-      pctReserva:       t.asarcoEquipo.pctReserva,
-      pctDetProgramada: t.asarcoEquipo.pctDetProgramada,
-      pctDetNoProg:     t.asarcoEquipo.pctDetNoProg,
-      pctPerdidaOp:     t.asarcoEquipo.pctPerdidaOp,
-    })
-    .from(t.equipo)
-    .leftJoin(t.kpiEquipo,    and(eq(t.kpiEquipo.equipoId,    t.equipo.id), eq(t.kpiEquipo.periodoId,    periodoActual as number)))
-    .leftJoin(t.asarcoEquipo, and(eq(t.asarcoEquipo.equipoId, t.equipo.id), eq(t.asarcoEquipo.periodoId, periodoActual as number)))
-    .orderBy(t.equipo.tipoFlotaId, desc(t.kpiEquipo.paroTotal), t.equipo.id);
+  // Carga en paralelo: no bloquear la query de equipos esperando los umbrales
+  const [filas, umbralesDB] = await Promise.all([
+    db
+      .select({
+        id:               t.equipo.id,
+        modelo:           t.equipo.modelo,
+        tipoFlota:        t.equipo.tipoFlotaId,
+        anio:             t.equipo.anioFabricacion,
+        // KPIs del periodo actual
+        dfm:              t.kpiEquipo.dfm,
+        tmef:             t.kpiEquipo.tmef,
+        tmpr:             t.kpiEquipo.tmpr,
+        tiempoOperativo:  t.kpiEquipo.tiempoOperativo,
+        reserva:          t.kpiEquipo.reserva,
+        horasAcumuladas:  t.kpiEquipo.horasAcumuladas,
+        paroTotal:        t.kpiEquipo.paroTotal,
+        motivoParo:       t.kpiEquipo.motivoParo,
+        kpiCreatedAt:     t.kpiEquipo.createdAt,
+        // ASARCO del periodo actual
+        pctOperativo:     t.asarcoEquipo.pctOperativo,
+        pctReserva:       t.asarcoEquipo.pctReserva,
+        pctDetProgramada: t.asarcoEquipo.pctDetProgramada,
+        pctDetNoProg:     t.asarcoEquipo.pctDetNoProg,
+        pctPerdidaOp:     t.asarcoEquipo.pctPerdidaOp,
+      })
+      .from(t.equipo)
+      // Solo equipos activos — excluye los dados de baja con darDeBajaEquipo()
+      .where(eq(t.equipo.enServicio, true))
+      .leftJoin(t.kpiEquipo,    and(eq(t.kpiEquipo.equipoId,    t.equipo.id), eq(t.kpiEquipo.periodoId,    periodoActual as number)))
+      .leftJoin(t.asarcoEquipo, and(eq(t.asarcoEquipo.equipoId, t.equipo.id), eq(t.asarcoEquipo.periodoId, periodoActual as number)))
+      .orderBy(t.equipo.tipoFlotaId, desc(t.kpiEquipo.paroTotal), t.equipo.id),
+    getUmbralesActivos(),
+  ]);
+
+  const umbrales = umbralesDesdeDB(umbralesDB);
 
   return filas.map((f): Equipo => {
     // Si no hay fila KPI para este período, el equipo no tiene datos cargados.
@@ -58,13 +67,13 @@ export const getFlota = cache(async (periodoId?: number): Promise<Equipo[]> => {
     return {
       id:                f.id,
       modelo:            f.modelo,
-      tipoFlota:         f.tipoFlota as TipoFlota,
+      tipoFlota:         f.tipoFlota as TipoFlota, // FK-garantizado: "785D"|"777F"|"992"|"PC2000"
       anio:              f.anio,
       horasAcumuladas:   f.horasAcumuladas ?? 0,
       paroTotal:         sinDatosKpi ? true : (f.paroTotal ?? false),
       motivoParo:        sinDatosKpi ? "Sin datos KPI para este período" : (f.motivoParo ?? undefined),
       kpis,
-      semaforo:          calcularSemaforos(kpis),
+      semaforo:          calcularSemaforos(kpis, umbrales),
       asarco: {
         operativo:             safeFloat(f.pctOperativo),
         reserva:               safeFloat(f.pctReserva),
@@ -79,8 +88,13 @@ export const getFlota = cache(async (periodoId?: number): Promise<Equipo[]> => {
 
 export const getEquipoPorId = cache(async (id: string, periodoId?: number): Promise<Equipo | undefined> => {
   // Query directa por ID para evitar cargar toda la flota (N+1)
-  const periodoActual = periodoId ?? await getPeriodoActualId();
+  const [periodoActual, umbralesDB] = await Promise.all([
+    periodoId !== undefined ? Promise.resolve(periodoId as number | null) : getPeriodoActualId(),
+    getUmbralesActivos(),
+  ]);
   if (periodoActual === null) return undefined;
+
+  const umbrales = umbralesDesdeDB(umbralesDB);
 
   const [f] = await db
     .select({
@@ -122,13 +136,13 @@ export const getEquipoPorId = cache(async (id: string, periodoId?: number): Prom
   return {
     id:                f.id,
     modelo:            f.modelo,
-    tipoFlota:         f.tipoFlota as TipoFlota,
+    tipoFlota:         f.tipoFlota as TipoFlota, // FK-garantizado
     anio:              f.anio,
     horasAcumuladas:   f.horasAcumuladas ?? 0,
     paroTotal:         sinDatosKpi ? true : (f.paroTotal ?? false),
     motivoParo:        sinDatosKpi ? "Sin datos KPI para este período" : (f.motivoParo ?? undefined),
     kpis,
-    semaforo:          calcularSemaforos(kpis),
+    semaforo:          calcularSemaforos(kpis, umbrales),
     asarco: {
       operativo:             safeFloat(f.pctOperativo),
       reserva:               safeFloat(f.pctReserva),
@@ -176,5 +190,3 @@ export const getEquiposInactivos = cache(async () => {
     .where(eq(t.equipo.enServicio, false))
     .orderBy(t.equipo.tipoFlotaId, t.equipo.id);
 });
-
-// Alias local eliminado — ahora usa safeFloat de @/lib/utils/safe-parse

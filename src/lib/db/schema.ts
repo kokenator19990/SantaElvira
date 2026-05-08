@@ -2,6 +2,7 @@ import {
   boolean,
   date,
   decimal,
+  index,
   integer,
   pgTable,
   serial,
@@ -153,7 +154,10 @@ export const alerta = pgTable("alerta", {
   resueltaPor:    text("resuelta_por"),                             // quién resolvió
   resueltaEn:     timestamp("resuelta_en", { withTimezone: true }), // cuándo se resolvió
   timestamp:      timestamp("timestamp", { withTimezone: true }).defaultNow().notNull(),
-});
+}, (t) => ({
+  // Índice para la query más frecuente: alertas activas de un período
+  periodoResueltaIdx: index("alerta_periodo_resuelta_idx").on(t.periodoId, t.resuelta),
+}));
 
 /* ─── 8. ANALISIS_APD ───────────────────────────────────────────────────────
  * Sesión de carga de análisis de aceite (un CSV importado)

@@ -223,7 +223,13 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
         }
       }
     });
-    void creadoPor; // marca de auditoría futura
+    await registrarAuditoria(
+      "alerta",
+      String(periodoId),
+      "DELETE",
+      creadoPor,
+      `Alertas regeneradas para período ${periodoId}: ${nuevas.length} creadas`,
+    );
 
     revalidatePath("/", "layout");
     return { ok: true, data: { creadas: nuevas.length } };
