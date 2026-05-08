@@ -195,12 +195,12 @@ export function Sidebar({ open, onClose, totalEquipos, alertasCriticas = 0 }: Si
           </form>
         </div>
         {/* OpenCore Business Flow — fila completa */}
-        <div className="pt-2 border-t border-[#F4F4F5]">
+        <div className="pt-2 border-t border-[#F4F4F5] flex justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/opencore-logo.png"
             alt="OpenCore Business Flow"
-            className="w-full h-auto"
+            className="w-1/2 h-auto"
             style={{ filter: "invert(1)", opacity: 0.75 }}
           />
         </div>
