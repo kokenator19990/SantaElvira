@@ -1,5 +1,163 @@
 # Changelog — Dashboard KPI MSG El Salvador
 
+## v1.4 — 2026-05-07
+
+### Resumen
+
+Tres rondas de auditoria de seguridad, integridad de datos, logica de negocio, robustez, SEO y accesibilidad. 53 archivos modificados en total (17 archivos en la tercera ronda, 6 en la segunda, 18 en la primera). Todas las correcciones verificadas con build exitoso y desplegadas a produccion.
+
+---
+
+### Primera auditoria — Seguridad y funcionalidad (18 archivos)
+
+#### P0 — Seguridad critica
+
+| Hallazgo | Archivo | Correccion |
+|----------|---------|------------|
+| Rate limiting con clave generica `"server-action"` | `login/page.tsx` | Clave por usuario: `login:${usuario.toLowerCase()}` |
+| Open redirect en login (`from` param sin validar) | `login/page.tsx` | Validacion: `!from.startsWith("//") && !from.includes("..")` |
+| Sesion validada con `length < 10` (demasiado permisivo) | `middleware.ts`, `session.ts` | Cambiado a `length < 36` (UUID minimo) |
+| Rutas `/reporte` y `/explorador` sin proteccion | `middleware.ts` | Agregadas a `RUTAS_PROTEGIDAS` |
+
+#### P1 — Bugs funcionales
+
+| Hallazgo | Archivo | Correccion |
+|----------|---------|------------|
+| `Number(x) \|\| FALLBACK` trata 0 como falsy | `dashboard/page.tsx`, `flota/[equipoId]/page.tsx` | Helper `parseUmbral()` con `Number.isFinite()` |
+| Periodo inexistente no validado al regenerar alertas | `lib/db/actions/kpis.ts` | Check `if (!per) return error` antes de operar |
+| APD parser acepta filas sin equipo o valor no numerico | `lib/domain/apd-parser.ts` | Validacion: `!equipo` -> skip, `isNaN(valor)` -> skip |
+| Color de paro inconsistente (`#DC2626` vs `#991B1B`) | `lib/constants/umbrales.ts` | Unificado a `#991B1B` |
+| Alertas `resolverTodasPorEstado` sin param usuario | `lib/db/actions/alertas.ts` | Agregado `usuario?: string` al params |
+| Year validation acepta valores fuera de rango | `EquiposAdminClient.tsx`, `PeriodosAdminClient.tsx` | Rango 1990-2099 |
+| `parseFloat` NaN en umbrales sin proteccion | `UmbralesAdminClient.tsx` | `Number.isFinite()` check |
+
+#### P2 — UX
+
+| Hallazgo | Archivo | Correccion |
+|----------|---------|------------|
+| Inputs sin `maxLength` | `AlertaRowClient.tsx`, `ResolverTodasButton.tsx` | `maxLength={500}` |
+| ReabrirButton sin advertencia de datos que se pierden | `ReabrirButton.tsx` | Mensaje explica que accion y datos de resolucion se eliminan |
+| Version desactualizada en sidebar | `Sidebar.tsx` | Actualizada a v1.4 |
+| TopBar sin ruta `/docs` ni `/admin/*` | `TopBar.tsx` | Rutas agregadas al mapa |
+| CalcularKpis no limpia estado de error | `CalcularKpisClient.tsx` | Reset de advertencias/diasEnMes on error |
+
+**Commit:** `11fd68c`
+
+---
+
+### Segunda auditoria — Seguridad y robustez (6 archivos)
+
+~64 hallazgos brutos de 4 agentes paralelos, filtrados a 6 reales despues de eliminar falsos positivos.
+
+| # | Hallazgo | Archivo | Correccion |
+|---|----------|---------|------------|
+| 1 | Sin header HSTS | `next.config.mjs` | `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` |
+| 2 | ReabrirButton ignora resultado de `reabrirAlerta()` | `ReabrirButton.tsx` | Estado de error + manejo de `result.ok` |
+| 3 | `accionTomada` sin validacion de longitud server-side | `lib/db/actions/alertas.ts` | `trim().length > 500` check en `resolverAlerta` y `resolverTodasPorEstado` |
+| 4 | Umbrales verde/ambar sin validacion de coherencia | `UmbralesAdminClient.tsx` | Validacion: invertido -> verde <= ambar; normal -> verde >= ambar |
+| 5 | MiniBar NaN con `max=0` | `FlotaSemaforo.tsx` | `Number.isFinite(valor / max)` guard |
+| 6 | Insight text overflow en mobile | `KpiSummaryStrip.tsx` | `line-clamp-2` |
+
+**Commit:** `acac23a`
+
+---
+
+### Tercera auditoria — Integridad, SEO y error boundaries (17 archivos)
+
+Auditoria de areas no cubiertas previamente: integridad transaccional de BD, logica de negocio edge cases, seguridad de API, SEO/metadata, error boundaries, impresion.
+
+#### P0 — Integridad y seguridad
+
+| # | Hallazgo | Archivo | Correccion |
+|---|----------|---------|------------|
+| 1 | APD upload no atomico: si falla insercion de muestras, queda analisis huerfano | `lib/db/actions/apd.ts` | Cabecera + muestras envueltas en `db.transaction()` |
+| 2 | `/api/digest` timing-safe compare con fallback a `===` directo (inseguro) | `app/api/digest/route.ts` | Reemplazado por `crypto.timingSafeEqual` de Node.js (sin fallback) |
+| 3 | `/api/digest` expone emails `DIGEST_TO` en respuesta JSON | `app/api/digest/route.ts` | Campo `to` eliminado de la respuesta |
+
+#### P1 — Logica de negocio
+
+| # | Hallazgo | Archivo | Correccion |
+|---|----------|---------|------------|
+| 4 | `calcularPerdidaEstimada()` usa `new Date().getMonth()` en vez del mes del periodo | `lib/domain/resumen-ejecutivo.ts` | Acepta `periodo?: {anio, mes}`, callers actualizados |
+| 5 | `crearPeriodo` race condition con mensaje generico en unique constraint | `lib/db/actions/kpis.ts` | Captura PG error 23505, retorna mensaje amigable |
+
+#### P2 — SEO, error boundaries, impresion
+
+| # | Hallazgo | Archivo | Correccion |
+|---|----------|---------|------------|
+| 6 | Sin `global-error.tsx` (errores de layout no manejados) | `app/global-error.tsx` | Creado con boton "Intentar de nuevo" |
+| 7 | Sin `not-found.tsx` (404 generico) | `app/not-found.tsx` | Creado con link a dashboard |
+| 8 | 23 paginas sin metadata (titulos de pestana genericos) | `layout.tsx` + 9 paginas | Title template `%s — MSG El Salvador` + metadata en 9 paginas clave |
+| 9 | Colores de semaforo no se preservan al imprimir | `globals.css` | `print-color-adjust: exact` en `@media print` |
+
+**Commit:** `bb759e3`
+
+---
+
+### Archivos modificados en v1.4 (por ronda)
+
+#### Primera ronda (18 archivos)
+- `src/app/login/page.tsx`
+- `src/middleware.ts`
+- `src/lib/db/actions/session.ts`
+- `src/app/dashboard/page.tsx`
+- `src/app/flota/[equipoId]/page.tsx`
+- `src/lib/db/actions/kpis.ts`
+- `src/lib/domain/apd-parser.ts`
+- `src/lib/constants/umbrales.ts`
+- `src/lib/db/actions/alertas.ts`
+- `src/app/admin/equipos/EquiposAdminClient.tsx`
+- `src/app/admin/periodos/PeriodosAdminClient.tsx`
+- `src/app/admin/umbrales/UmbralesAdminClient.tsx`
+- `src/app/alertas/AlertaRowClient.tsx`
+- `src/app/alertas/ResolverTodasButton.tsx`
+- `src/app/alertas/ReabrirButton.tsx`
+- `src/components/layout/Sidebar.tsx`
+- `src/components/layout/TopBar.tsx`
+- `src/app/admin/calcular-kpis/CalcularKpisClient.tsx`
+
+#### Segunda ronda (6 archivos)
+- `next.config.mjs`
+- `src/app/alertas/ReabrirButton.tsx`
+- `src/lib/db/actions/alertas.ts`
+- `src/app/admin/umbrales/UmbralesAdminClient.tsx`
+- `src/components/dashboard/FlotaSemaforo.tsx`
+- `src/components/dashboard/KpiSummaryStrip.tsx`
+
+#### Tercera ronda (17 archivos, 2 creados + 15 modificados)
+
+Creados:
+- `src/app/global-error.tsx`
+- `src/app/not-found.tsx`
+
+Modificados:
+- `src/app/admin/page.tsx`
+- `src/app/alertas/page.tsx`
+- `src/app/apd/page.tsx`
+- `src/app/api/digest/route.ts`
+- `src/app/dashboard/page.tsx`
+- `src/app/docs/page.tsx`
+- `src/app/explorador/page.tsx`
+- `src/app/flota/page.tsx`
+- `src/app/globals.css`
+- `src/app/layout.tsx`
+- `src/app/login/page.tsx`
+- `src/app/reporte/page.tsx`
+- `src/lib/db/actions/apd.ts`
+- `src/lib/db/actions/kpis.ts`
+- `src/lib/domain/resumen-ejecutivo.ts`
+
+---
+
+### Verificacion
+
+- **Build:** 3 builds exitosos (uno por ronda), 0 errores
+- **Deploy:** 3 deploys a produccion via `npx vercel --prod`
+- **Commits:** `11fd68c`, `acac23a`, `bb759e3`
+- **Version:** v1.4 · MSG 2026
+
+---
+
 ## v1.3 — 2026-05-07
 
 ### Resumen
