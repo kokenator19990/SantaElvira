@@ -40,7 +40,7 @@ export default async function PortadaPage() {
   const advertencias = alertas.filter((a) => a.estado === "ambar").length;
 
   const activos     = flota.filter((e) => !e.paroTotal);
-  const estables    = activos.length - criticos;
+  const estables    = activos.filter((e) => e.semaforo.general === "verde").length;
   const dfmPromedio = activos.length > 0
     ? round1(activos.reduce((a, e) => a + e.kpis.dfm, 0) / activos.length)
     : 0;

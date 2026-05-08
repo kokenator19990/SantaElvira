@@ -87,6 +87,13 @@ export const HELP: Record<string, HelpItem> = {
     origen: "Segunda categoría ASARCO. Indica sobre-dotación de flota o falta de frentes de trabajo disponibles.",
     ejemplo: "8% Reserva → 8h de 100h el equipo estuvo disponible mecánicamente pero esperando asignación del operaciones.",
   },
+  perdidaEstimada: {
+    titulo: "Pérdida Estimada Mensual",
+    que_es: "USD estimados que se pierden en el período por detención no programada y pérdida operacional de la flota.",
+    como_funciona: "Fórmula: (Horas en Det. No Prog. + Horas Pérdida Operacional) × Costo horario de paro por tipo de flota. Los equipos en paro total se contabilizan por la totalidad del mes.",
+    ejemplo: "Si 3 equipos 785D perdieron 120h en detención no programada a USD $1.200/h, la pérdida es USD $144.000.",
+    meta: "Referencial — no tiene umbral fijo. Sirve para priorizar esfuerzo de mantenimiento preventivo.",
+  },
   asarcoDetProg: {
     titulo: "Detención Programada — ASARCO",
     que_es: "Horas de parada planificadas con anticipación: mantención preventiva, cambio de aceite, cambio de neumáticos, inspecciones periódicas.",
