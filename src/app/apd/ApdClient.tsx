@@ -112,6 +112,12 @@ export function ApdClient({
                   <Database size={11} /> Guardar en base de datos
                 </p>
               </Tooltip>
+              {periodos.length === 0 ? (
+                <div className="flex items-start gap-2 p-2.5 rounded-[6px] bg-[#FEF2F2] border border-[#FECACA]">
+                  <AlertTriangle size={13} className="text-[#B91C1C] shrink-0 mt-0.5" />
+                  <p className="text-[12px] text-[#B91C1C]">No hay períodos disponibles. Crea un período en <strong>Admin → Períodos</strong> antes de guardar.</p>
+                </div>
+              ) : (<>
               <label className="flex flex-col gap-1">
                 <span className="text-[11px] text-[#71717A]">Período</span>
                 <select
@@ -138,6 +144,7 @@ export function ApdClient({
               >
                 <Database size={13} /> {pending ? "Guardando…" : "Guardar análisis"}
               </button>
+              </>)}
             </div>
           )}
 
