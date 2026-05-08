@@ -51,15 +51,20 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
   });
 
   const estadoGeneral = calcularEstadoGeneral(flotas);
-  const dfmFlota   = flotas.length > 0
-    ? Math.round(flotas.reduce((s, f) => s + f.dfmPromedio,  0) / flotas.length * 10) / 10
-    : 0;
-  const tmefFlota  = flotas.length > 0
-    ? Math.round(flotas.reduce((s, f) => s + f.tmefPromedio, 0) / flotas.length * 10) / 10
-    : 0;
-  const tmprFlota  = flotas.length > 0
-    ? Math.round(flotas.reduce((s, f) => s + f.tmprPromedio, 0) / flotas.length * 10) / 10
-    : 0;
+
+  // Promedio ponderado por cantidad de equipos activos (excluye paros)
+  const actCnt = (f: FlotaResumen) => f.cantidad - f.enParo;
+  const totalActivos = flotas.reduce((s, f) => s + actCnt(f), 0);
+  const wAvg = (fn: (f: FlotaResumen) => number) =>
+    totalActivos > 0
+      ? Math.round(flotas.reduce((s, f) => s + fn(f) * actCnt(f), 0) / totalActivos * 10) / 10
+      : 0;
+
+  const dfmFlota  = wAvg((f) => f.dfmPromedio);
+  const tmefFlota = wAvg((f) => f.tmefPromedio);
+  const tmprFlota = wAvg((f) => f.tmprPromedio);
+  const topFlota  = wAvg((f) => f.tiempoOperativoPromedio);
+  const resFlota  = wAvg((f) => f.reservaPromedio);
 
   return (
     <div className="print-target bg-white rounded-xl border border-[#E4E4E7] overflow-hidden">
@@ -100,15 +105,17 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
       </div>
 
       {/* ── KPI CARDS — pantalla only ─────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#F4F4F5] border-b border-[#E4E4E7]">
+      <div className="grid grid-cols-2 sm:grid-cols-5 divide-y-0 sm:divide-x divide-[#F4F4F5] border-b border-[#E4E4E7]">
         {[
-          { label: "Dfm promedio",   valor: `${dfmFlota}%`,  nota: "≥ 85% meta",  color: dfmFlota >= 85 ? "#15803D" : dfmFlota >= 75 ? "#B45309" : "#DC2626" },
-          { label: "TMEF promedio",  valor: `${tmefFlota}h`, nota: "≥ 80h meta",  color: tmefFlota >= 80 ? "#15803D" : tmefFlota >= 50 ? "#B45309" : "#DC2626" },
-          { label: "TMPR promedio",  valor: `${tmprFlota}h`, nota: "≤ 5h meta",   color: tmprFlota <= 5 ? "#15803D" : tmprFlota <= 15 ? "#B45309" : "#DC2626" },
+          { label: "DFM",       valor: `${dfmFlota}%`,  nota: "≥ 85% meta",  color: dfmFlota >= 85 ? "#15803D" : dfmFlota >= 75 ? "#B45309" : "#DC2626" },
+          { label: "TMEF",      valor: `${tmefFlota}h`, nota: "≥ 80h meta",  color: tmefFlota >= 80 ? "#15803D" : tmefFlota >= 50 ? "#B45309" : "#DC2626" },
+          { label: "TMPR",      valor: `${tmprFlota}h`, nota: "≤ 5h meta",   color: tmprFlota <= 5 ? "#15803D" : tmprFlota <= 15 ? "#B45309" : "#DC2626" },
+          { label: "T.Operativo", valor: `${topFlota}%`, nota: "≥ 80% meta", color: topFlota >= 80 ? "#15803D" : topFlota >= 65 ? "#B45309" : "#DC2626" },
+          { label: "Reserva",   valor: `${resFlota}%`,  nota: "≤ 8% meta",   color: resFlota <= 8 ? "#15803D" : resFlota <= 20 ? "#B45309" : "#DC2626" },
         ].map(({ label, valor, nota, color }) => (
-          <div key={label} className="px-5 py-4 flex flex-col gap-1">
+          <div key={label} className="px-4 py-4 flex flex-col gap-1 border-b sm:border-b-0 border-[#F4F4F5]">
             <span className="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-[0.1em]">{label}</span>
-            <span className="text-[27px] font-bold font-mono leading-none" style={{ color }}>{valor}</span>
+            <span className="text-[24px] font-bold font-mono leading-none" style={{ color }}>{valor}</span>
             <span className="text-[11px] text-[#A1A1AA]">{nota}</span>
           </div>
         ))}
@@ -163,9 +170,11 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
                 <tr className="bg-[#F4F4F5]">
                   <th className="border border-[#E4E4E7] px-3 py-2 text-left text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Flota</th>
                   <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">N°</th>
-                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Dfm</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">DFM</th>
                   <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">TMEF</th>
                   <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">TMPR</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">T.Op</th>
+                  <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Reserva</th>
                   <th className="border border-[#E4E4E7] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-[#52525B]">Estado</th>
                 </tr>
               </thead>
@@ -177,6 +186,8 @@ export function ReportePreview({ periodo, flotas, equiposCriticos, equiposEnParo
                     <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#52525B]">{f.dfmPromedio}%</td>
                     <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#52525B]">{f.tmefPromedio}h</td>
                     <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#52525B]">{f.tmprPromedio}h</td>
+                    <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#52525B]">{f.tiempoOperativoPromedio}%</td>
+                    <td className="border border-[#F4F4F5] px-3 py-2.5 text-center font-mono text-[#52525B]">{f.reservaPromedio}%</td>
                     <td className="border border-[#F4F4F5] px-3 py-2.5 text-center">
                       <span
                         className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider"

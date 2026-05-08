@@ -75,7 +75,7 @@ export interface KpisDelta {
  */
 export const getKpisDeltaFlota = cache(async (periodoIdRef?: number): Promise<KpisDelta | null> => {
   const baseQuery = db
-    .selectDistinct({ id: t.periodo.id })
+    .selectDistinct({ id: t.periodo.id, anio: t.periodo.anio, mes: t.periodo.mes })
     .from(t.kpiEquipo)
     .innerJoin(t.periodo, eq(t.periodo.id, t.kpiEquipo.periodoId));
 
@@ -83,7 +83,7 @@ export const getKpisDeltaFlota = cache(async (periodoIdRef?: number): Promise<Kp
     periodoIdRef !== undefined
       ? baseQuery.where(sql`${t.periodo.id} <= ${periodoIdRef}`)
       : baseQuery
-  ).orderBy(desc(t.periodo.id)).limit(2);
+  ).orderBy(desc(t.periodo.anio), desc(t.periodo.mes)).limit(2);
 
   if (periodos.length < 2) return null;
 

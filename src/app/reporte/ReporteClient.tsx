@@ -18,9 +18,9 @@ import { clsx } from "clsx";
 
 type Tab = "informe" | "comparar" | "integracion";
 
-export function ReporteClient({ flota, periodos, delta }: { flota: Equipo[]; periodos: Periodo[]; delta: KpisDelta | null }) {
+export function ReporteClient({ flota, periodos, delta, periodoActual }: { flota: Equipo[]; periodos: Periodo[]; delta: KpisDelta | null; periodoActual?: Periodo }) {
   const [tab, setTab]       = useState<Tab>("informe");
-  const periodo = periodos[0]?.label ?? "Sin datos";
+  const periodo = periodoActual?.label ?? periodos[0]?.label ?? "Sin datos";
 
   const flotas: FlotaResumen[] = [
     calcularResumenFlota("785D",   "CAT 785D",        flota),

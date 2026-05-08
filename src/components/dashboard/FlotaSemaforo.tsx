@@ -99,11 +99,12 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
             </div>
 
             {/* KPI grid */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[
-                { k: "Dfm",  v: flota.dfmPromedio,  u: "%",  max: 100, helpKey: "dfm" },
-                { k: "TMEF", v: flota.tmefPromedio,  u: "h",  max: 150, helpKey: "tmef" },
-                { k: "TMPR", v: flota.tmprPromedio,  u: "h",  max: 30,  helpKey: "tmpr" },
+                { k: "Dfm",  v: flota.dfmPromedio,              u: "%",  max: 100, helpKey: "dfm" },
+                { k: "TMEF", v: flota.tmefPromedio,             u: "h",  max: 150, helpKey: "tmef" },
+                { k: "TMPR", v: flota.tmprPromedio,             u: "h",  max: 30,  helpKey: "tmpr" },
+                { k: "T.Op", v: flota.tiempoOperativoPromedio,  u: "%",  max: 100, helpKey: "tiempoOperativo" },
               ].map(({ k, v, u, max, helpKey }) => (
                 <div key={k} className="flex flex-col">
                   <Tooltip short={HELP[helpKey].titulo} help={HELP[helpKey]}>

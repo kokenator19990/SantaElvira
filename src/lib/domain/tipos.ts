@@ -51,6 +51,8 @@ export interface FlotaResumen {
   dfmPromedio: number;
   tmefPromedio: number;
   tmprPromedio: number;
+  tiempoOperativoPromedio: number;
+  reservaPromedio: number;
   semaforoGeneral: EstadoSemaforo;
 }
 
