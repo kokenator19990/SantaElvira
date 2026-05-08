@@ -33,7 +33,7 @@ export function ReporteClient({ flota, periodos, delta, periodoActual }: { flota
 
   function imprimir() {
     const prev = document.title;
-    document.title = `MSG_Informe_${periodo.replace(" ", "_")}.pdf`;
+    document.title = `MSG_Informe_${periodo.replace(/\s+/g, "_")}.pdf`;
     window.print();
     document.title = prev;
   }

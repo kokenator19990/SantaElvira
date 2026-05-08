@@ -56,7 +56,7 @@ export function ShellClient({
       </div>
     )}
 
-    <div className={`flex h-screen overflow-hidden bg-[#F8FAFC] ${helpMode ? "mt-[40px]" : ""} ${offline ? "mt-[36px]" : ""}`}>
+    <div className={`flex h-screen overflow-hidden bg-[#F8FAFC] ${helpMode && offline ? "mt-[76px]" : helpMode ? "mt-[40px]" : offline ? "mt-[36px]" : ""}`}>
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/40 backdrop-blur-sm lg:hidden"

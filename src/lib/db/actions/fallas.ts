@@ -32,7 +32,7 @@ export async function crearEventoFalla(input: EventoFallaInput): Promise<ActionR
 
   try {
     const [created] = await db.insert(t.eventoFalla).values({
-      equipoId:      input.equipoId,
+      equipoId:      input.equipoId.trim().toUpperCase(),
       fecha:         new Date(input.fecha),
       descripcion:   input.descripcion.trim(),
       componente:    input.componente?.trim() || null,
@@ -61,7 +61,7 @@ export async function actualizarEventoFalla(
   }
   if (input.componente !== undefined) updates.componente = input.componente?.trim() || null;
   if (input.hrsReparacion !== undefined) {
-    if (input.hrsReparacion < 0) return { ok: false, error: "Horas no pueden ser negativas" };
+    if (Number.isNaN(input.hrsReparacion) || input.hrsReparacion < 0) return { ok: false, error: "Horas no pueden ser negativas" };
     updates.hrsReparacion = String(input.hrsReparacion);
   }
   if (input.fecha !== undefined) updates.fecha = new Date(input.fecha);

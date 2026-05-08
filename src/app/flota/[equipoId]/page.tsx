@@ -1,11 +1,12 @@
 export const revalidate = 300;
 
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { ArrowLeft, AlertTriangle, BellRing, Info } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getEquipoPorId } from "@/lib/db/queries/flota";
 import { getHistoricoEquipo } from "@/lib/db/queries/historico";
 import { getUmbralesActivos } from "@/lib/db/queries/umbrales";
+import { getAlertas } from "@/lib/db/queries/alertas";
 import { OBJETIVO_DFM, OBJETIVO_TMEF, OBJETIVO_TMPR, OBJETIVO_OP, OBJETIVO_RESERVA } from "@/lib/constants/umbrales";
 import { EquipoHeader } from "@/components/equipo/EquipoHeader";
 import { EquipoKpiPanel } from "@/components/equipo/EquipoKpiPanel";
@@ -28,14 +29,19 @@ interface Props {
 }
 
 export default async function EquipoPage({ params }: Props) {
-  const [equipoResult, umbralesActivos] = await Promise.all([
+  const [equipoResult, umbralesActivos, todasAlertas] = await Promise.all([
     getEquipoPorId(params.equipoId.toUpperCase()),
     getUmbralesActivos(),
+    getAlertas(),
   ]);
   const equipo = equipoResult;
   if (!equipo) notFound();
 
+  const alertasEquipo = todasAlertas.filter((a) => a.equipoId === equipo.id);
   const historico = await getHistoricoEquipo(equipo.id);
+
+  // Detectar si el equipo está marcado como "paro" solo por falta de datos (no por falla real)
+  const SIN_DATOS_KPI = equipo.paroTotal && equipo.motivoParo === "Sin datos KPI para este período";
 
   // Objetivos KPI dinámicos desde BD con fallback a constantes
   const umbralMap = new Map(umbralesActivos.map((u) => [u.kpi, u]));
@@ -56,6 +62,38 @@ export default async function EquipoPage({ params }: Props) {
         <ArrowLeft size={13} /> Volver a Flota
       </Link>
       <EquipoHeader equipo={equipo} />
+
+      {/* Banner: sin datos KPI — no es paro real */}
+      {SIN_DATOS_KPI && (
+        <div className="flex items-center gap-2.5 px-4 py-3 rounded-[10px] bg-[#EFF6FF] border border-[#BFDBFE]">
+          <Info size={15} className="text-[#1D4ED8] shrink-0" />
+          <p className="text-[13px] text-[#1E40AF] flex-1">
+            <strong>Sin datos cargados para este período.</strong> El estado de paro es provisional — no indica falla real. Para actualizar, carga los KPIs desde{" "}
+            <Link href="/admin/kpis" className="underline font-semibold hover:text-[#1D4ED8]">Admin → Carga de KPIs</Link>.
+          </p>
+        </div>
+      )}
+
+      {/* Alertas activas del equipo */}
+      {alertasEquipo.length > 0 && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-[10px] bg-[#FEF2F2] border border-[#FECACA]">
+          <BellRing size={15} className="text-[#B91C1C] shrink-0" />
+          <div className="flex-1">
+            <p className="text-[13px] font-bold text-[#991B1B]">
+              {alertasEquipo.length} alerta{alertasEquipo.length > 1 ? "s" : ""} activa{alertasEquipo.length > 1 ? "s" : ""} para este equipo
+            </p>
+            <p className="text-[12px] text-[#B91C1C] mt-0.5">
+              {alertasEquipo.map((a) => a.mensaje).join(" · ")}
+            </p>
+          </div>
+          <Link
+            href="/alertas"
+            className="shrink-0 px-3 py-1.5 rounded-[6px] bg-[#B91C1C] hover:bg-[#991B1B] text-white text-[12px] font-semibold transition-colors"
+          >
+            Ver alertas
+          </Link>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Columna izquierda — KPIs + ASARCO + Datos */}
@@ -150,7 +188,7 @@ export default async function EquipoPage({ params }: Props) {
                 { label: "Modelo",              valor: equipo.modelo,                                                   helpKey: "modelo" },
                 { label: "Tipo flota",           valor: equipo.tipoFlota,                                                helpKey: "tipoFlota" },
                 { label: "Año fabricación",      valor: String(equipo.anio),                                             helpKey: "columnaAnio" },
-                { label: "Horas acumuladas",     valor: `${equipo.horasAcumuladas.toLocaleString("es-CL")} h`,          helpKey: "equipoHoras" },
+                { label: "Horas acumuladas",     valor: `${(equipo.horasAcumuladas ?? 0).toLocaleString("es-CL")} h`,  helpKey: "equipoHoras" },
                 { label: "Última actualización", valor: new Date(equipo.ultimaActualizacion).toLocaleDateString("es-CL") },
               ].map((item) => (
                 <div key={item.label} className="flex justify-between items-center px-4 py-2.5 text-sm">
@@ -167,8 +205,8 @@ export default async function EquipoPage({ params }: Props) {
             </div>
           </section>
 
-          {/* Motivo de paro */}
-          {equipo.paroTotal && (
+          {/* Motivo de paro — solo cuando hay falla real, no cuando faltan datos */}
+          {equipo.paroTotal && !SIN_DATOS_KPI && (
             <section>
               <SectionTitle className="mb-3">
                 <Tooltip short="Razón por la cual el equipo está completamente detenido" help={HELP.paroTotal}>

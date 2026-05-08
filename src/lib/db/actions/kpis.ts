@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "../index";
 import * as t from "../schema";
 import { calcularSemaforos, umbralesDesdeDB } from "@/lib/domain/semaforo";
@@ -169,7 +169,8 @@ export async function upsertKpiYAsarcoEquipo(
   if (asarcoError) return { ok: false, error: asarcoError };
 
   const [per] = await db.select({ cerrado: t.periodo.cerrado }).from(t.periodo).where(eq(t.periodo.id, kpi.periodoId)).limit(1);
-  if (per?.cerrado) return { ok: false, error: "No se pueden modificar datos de un período cerrado" };
+  if (!per) return { ok: false, error: "El período no existe" };
+  if (per.cerrado) return { ok: false, error: "No se pueden modificar datos de un período cerrado" };
 
   try {
     await db.transaction(async (tx) => {
@@ -306,7 +307,7 @@ export async function regenerarAlertasPeriodo(periodoId: number, creadoPor = "ad
         and(
           eq(t.alerta.periodoId, periodoId),
           eq(t.alerta.resuelta, false),
-          sql`${t.alerta.kpi} IN ('dfm', 'tmef', 'tmpr', 'tiempoOperativo', 'reserva')`
+          inArray(t.alerta.kpi, ["dfm", "tmef", "tmpr", "tiempoOperativo", "reserva"])
         )
       );
       if (nuevas.length > 0) {

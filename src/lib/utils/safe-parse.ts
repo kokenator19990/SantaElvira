@@ -12,7 +12,7 @@
 export function safeFloat(v: string | number | null | undefined): number {
   if (v == null) return 0;
   const n = typeof v === "number" ? v : parseFloat(v);
-  return Number.isFinite(n) ? n : 0;
+  return Number.isFinite(n) ? (n === 0 ? 0 : n) : 0;
 }
 
 /** Redondea a 1 decimal. */

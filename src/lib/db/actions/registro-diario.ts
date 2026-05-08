@@ -7,6 +7,7 @@ import * as t from "../schema";
 import { safeFloat, esFechaValida } from "@/lib/utils/safe-parse";
 import { verificarSesion } from "./session";
 import { errorSeguro } from "@/lib/utils/safe-parse";
+import { registrarAuditoria } from "./audit";
 import type { ActionResult } from "./equipos";
 
 export interface RegistroDiarioInput {
@@ -101,7 +102,10 @@ export async function cargarRegistrosPorFecha(fecha: string) {
 export async function upsertRegistroDiario(input: RegistroDiarioInput): Promise<ActionResult> {
   await verificarSesion();
   const result = await upsertRegistroCore(input);
-  if (result.ok) revalidatePath("/", "layout");
+  if (result.ok) {
+    await registrarAuditoria("registro_diario", `${input.equipoId}:${input.fecha}`, "UPDATE", input.creadoPor ?? "admin", `Turno=${input.turno ?? "completo"}`);
+    revalidatePath("/", "layout");
+  }
   return result;
 }
 
@@ -112,6 +116,7 @@ export async function eliminarRegistroDiario(id: number): Promise<ActionResult> 
       .where(eq(t.registroDiario.id, id))
       .returning({ id: t.registroDiario.id });
     if (r.length === 0) return { ok: false, error: "Registro no encontrado" };
+    await registrarAuditoria("registro_diario", String(id), "DELETE", "admin", "Registro eliminado");
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
@@ -133,8 +138,8 @@ export async function upsertRegistrosDiarioBatch(
     const error = validar(r);
     if (error) erroresValidacion.push(`${r.equipoId}: ${error}`);
   }
-  if (erroresValidacion.length > 0 && erroresValidacion.length === registros.length) {
-    return { ok: false, error: erroresValidacion[0] };
+  if (erroresValidacion.length > 0) {
+    return { ok: false, error: `${erroresValidacion.length} registro(s) inválido(s): ${erroresValidacion[0]}` };
   }
 
   const errores: string[] = [...erroresValidacion];
@@ -176,6 +181,10 @@ export async function upsertRegistrosDiarioBatch(
     return { ok: false, error: errorSeguro(e, "registro-diario") };
   }
 
+  if (guardados > 0) {
+    const fecha = validos[0]?.fecha ?? "?";
+    await registrarAuditoria("registro_diario", fecha, "UPDATE", "admin", `Batch: ${guardados} registros guardados`);
+  }
   revalidatePath("/", "layout");
   return { ok: true, data: { guardados, errores } };
 }

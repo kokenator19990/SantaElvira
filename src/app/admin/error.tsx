@@ -10,7 +10,11 @@ export default function AdminError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Error en Admin:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error en Admin:", error);
+    } else if (error.digest) {
+      console.error("Error digest:", error.digest);
+    }
   }, [error]);
 
   return (

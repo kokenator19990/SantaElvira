@@ -52,7 +52,7 @@ interface FlotaSemaforoProps {
 }
 
 export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
-  if (flotas.length === 0) {
+  if (flotas.every((f) => f.cantidad === 0)) {
     return (
       <div className="flex items-center justify-center h-32 rounded-[10px] bg-white border border-[#E4E4E7]">
         <p className="text-[13px] text-[#A1A1AA]">Sin datos de flota disponibles — carga KPIs desde Admin para ver el semáforo.</p>
@@ -107,7 +107,7 @@ export function FlotaSemaforo({ flotas }: FlotaSemaforoProps) {
                 { k: "T.Op", v: flota.tiempoOperativoPromedio,  u: "%",  max: 100, helpKey: "tiempoOperativo" },
               ].map(({ k, v, u, max, helpKey }) => (
                 <div key={k} className="flex flex-col">
-                  <Tooltip short={HELP[helpKey].titulo} help={HELP[helpKey]}>
+                  <Tooltip short={HELP[helpKey]?.titulo ?? k} help={HELP[helpKey]}>
                     <span className="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider cursor-help">{k}</span>
                   </Tooltip>
                   <span className="text-[22px] font-mono font-bold text-[#09090B] leading-none mt-0.5">

@@ -8,6 +8,8 @@ import { verificarSesion } from "./session";
 import { errorSeguro } from "@/lib/utils/safe-parse";
 import type { ActionResult } from "./equipos";
 
+const KPI_VALIDOS = ["dfm", "tmef", "tmpr", "tiempoOperativo", "reserva"] as const;
+
 interface ActualizarUmbralInput {
   kpi:         string;
   nivelVerde:  number;
@@ -24,7 +26,9 @@ export async function actualizarUmbral(input: ActualizarUmbralInput): Promise<Ac
   await verificarSesion();
   const { kpi, nivelVerde, nivelAmbar, invertido } = input;
 
-  if (!kpi) return { ok: false, error: "KPI inválido" };
+  if (!kpi || !(KPI_VALIDOS as readonly string[]).includes(kpi)) {
+    return { ok: false, error: "KPI inválido" };
+  }
   if (nivelVerde < 0 || nivelAmbar < 0) return { ok: false, error: "Los umbrales no pueden ser negativos" };
 
   try {
@@ -49,6 +53,7 @@ export async function actualizarUmbral(input: ActualizarUmbralInput): Promise<Ac
     });
 
     revalidatePath("/admin/umbrales");
+    revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {
     return { ok: false, error: errorSeguro(e, "umbrales") };

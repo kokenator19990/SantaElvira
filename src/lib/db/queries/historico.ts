@@ -29,7 +29,7 @@ export const getHistoricoEquipo = cache(async (equipoId: string): Promise<SerieT
   const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"] as const;
 
   return filas.map((f) => ({
-    mes:             `${MESES[f.mes - 1]} ${String(f.anio).slice(-2)}`,
+    mes:             `${MESES[f.mes - 1] ?? "?"} ${String(f.anio).slice(-2)}`,
     dfm:             f.paroTotal ? 0 : safeFloat(f.dfm),
     tmef:            safeFloat(f.tmef),
     tmpr:            safeFloat(f.tmpr),

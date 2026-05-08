@@ -101,7 +101,7 @@ export function calcularKpiEquipo(
   //     (descarta equipos legítimamente en reserva/mantenimiento programado)
   const esParo = hrsOp < 0.01 && (
     hrsDetNoProg / totalHrs > UMBRAL_PARO_DET_NO_PROG ||
-    (hrsRes < 0.01 && hrsDetNoProg > 0)
+    (hrsRes < 0.01 && hrsDetProg < 0.01 && hrsDetNoProg > 0)
   );
 
   const dfm            = round2((hrsDisponible / totalHrs) * 100);
@@ -129,7 +129,7 @@ export function calcularKpiEquipo(
   const residuo = round2(100 - sumaRedondeada);
   if (residuo !== 0) {
     const maxIdx = normalizado.indexOf(Math.max(...normalizado));
-    normalizado[maxIdx] = round2(normalizado[maxIdx] + residuo);
+    normalizado[maxIdx] = round2(Math.min(100, Math.max(0, normalizado[maxIdx] + residuo)));
   }
   const [pctOperativo, pctReserva, pctDetProgramada, pctDetNoProg, pctPerdidaOp] = normalizado;
 

@@ -93,11 +93,9 @@ function HistorialResueltas({ resueltas }: { resueltas: Alerta[] }) {
                 <span className="text-[11px] px-1.5 py-0.5 rounded-[4px] bg-[#F4F4F5] text-[#A1A1AA] font-mono">
                   {KPI_LABEL[a.kpi] ?? a.kpi}
                 </span>
-                {a.valorActual > 0 && (
-                  <span className="text-[11px] font-mono text-[#71717A]">
-                    {a.valorActual}{KPI_UNIDAD[a.kpi] ?? ""}
-                  </span>
-                )}
+                <span className="text-[11px] font-mono text-[#71717A]">
+                  {a.valorActual}{KPI_UNIDAD[a.kpi] ?? ""}
+                </span>
               </div>
               <p className="text-[12px] text-[#A1A1AA] mt-0.5 truncate">{a.mensaje}</p>
               {a.accionTomada && (

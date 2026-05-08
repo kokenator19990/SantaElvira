@@ -128,7 +128,8 @@ export function KpisImportarClient({
   periodos: Periodo[];
   equipoIdsValidos: string[];
 }) {
-  const [periodoId, setPeriodoId]   = useState(periodos[0]?.id ?? 0);
+  const primerAbierto = periodos.find((p) => !p.cerrado);
+  const [periodoId, setPeriodoId]   = useState(primerAbierto?.id ?? periodos[0]?.id ?? 0);
   const [filas, setFilas]           = useState<FilaParseada[]>([]);
   const [errores, setErrores]       = useState<ErrorLinea[]>([]);
   const [globalMsg, setGlobalMsg]   = useState<{ type: "ok" | "error"; text: string } | null>(null);

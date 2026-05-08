@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save, AlertTriangle, CheckCircle2, RefreshCw, Upload } from "lucide-react";
 import { clsx } from "clsx";
 import type { Equipo } from "@/lib/domain/tipos";
 import type { Periodo } from "@/lib/db/schema";
-import { upsertKpiEquipo, upsertAsarcoEquipo, regenerarAlertasPeriodo } from "@/lib/db/actions/kpis";
+import { upsertKpiYAsarcoEquipo, regenerarAlertasPeriodo } from "@/lib/db/actions/kpis";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { HELP } from "@/lib/help-content";
@@ -57,7 +57,8 @@ function sumaAsarco(r: KpiRow) {
 }
 
 export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos: Periodo[] }) {
-  const [periodoId, setPeriodoId] = useState(periodos[0]?.id ?? 0);
+  const primerAbierto = periodos.find((p) => !p.cerrado);
+  const [periodoId, setPeriodoId] = useState(primerAbierto?.id ?? periodos[0]?.id ?? 0);
   const [rows, setRows] = useState<KpiRow[]>(() => flota.map(rowFromEquipo));
   const [globalMsg, setGlobalMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [guardando, setGuardando] = useState(false);
@@ -88,8 +89,9 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
     patch(idx, { status: "saving", errorMsg: undefined });
 
-    const [resKpi, resAsarco] = await Promise.all([
-      upsertKpiEquipo({
+    // C4: upsert atómico — KPI + ASARCO en una sola transacción
+    const res = await upsertKpiYAsarcoEquipo(
+      {
         equipoId:        r.equipoId,
         periodoId,
         dfm:             r.dfm,
@@ -100,8 +102,8 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
         horasAcumuladas: r.horasAcumuladas,
         paroTotal:       r.paroTotal,
         motivoParo:      r.motivoParo || null,
-      }),
-      upsertAsarcoEquipo({
+      },
+      {
         equipoId:         r.equipoId,
         periodoId,
         pctOperativo:     r.pctOperativo,
@@ -109,16 +111,12 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
         pctDetProgramada: r.pctDetProgramada,
         pctDetNoProg:     r.pctDetNoProg,
         pctPerdidaOp:     r.pctPerdidaOp,
-      }),
-    ]);
+      },
+    );
 
-    if (!resKpi.ok) {
-      patch(idx, { status: "error", errorMsg: resKpi.error });
-      return { ok: false, error: resKpi.error };
-    }
-    if (!resAsarco.ok) {
-      patch(idx, { status: "error", errorMsg: resAsarco.error });
-      return { ok: false, error: resAsarco.error };
+    if (!res.ok) {
+      patch(idx, { status: "error", errorMsg: res.error });
+      return { ok: false, error: res.error };
     }
     patch(idx, { status: "ok" });
     return { ok: true };
@@ -249,8 +247,8 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
               const suma = sumaAsarco(r);
               const sumOk = Math.abs(suma - 100) <= 0.1;
               return (
-                <>
-                  <tr key={r.equipoId} className="border-t border-[#F4F4F5] hover:bg-[#FAFAFA]">
+                <React.Fragment key={r.equipoId}>
+                  <tr className="border-t border-[#F4F4F5] hover:bg-[#FAFAFA]">
                     <td className="px-3 py-1.5 font-mono font-bold text-[#09090B]">{r.equipoId}</td>
                     <td className="px-3 py-1.5 text-[#71717A] text-[12px]">{r.modelo}</td>
                     <Num value={r.dfm} onChange={(v) => patch(idx, { dfm: v })} label={`DFM ${r.equipoId}`} />
@@ -317,13 +315,13 @@ export function KpisAdminClient({ flota, periodos }: { flota: Equipo[]; periodos
 
                   {/* Fila de error inline */}
                   {r.status === "error" && r.errorMsg && (
-                    <tr key={`${r.equipoId}-err`} className="bg-[#FEF2F2]">
+                    <tr className="bg-[#FEF2F2]">
                       <td colSpan={16} className="px-3 py-1.5">
                         <p className="text-[11px] text-[#B91C1C]">{r.errorMsg}</p>
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </tbody>
@@ -355,7 +353,7 @@ function Num({
         type="number"
         step={step}
         value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+        onChange={(e) => { const v = parseFloat(e.target.value); onChange(Number.isFinite(v) ? v : 0); }}
         aria-label={label}
         className="w-[58px] px-1.5 py-1 rounded-[4px] bg-white border border-[#E4E4E7] focus:border-[#B45309] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#B45309] text-right text-[12px] font-mono"
       />
